@@ -27,7 +27,7 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     id: "tracker",
-    label: "Tracker",
+    label: "Track",
     href: "/tracker",
   },
   {

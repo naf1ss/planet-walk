@@ -21,7 +21,7 @@ function scrollToId(id: string) {
 }
 
 /**
- * Fixed frosted-glass site menu — home pill left, links center, Tracker CTA right.
+ * Fixed frosted-glass site menu — home pill left, links center, Track CTA right.
  */
 export function SiteHeader() {
   const pathname = usePathname();
@@ -84,7 +84,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* Right — Tracker CTA + mobile menu */}
+        {/* Right — Track CTA + mobile menu */}
         <div className="pointer-events-auto flex items-center gap-2">
           <Link
             href={TRACKER_ITEM.href}

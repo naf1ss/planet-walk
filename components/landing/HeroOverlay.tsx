@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,12 +19,45 @@ export function HeroOverlay({
   zoomTrackRef,
   startAtSolarSystem = false,
 }: HeroOverlayProps) {
+  const heroBlockRef = useRef<HTMLDivElement>(null);
   const scrollPromptRef = useRef<HTMLParagraphElement>(null);
   const midTextRef = useRef<HTMLParagraphElement>(null);
-  const endSectionRef = useRef<HTMLDivElement>(null);
+  const endSectionRef = useRef<HTMLParagraphElement>(null);
 
-  const [introOpacity, setIntroOpacity] = useState(startAtSolarSystem ? 0 : 1);
-  const [introY, setIntroY] = useState(0);
+  const [introReady, setIntroReady] = useState(startAtSolarSystem);
+  const [introOpacity, setIntroOpacity] = useState(0);
+  const [introY, setIntroY] = useState(startAtSolarSystem ? -36 : -100);
+
+  /* Hero text drop — 3s after mount, independent of the WebGL entrance */
+  useLayoutEffect(() => {
+    if (startAtSolarSystem) return;
+    const el = heroBlockRef.current;
+    if (!el) return;
+
+    gsap.set(el, { opacity: 0, y: -100 });
+
+    const tl = gsap.timeline();
+    tl.to(
+      el,
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.05,
+        ease: "power3.out",
+        onComplete: () => {
+          setIntroOpacity(1);
+          setIntroY(0);
+          setIntroReady(true);
+          gsap.set(el, { clearProps: "opacity,y,transform" });
+        },
+      },
+      3,
+    );
+
+    return () => {
+      tl.kill();
+    };
+  }, [startAtSolarSystem]);
 
   /* Hero title block fade — still tied to first scroll segment */
   useEffect(() => {
@@ -33,6 +66,8 @@ export function HeroOverlay({
       setIntroY(-36);
       return;
     }
+
+    if (!introReady) return;
 
     const update = () => {
       const track = zoomTrackRef.current;
@@ -66,7 +101,7 @@ export function HeroOverlay({
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [zoomTrackRef, startAtSolarSystem]);
+  }, [zoomTrackRef, startAtSolarSystem, introReady]);
 
   /* GSAP timeline — scroll prompt ↔ Milky Way copy */
   useEffect(() => {
@@ -81,13 +116,13 @@ export function HeroOverlay({
     if (startAtSolarSystem) {
       gsap.set(scrollPrompt, { opacity: 0 });
       gsap.set(midText, { opacity: 0 });
-      gsap.set(endSection, { opacity: 1, y: 0 });
+      gsap.set(endSection, { opacity: 1 });
       return;
     }
 
     gsap.set(scrollPrompt, { opacity: 1 });
     gsap.set(midText, { opacity: 0 });
-    gsap.set(endSection, { opacity: 0, y: 24 });
+    gsap.set(endSection, { opacity: 0 });
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -121,11 +156,12 @@ export function HeroOverlay({
         0.5,
       );
 
+      // Enter only after "...milky way" has fully faded out
       tl.fromTo(
         endSection,
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" },
-        0.72,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.12, ease: "power2.inOut" },
+        ">",
       );
     }, track);
 
@@ -147,24 +183,29 @@ export function HeroOverlay({
       />
 
       <div
-        style={{
-          opacity: introOpacity,
-          transform: `translateY(${introY}px)`,
-        }}
+        ref={heroBlockRef}
+        style={
+          introReady
+            ? {
+                opacity: introOpacity,
+                transform: `translateY(${introY}px)`,
+              }
+            : undefined
+        }
         className="absolute top-32 left-1/2 flex w-full max-w-4xl -translate-x-1/2 flex-col items-center text-center sm:top-36"
       >
         <motion.p
-          initial={{ opacity: 0, y: 12 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0 }}
           className="mb-5 text-[0.7rem] uppercase tracking-[0.35em] text-accent sm:text-xs"
         >
           {SITE.campus}
         </motion.p>
         <motion.h1
-          initial={{ opacity: 0, y: 28 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.25, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0 }}
           className="font-display text-5xl font-medium tracking-tight text-star drop-shadow-[0_0_40px_rgba(3,4,10,0.9)] sm:text-7xl md:text-8xl"
         >
           <span className="text-star drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
@@ -175,9 +216,9 @@ export function HeroOverlay({
           </span>
         </motion.h1>
         <motion.p
-          initial={{ opacity: 0, y: 16 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0 }}
           className="mt-6 max-w-md text-base text-foreground-muted sm:text-lg"
         >
           {SITE.tagline}
@@ -198,20 +239,12 @@ export function HeroOverlay({
         Diving through the Milky Way
       </p>
 
-      <div
+      <p
         ref={endSectionRef}
-        className="absolute inset-x-0 bottom-[14%] flex flex-col items-center text-center"
+        className="absolute bottom-10 left-1/2 w-full -translate-x-1/2 text-center animate-bounce font-nav text-[0.65rem] uppercase tracking-[0.38em] text-accent/90"
       >
-        <p className="text-[0.7rem] uppercase tracking-[0.35em] text-accent-warm">
-          Our neighborhood
-        </p>
-        <h2 className="font-display mt-3 text-3xl text-star sm:text-4xl">
-          The Solar System
-        </h2>
-        <p className="mt-3 max-w-sm text-sm text-foreground-muted">
-          Click any world to begin its guided journey.
-        </p>
-      </div>
+        Click any world to begin
+      </p>
     </div>
   );
 }
