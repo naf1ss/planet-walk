@@ -120,7 +120,7 @@ export function PlanetExperience({ body }: PlanetExperienceProps) {
   }, [router]);
 
   return (
-    <main className="relative min-h-[100dvh] w-full bg-void">
+    <main className="relative min-h-[100dvh] w-full">
       <PlanetFlyScene
         key={body.slug}
         body={body}

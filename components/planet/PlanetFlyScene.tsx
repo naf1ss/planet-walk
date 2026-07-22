@@ -2,9 +2,10 @@
 
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
+import { Stars, useTexture } from "@react-three/drei";
 import gsap from "gsap";
 import * as THREE from "three";
+import { MilkyWay } from "@/components/canvas/MilkyWay";
 import type { BodyContent } from "@/lib/planet-content";
 import { useDayNight } from "@/components/providers/DayNightProvider";
 import { CAMERA_END } from "@/lib/scroll-camera";
@@ -112,7 +113,7 @@ export function PlanetFlyScene({
   exiting = false,
   onExitComplete,
 }: PlanetFlySceneProps) {
-  const { spaceColor, ambientIntensity } = useDayNight();
+  const { spaceColor, ambientIntensity, isDay } = useDayNight();
 
   const { cameraPosition, cameraFov, meshRadius } = useMemo(() => {
     const saved = readPlanetTransition(body.slug);
@@ -168,14 +169,30 @@ export function PlanetFlyScene({
           position: cameraPosition,
           fov: cameraFov,
           near: 0.1,
-          far: 200,
+          far: 2500,
         }}
         gl={{ antialias: true, alpha: false }}
         onCreated={({ gl }) => gl.setClearColor(spaceColor)}
       >
         <HeroCamera anim={cameraAnim} />
         <color attach="background" args={[spaceColor]} />
+        <fog
+          attach="fog"
+          args={[spaceColor, isDay ? 180 : 160, isDay ? 760 : 720]}
+        />
         <ambientLight intensity={ambientIntensity + 0.1} />
+        <Suspense fallback={null}>
+          <MilkyWay />
+        </Suspense>
+        <Stars
+          radius={480}
+          depth={90}
+          count={isDay ? 1400 : 1800}
+          factor={isDay ? 1.6 : 2}
+          saturation={0}
+          fade
+          speed={0.12}
+        />
         <Suspense fallback={null}>
           <BodyMesh body={body} radius={meshRadius} />
         </Suspense>
