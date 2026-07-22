@@ -20,6 +20,12 @@ import {
   CAMERA_START,
   scrollCamera,
 } from "@/lib/scroll-camera";
+import {
+  getDiveEndCamera,
+  getTransitionCameraOffset,
+  savePlanetTransition,
+} from "@/lib/planet-transition";
+import type { BodySlug } from "@/lib/planet-content";
 
 type SceneCanvasProps = {
   zoomTrackRef: React.RefObject<HTMLElement | null>;
@@ -121,21 +127,29 @@ export function SceneCanvas({
       scrubRef.current = null;
 
       const { position, size, slug } = payload;
-      const end = {
-        posX: position.x + size * 0.35,
-        posY: position.y + Math.max(0.6, size * 0.55),
-        posZ: position.z + Math.max(2.8, size * 3.4),
-        lookX: position.x,
-        lookY: position.y,
-        lookZ: position.z,
-        fov: 34,
-      };
+      const bodySlug = slug as BodySlug;
+      const radius = size;
+      const end = getDiveEndCamera(
+        position.x,
+        position.y,
+        position.z,
+        radius,
+      );
+      const pageOffset = getTransitionCameraOffset(radius);
 
       gsap.to(scrollCamera, {
         ...end,
         duration: 1.7,
         ease: "power3.inOut",
         onComplete: () => {
+          savePlanetTransition({
+            slug: bodySlug,
+            posX: pageOffset.x,
+            posY: pageOffset.y,
+            posZ: pageOffset.z,
+            fov: end.fov,
+            radius,
+          });
           router.push(`/planet/${slug}`);
         },
       });

@@ -54,13 +54,13 @@ export function LandingExperience() {
       <section
         id="hero"
         ref={heroRef}
-        className="relative z-10 h-screen w-full"
+        className="pointer-events-none relative z-10 h-screen w-full"
         aria-label="Planet Walk intro"
       />
 
       <div
         ref={zoomTrackRef}
-        className="relative z-10 w-full"
+        className="pointer-events-none relative z-10 w-full"
         style={{ height: "350vh" }}
         aria-hidden
       >

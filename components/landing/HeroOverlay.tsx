@@ -1,33 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SITE } from "@/lib/constants";
 
 type HeroOverlayProps = {
   zoomTrackRef: React.RefObject<HTMLElement | null>;
 };
 
-function clamp01(n: number) {
-  return Math.min(1, Math.max(0, n));
-}
-
 /**
- * Landing hero copy — centered over the 3D canvas.
- * Fades as the user scrolls into the galaxy zoom.
+ * Landing hero copy — anchored above the galaxy center.
+ * Scroll-driven fades via GSAP ScrollTrigger (synced with zoom track).
  */
 export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
+  const scrollPromptRef = useRef<HTMLParagraphElement>(null);
+  const midTextRef = useRef<HTMLParagraphElement>(null);
+  const endSectionRef = useRef<HTMLDivElement>(null);
+
   const [introOpacity, setIntroOpacity] = useState(1);
   const [introY, setIntroY] = useState(0);
-  const [zoomProgress, setZoomProgress] = useState(0);
 
+  /* Hero title block fade — still tied to first scroll segment */
   useEffect(() => {
     const update = () => {
       const track = zoomTrackRef.current;
       if (!track) {
         setIntroOpacity(1);
         setIntroY(0);
-        setZoomProgress(0);
         return;
       }
 
@@ -46,9 +47,6 @@ export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
         setIntroOpacity(t);
         setIntroY(-36 * (1 - t));
       }
-
-      const trackHeight = Math.max(1, track.offsetHeight - vh);
-      setZoomProgress(clamp01(-zoomTop / trackHeight));
     };
 
     update();
@@ -60,26 +58,72 @@ export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
     };
   }, [zoomTrackRef]);
 
+  /* GSAP timeline — scroll prompt ↔ Milky Way copy */
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const track = zoomTrackRef.current;
+    const scrollPrompt = scrollPromptRef.current;
+    const midText = midTextRef.current;
+    const endSection = endSectionRef.current;
+    if (!track || !scrollPrompt || !midText || !endSection) return;
+
+    gsap.set(scrollPrompt, { opacity: 1 });
+    gsap.set(midText, { opacity: 0 });
+    gsap.set(endSection, { opacity: 0, y: 24 });
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: track,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl.addLabel("diveBegin", 0.18);
+
+      tl.to(
+        scrollPrompt,
+        { opacity: 0, duration: 0.12, ease: "power2.inOut" },
+        "diveBegin",
+      );
+
+      tl.fromTo(
+        midText,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.12, ease: "power2.inOut" },
+        "diveBegin",
+      );
+
+      tl.to(
+        midText,
+        { opacity: 0, duration: 0.12, ease: "power2.inOut" },
+        0.5,
+      );
+
+      tl.fromTo(
+        endSection,
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" },
+        0.72,
+      );
+    }, track);
+
+    const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ctx.revert();
+    };
+  }, [zoomTrackRef]);
+
   const scrimOpacity = introOpacity * 0.78;
 
-  const midOpacity =
-    zoomProgress < 0.18
-      ? 0
-      : zoomProgress < 0.3
-        ? (zoomProgress - 0.18) / 0.12
-        : zoomProgress < 0.5
-          ? 1
-          : zoomProgress < 0.62
-            ? 1 - (zoomProgress - 0.5) / 0.12
-            : 0;
-
-  const endOpacity =
-    zoomProgress < 0.72 ? 0 : zoomProgress > 0.88 ? 1 : (zoomProgress - 0.72) / 0.16;
-  const endY =
-    zoomProgress < 0.72 ? 24 : Math.max(0, 24 * (1 - (zoomProgress - 0.72) / 0.2));
-
   return (
-    <div className="pointer-events-none fixed inset-0 z-10 flex flex-col items-center justify-center px-6">
+    <div className="pointer-events-none fixed inset-0 z-10 px-6">
       <div
         style={{ opacity: scrimOpacity }}
         className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,var(--hero-scrim)_75%,var(--void)_100%)]"
@@ -90,7 +134,7 @@ export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
           opacity: introOpacity,
           transform: `translateY(${introY}px)`,
         }}
-        className="relative flex flex-col items-center text-center"
+        className="absolute top-32 left-1/2 flex w-full max-w-4xl -translate-x-1/2 flex-col items-center text-center sm:top-36"
       >
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -116,28 +160,24 @@ export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
         >
           {SITE.tagline}
         </motion.p>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className="mt-14 text-[0.65rem] uppercase tracking-[0.32em] text-foreground-muted/90"
-        >
-          Scroll to enter the galaxy
-        </motion.p>
       </div>
 
       <p
-        style={{ opacity: midOpacity }}
-        className="absolute bottom-[18%] text-center text-sm tracking-[0.2em] text-foreground-muted uppercase"
+        ref={scrollPromptRef}
+        className="absolute bottom-10 left-1/2 w-full -translate-x-1/2 text-center animate-bounce font-nav text-[0.65rem] uppercase tracking-[0.38em] text-accent/90"
+      >
+        Scroll to enter the galaxy
+      </p>
+
+      <p
+        ref={midTextRef}
+        className="absolute bottom-10 left-1/2 w-full -translate-x-1/2 text-center font-nav text-[0.65rem] uppercase tracking-[0.38em] text-foreground-muted/90"
       >
         Diving through the Milky Way
       </p>
 
       <div
-        style={{
-          opacity: endOpacity,
-          transform: `translateY(${endY}px)`,
-        }}
+        ref={endSectionRef}
         className="absolute inset-x-0 bottom-[14%] flex flex-col items-center text-center"
       >
         <p className="text-[0.7rem] uppercase tracking-[0.35em] text-accent-warm">

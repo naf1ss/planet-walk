@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useMemo, useRef, useState } from "react";
+import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Line, useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import { AtmosphereGlow } from "@/components/canvas/AtmosphereGlow";
 import { PLANET_VISUALS, SUN, type PlanetVisual } from "@/lib/planets";
+import type { PlanetSlug } from "@/lib/constants";
 import {
   orbitalSpeedRadPerSec,
   orbitPhase,
@@ -18,11 +20,14 @@ export type BodySelectPayload = {
   position: THREE.Vector3;
 };
 
+const ORBIT_SEGMENTS = 512;
+const ORBIT_OPACITY = 0.17;
+
 function OrbitRing({ radius }: { radius: number }) {
   const points = useMemo(() => {
     const pts: [number, number, number][] = [];
-    for (let i = 0; i <= 128; i++) {
-      const a = (i / 128) * Math.PI * 2;
+    for (let i = 0; i <= ORBIT_SEGMENTS; i++) {
+      const a = (i / ORBIT_SEGMENTS) * Math.PI * 2;
       pts.push([Math.cos(a) * radius, 0, Math.sin(a) * radius]);
     }
     return pts;
@@ -31,12 +36,25 @@ function OrbitRing({ radius }: { radius: number }) {
   return (
     <Line
       points={points}
-      color="#9ec9ff"
+      color="#8eb4d8"
       transparent
-      opacity={0.14}
+      opacity={ORBIT_OPACITY}
+      depthWrite={false}
       lineWidth={1}
     />
   );
+}
+
+/** Outer-system bodies keep a forgiving hit target at distance */
+const OUTER_HITBOX_SLUGS = new Set<PlanetSlug>(["uranus", "neptune", "pluto"]);
+const OUTER_MIN_HIT_RADIUS = 0.55;
+
+function hitRadius(slug: PlanetSlug | "sun", visualSize: number) {
+  if (slug === "sun") return visualSize * 1.05;
+  if (OUTER_HITBOX_SLUGS.has(slug)) {
+    return Math.max(visualSize * 2.0, OUTER_MIN_HIT_RADIUS);
+  }
+  return visualSize * 1.05;
 }
 
 function PlanetBody({
@@ -49,6 +67,7 @@ function PlanetBody({
   const groupRef = useRef<THREE.Group>(null);
   const angleRef = useRef(orbitPhase(planet.slug));
   const omega = orbitalSpeedRadPerSec(planet.periodDays);
+  const [hovered, setHovered] = useState(false);
   const map = useTexture(planet.texture);
   map.colorSpace = THREE.SRGBColorSpace;
   map.anisotropy = 8;
@@ -62,7 +81,7 @@ function PlanetBody({
     groupRef.current.rotation.y += delta * (0.15 + omega * 0.35);
   });
 
-  const select = (e: { stopPropagation: () => void; object: THREE.Object3D }) => {
+  const select = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     if (!groupRef.current || !onSelect) return;
     const position = new THREE.Vector3();
@@ -75,34 +94,47 @@ function PlanetBody({
     });
   };
 
+  const onPointerOver = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    setHovered(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const onPointerOut = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    setHovered(false);
+    document.body.style.cursor = "auto";
+  };
+
   return (
     <group ref={groupRef}>
-      <mesh
-        onClick={select}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={() => {
-          document.body.style.cursor = "auto";
-        }}
-      >
-        <sphereGeometry args={[planet.size, 64, 64]} />
-        <meshStandardMaterial
-          map={map}
-          color="#ffffff"
-          roughness={0.72}
-          metalness={0.05}
-          emissive="#000000"
-          emissiveIntensity={0}
-        />
-      </mesh>
+      <group>
+        <mesh>
+          <sphereGeometry args={[planet.size, 64, 64]} />
+          <meshStandardMaterial
+            map={map}
+            color="#ffffff"
+            roughness={0.72}
+            metalness={0.05}
+          />
+        </mesh>
 
-      {/* Larger invisible hit target for easier clicking */}
-      <mesh visible={false} onClick={select}>
-        <sphereGeometry args={[planet.size * 1.85, 16, 16]} />
-        <meshBasicMaterial />
-      </mesh>
+        <AtmosphereGlow
+          radius={planet.size}
+          glowColor={planet.color}
+          targetIntensity={hovered ? 1 : 0}
+        />
+
+        <mesh
+          visible={false}
+          onClick={select}
+          onPointerOver={onPointerOver}
+          onPointerOut={onPointerOut}
+        >
+          <sphereGeometry args={[hitRadius(planet.slug, planet.size), 16, 16]} />
+          <meshBasicMaterial />
+        </mesh>
+      </group>
 
       {planet.slug === "saturn" ? <SaturnRings size={planet.size} /> : null}
     </group>
@@ -110,24 +142,29 @@ function PlanetBody({
 }
 
 function SaturnRings({ size }: { size: number }) {
-  const ringMap = useTexture("/textures/saturn-ring.png");
+  const ringMap = useTexture("/textures/saturn-ring-alpha.png");
   ringMap.colorSpace = THREE.SRGBColorSpace;
-  ringMap.anisotropy = 4;
+  ringMap.anisotropy = 8;
   ringMap.wrapS = THREE.ClampToEdgeWrapping;
   ringMap.wrapT = THREE.ClampToEdgeWrapping;
 
   return (
-    <mesh rotation={[Math.PI / 2.35, 0, 0]}>
-      <ringGeometry args={[size * 1.35, size * 2.35, 96]} />
+    <mesh
+      rotation={[Math.PI / 2, 0.18, 0.1]}
+      renderOrder={2}
+      raycast={() => null}
+    >
+      <ringGeometry args={[size * 1.28, size * 2.45, 128]} />
       <meshStandardMaterial
         map={ringMap}
         alphaMap={ringMap}
         transparent
-        opacity={0.9}
+        opacity={1}
         side={THREE.DoubleSide}
         depthWrite={false}
-        roughness={0.85}
-        metalness={0.1}
+        roughness={0.88}
+        metalness={0.04}
+        toneMapped={false}
       />
     </mesh>
   );
@@ -173,6 +210,7 @@ function SunBody({
 }) {
   const sunRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Group>(null);
+  const [hovered, setHovered] = useState(false);
   const map = useTexture(SUN.texture);
   map.colorSpace = THREE.SRGBColorSpace;
   map.anisotropy = 8;
@@ -189,7 +227,7 @@ function SunBody({
     }
   });
 
-  const select = (e: { stopPropagation: () => void }) => {
+  const select = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     onSelect?.({
       slug: "sun",
@@ -197,6 +235,18 @@ function SunBody({
       size: SUN.size,
       position: new THREE.Vector3(0, 0, 0),
     });
+  };
+
+  const onPointerOver = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    setHovered(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const onPointerOut = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    setHovered(false);
+    document.body.style.cursor = "auto";
   };
 
   return (
@@ -210,7 +260,7 @@ function SunBody({
                 transparent
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
-                opacity={0.55 - i * 0.14}
+                opacity={0.32 - i * 0.08}
                 toneMapped={false}
               />
             </sprite>
@@ -218,23 +268,26 @@ function SunBody({
         </group>
       ) : null}
 
-      <mesh
-        ref={sunRef}
-        onClick={select}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={() => {
-          document.body.style.cursor = "auto";
-        }}
-      >
-        <sphereGeometry args={[SUN.size, 64, 64]} />
-        <meshBasicMaterial map={map} color="#fff2cc" toneMapped={false} />
-      </mesh>
+      <group>
+        <mesh ref={sunRef}>
+          <sphereGeometry args={[SUN.size, 64, 64]} />
+          <meshBasicMaterial map={map} color="#fff2cc" toneMapped={false} />
+        </mesh>
 
-      <mesh visible={false} onClick={select}>
-        <sphereGeometry args={[SUN.size * 1.7, 16, 16]} />
+        <AtmosphereGlow
+          radius={SUN.size}
+          glowColor={SUN.color}
+          targetIntensity={hovered ? 1 : 0}
+        />
+      </group>
+
+      <mesh
+        visible={false}
+        onClick={select}
+        onPointerOver={onPointerOver}
+        onPointerOut={onPointerOut}
+      >
+        <sphereGeometry args={[hitRadius("sun", SUN.size), 16, 16]} />
         <meshBasicMaterial />
       </mesh>
 

@@ -60,7 +60,7 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-[background,border-color,backdrop-filter] duration-300",
+        "pointer-events-none fixed inset-x-0 top-0 z-50 transition-[background,border-color,backdrop-filter] duration-300",
         scrolled || open
           ? "border-b border-border bg-glass/90 backdrop-blur-md"
           : "border-b border-transparent bg-transparent",
@@ -75,18 +75,21 @@ export function SiteHeader() {
               e,
             )
           }
-          className="font-display text-sm font-medium tracking-[0.08em] text-star transition-colors hover:text-accent sm:text-[0.95rem]"
+          className="pointer-events-auto font-display text-sm font-medium tracking-[0.08em] text-star transition-colors hover:text-accent sm:text-[0.95rem]"
         >
           {SITE.name}
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+        <nav
+          className="pointer-events-auto hidden items-center gap-1 md:flex"
+          aria-label="Primary"
+        >
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.id}
               href={item.href}
               onClick={(e) => onNavClick(item, e)}
-              className="rounded-sm px-3 py-2 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
+              className="pointer-events-auto rounded-sm px-3 py-2 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
             >
               {item.label}
             </Link>
@@ -95,7 +98,7 @@ export function SiteHeader() {
 
         <button
           type="button"
-          className="inline-flex items-center justify-center rounded-sm p-2 text-star md:hidden"
+          className="pointer-events-auto inline-flex items-center justify-center rounded-sm p-2 text-star md:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -108,7 +111,7 @@ export function SiteHeader() {
       {open ? (
         <nav
           id="mobile-nav"
-          className="border-t border-border bg-background-elevated/95 px-5 py-4 backdrop-blur-md md:hidden"
+          className="pointer-events-auto border-t border-border bg-background-elevated/95 px-5 py-4 backdrop-blur-md md:hidden"
           aria-label="Mobile"
         >
           <ul className="flex flex-col gap-1">

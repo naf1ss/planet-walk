@@ -89,8 +89,12 @@ export function MilkyWay() {
         <sphereGeometry args={[520, 64, 64]} />
         <meshBasicMaterial
           map={skyMap}
+          color="#ffffff"
+          opacity={1}
           side={THREE.BackSide}
           depthWrite={false}
+          fog={false}
+          toneMapped={false}
         />
       </mesh>
 
@@ -98,11 +102,14 @@ export function MilkyWay() {
         <circleGeometry args={[200, 64]} />
         <meshBasicMaterial
           map={skyMap}
+          color="#ffffff"
           transparent
-          opacity={0.18}
+          opacity={0.22}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
           side={THREE.DoubleSide}
+          fog={false}
+          toneMapped={false}
         />
       </mesh>
 
@@ -110,14 +117,15 @@ export function MilkyWay() {
         <pointsMaterial
           map={circleMap ?? undefined}
           alphaMap={circleMap ?? undefined}
-          size={1.1}
+          size={1.2}
           sizeAttenuation
           vertexColors
           transparent
-          opacity={0.95}
+          opacity={1}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
           alphaTest={0.01}
+          fog={false}
         />
       </points>
     </group>

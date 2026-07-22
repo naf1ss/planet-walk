@@ -37,6 +37,10 @@
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-nav: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+
+  /* Rocket cursors — Iconify CDN (SVG, 32×32) */
+  --cursor-rocket: url("https://api.iconify.design/fa6-solid/rocket.svg?color=%236eb6ff&width=32&height=32") 16 16;
+  --cursor-rocket-hover: url("https://api.iconify.design/fa6-solid/rocket.svg?color=%23f0c06a&width=32&height=32") 16 16;
 }
 
 /* Local nighttime — deep cool blues + true black */
@@ -97,6 +101,20 @@ html[data-theme="day"] {
 *::before,
 *::after {
   box-sizing: border-box;
+  cursor: var(--cursor-rocket), auto !important;
+}
+
+a,
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+label[for],
+select,
+summary,
+.cursor-pointer {
+  cursor: var(--cursor-rocket-hover), pointer !important;
 }
 
 html {
@@ -150,6 +168,7 @@ body {
 .canvas-root--interactive {
   pointer-events: auto;
   cursor: grab;
+  z-index: 5;
 }
 
 .canvas-root canvas {

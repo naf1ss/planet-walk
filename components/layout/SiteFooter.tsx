@@ -1,12 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/nav";
 
 /**
- * Standard site footer — mirrors primary nav; extend content later as needed.
+ * Standard site footer — mirrors primary nav; hidden on the landing page.
  */
 export function SiteFooter() {
+  const pathname = usePathname();
   const year = new Date().getFullYear();
+
+  if (pathname === "/") return null;
 
   return (
     <footer className="relative z-30 border-t border-border bg-background-elevated">
