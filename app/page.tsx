@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { LandingExperience } from "@/components/landing/LandingExperience";
 
 export default function HomePage() {
-  return <LandingExperience />;
+  return (
+    <Suspense fallback={null}>
+      <LandingExperience />
+    </Suspense>
+  );
 }

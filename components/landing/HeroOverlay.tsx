@@ -8,22 +8,32 @@ import { SITE } from "@/lib/constants";
 
 type HeroOverlayProps = {
   zoomTrackRef: React.RefObject<HTMLElement | null>;
+  startAtSolarSystem?: boolean;
 };
 
 /**
  * Landing hero copy — anchored above the galaxy center.
  * Scroll-driven fades via GSAP ScrollTrigger (synced with zoom track).
  */
-export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
+export function HeroOverlay({
+  zoomTrackRef,
+  startAtSolarSystem = false,
+}: HeroOverlayProps) {
   const scrollPromptRef = useRef<HTMLParagraphElement>(null);
   const midTextRef = useRef<HTMLParagraphElement>(null);
   const endSectionRef = useRef<HTMLDivElement>(null);
 
-  const [introOpacity, setIntroOpacity] = useState(1);
+  const [introOpacity, setIntroOpacity] = useState(startAtSolarSystem ? 0 : 1);
   const [introY, setIntroY] = useState(0);
 
   /* Hero title block fade — still tied to first scroll segment */
   useEffect(() => {
+    if (startAtSolarSystem) {
+      setIntroOpacity(0);
+      setIntroY(-36);
+      return;
+    }
+
     const update = () => {
       const track = zoomTrackRef.current;
       if (!track) {
@@ -56,7 +66,7 @@ export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [zoomTrackRef]);
+  }, [zoomTrackRef, startAtSolarSystem]);
 
   /* GSAP timeline — scroll prompt ↔ Milky Way copy */
   useEffect(() => {
@@ -67,6 +77,13 @@ export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
     const midText = midTextRef.current;
     const endSection = endSectionRef.current;
     if (!track || !scrollPrompt || !midText || !endSection) return;
+
+    if (startAtSolarSystem) {
+      gsap.set(scrollPrompt, { opacity: 0 });
+      gsap.set(midText, { opacity: 0 });
+      gsap.set(endSection, { opacity: 1, y: 0 });
+      return;
+    }
 
     gsap.set(scrollPrompt, { opacity: 1 });
     gsap.set(midText, { opacity: 0 });
@@ -118,7 +135,7 @@ export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
       cancelAnimationFrame(raf);
       ctx.revert();
     };
-  }, [zoomTrackRef]);
+  }, [zoomTrackRef, startAtSolarSystem]);
 
   const scrimOpacity = introOpacity * 0.78;
 

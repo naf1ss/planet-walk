@@ -31,6 +31,8 @@ type SceneCanvasProps = {
   zoomTrackRef: React.RefObject<HTMLElement | null>;
   /** When true, canvas receives clicks (Explore) and forwards wheel to the page */
   interactive?: boolean;
+  /** Skip Milky Way intro — mount camera at solar-system end pose */
+  startAtSolarSystem?: boolean;
 };
 
 function Experience({
@@ -70,6 +72,7 @@ function Experience({
 export function SceneCanvas({
   zoomTrackRef,
   interactive = false,
+  startAtSolarSystem = false,
 }: SceneCanvasProps) {
   const { spaceColor } = useDayNight();
   const router = useRouter();
@@ -83,12 +86,19 @@ export function SceneCanvas({
     const track = zoomTrackRef.current;
     if (!track) return;
 
-    Object.assign(scrollCamera, { progress: 0, ...CAMERA_START });
+    Object.assign(
+      scrollCamera,
+      startAtSolarSystem
+        ? { progress: 1, ...CAMERA_END }
+        : { progress: 0, ...CAMERA_START },
+    );
 
     const ctx = gsap.context(() => {
       scrubRef.current = gsap.fromTo(
         scrollCamera,
-        { progress: 0, ...CAMERA_START },
+        startAtSolarSystem
+          ? { progress: 1, ...CAMERA_END }
+          : { progress: 0, ...CAMERA_START },
         {
           progress: 1,
           ...CAMERA_END,
@@ -112,7 +122,7 @@ export function SceneCanvas({
       ctx.revert();
       Object.assign(scrollCamera, { progress: 0, ...CAMERA_START });
     };
-  }, [zoomTrackRef]);
+  }, [zoomTrackRef, startAtSolarSystem]);
 
   const onSelectBody = useCallback(
     (payload: BodySelectPayload) => {
@@ -183,8 +193,10 @@ export function SceneCanvas({
             failIfMajorPerformanceCaveat: false,
           }}
           camera={{
-            position: [CAMERA_START.posX, CAMERA_START.posY, CAMERA_START.posZ],
-            fov: CAMERA_START.fov,
+            position: startAtSolarSystem
+              ? [CAMERA_END.posX, CAMERA_END.posY, CAMERA_END.posZ]
+              : [CAMERA_START.posX, CAMERA_START.posY, CAMERA_START.posZ],
+            fov: startAtSolarSystem ? CAMERA_END.fov : CAMERA_START.fov,
             near: 0.1,
             far: 2500,
           }}

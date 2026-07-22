@@ -1,4 +1,3 @@
-import type { PlanetSlug } from "@/lib/constants";
 import { PLANET_SLUGS } from "@/lib/constants";
 
 /** Route bodies: Sun (Planetarium) + 8 planets + Pluto (Observatory) */

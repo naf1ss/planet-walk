@@ -1,35 +1,41 @@
 "use client";
 
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
+import gsap from "gsap";
 import * as THREE from "three";
 import type { BodyContent } from "@/lib/planet-content";
 import { useDayNight } from "@/components/providers/DayNightProvider";
+import { CAMERA_END } from "@/lib/scroll-camera";
 import {
   getBodyRadius,
   getPlanetPageCamera,
+  getPlanetZoomOutTargetZ,
   readPlanetTransition,
 } from "@/lib/planet-transition";
 
-function HeroCamera({
-  position,
-  fov,
-}: {
-  position: [number, number, number];
+type CameraAnim = {
+  x: number;
+  y: number;
+  z: number;
   fov: number;
-}) {
+};
+
+function HeroCamera({ anim }: { anim: React.RefObject<CameraAnim> }) {
   const { camera } = useThree();
   const lookTarget = useRef(new THREE.Vector3(0, 0, 0));
 
   useFrame(() => {
-    camera.position.set(position[0], position[1], position[2]);
+    const state = anim.current;
+    if (!state) return;
+    camera.position.set(state.x, state.y, state.z);
     camera.lookAt(lookTarget.current);
 
     if ("fov" in camera) {
       const persp = camera as THREE.PerspectiveCamera;
-      if (Math.abs(persp.fov - fov) > 0.01) {
-        persp.fov = fov;
+      if (Math.abs(persp.fov - state.fov) > 0.01) {
+        persp.fov = state.fov;
         persp.updateProjectionMatrix();
       }
     }
@@ -94,8 +100,18 @@ function BodyMesh({ body, radius }: { body: BodyContent; radius: number }) {
   );
 }
 
+type PlanetFlySceneProps = {
+  body: BodyContent;
+  exiting?: boolean;
+  onExitComplete?: () => void;
+};
+
 /** Fixed hero backdrop — body centered at origin, camera at radius × VIEWING_RATIO. */
-export function PlanetFlyScene({ body }: { body: BodyContent }) {
+export function PlanetFlyScene({
+  body,
+  exiting = false,
+  onExitComplete,
+}: PlanetFlySceneProps) {
   const { spaceColor, ambientIntensity } = useDayNight();
 
   const { cameraPosition, cameraFov, meshRadius } = useMemo(() => {
@@ -121,6 +137,28 @@ export function PlanetFlyScene({ body }: { body: BodyContent }) {
     };
   }, [body.slug]);
 
+  const cameraAnim = useRef<CameraAnim>({
+    x: cameraPosition[0],
+    y: cameraPosition[1],
+    z: cameraPosition[2],
+    fov: cameraFov,
+  });
+
+  useEffect(() => {
+    if (!exiting) return;
+
+    const targetZ = getPlanetZoomOutTargetZ(cameraAnim.current.z, meshRadius);
+
+    gsap.to(cameraAnim.current, {
+      z: targetZ,
+      y: cameraAnim.current.y * 1.6,
+      fov: CAMERA_END.fov,
+      duration: 1.65,
+      ease: "power3.inOut",
+      onComplete: () => onExitComplete?.(),
+    });
+  }, [exiting, meshRadius, onExitComplete]);
+
   return (
     <div className="pointer-events-none fixed inset-0 z-0 flex w-full items-center justify-center">
       <Canvas
@@ -135,7 +173,7 @@ export function PlanetFlyScene({ body }: { body: BodyContent }) {
         gl={{ antialias: true, alpha: false }}
         onCreated={({ gl }) => gl.setClearColor(spaceColor)}
       >
-        <HeroCamera position={cameraPosition} fov={cameraFov} />
+        <HeroCamera anim={cameraAnim} />
         <color attach="background" args={[spaceColor]} />
         <ambientLight intensity={ambientIntensity + 0.1} />
         <Suspense fallback={null}>

@@ -91,3 +91,34 @@ export function readPlanetTransition(slug: BodySlug): PlanetTransitionState | nu
     return null;
   }
 }
+
+/** Query flag when returning from a planet page after zoom-out */
+export const RETURN_PARAM = "return";
+
+const RETURN_FLAG_KEY = "planet-walk-return";
+
+export function markReturnToSolarSystem() {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(RETURN_FLAG_KEY, "1");
+}
+
+export function consumeReturnToSolarSystem(): boolean {
+  if (typeof window === "undefined") return false;
+  const flagged = sessionStorage.getItem(RETURN_FLAG_KEY) === "1";
+  if (flagged) sessionStorage.removeItem(RETURN_FLAG_KEY);
+  return flagged;
+}
+
+/** Scroll Y that places the landing camera at the solar-system (Explore) end pose */
+export function getSolarSystemScrollPosition(zoomTrack: HTMLElement): number {
+  const vh = window.innerHeight;
+  const hero = document.getElementById("hero");
+  const heroHeight = hero?.offsetHeight ?? vh;
+  const trackHeight = Math.max(1, zoomTrack.offsetHeight - vh);
+  return heroHeight + trackHeight;
+}
+
+/** Camera Z target when zooming out from a planet hero before routing home */
+export function getPlanetZoomOutTargetZ(startZ: number, radius: number) {
+  return Math.max(startZ * 5.5, radius * VIEWING_RATIO * 8);
+}
