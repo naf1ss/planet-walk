@@ -8,6 +8,12 @@ import { SITE } from "@/lib/constants";
 import { NAV_ITEMS, type NavItem } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
+const HOME_ITEM = NAV_ITEMS.find((i) => i.id === "planet-walk")!;
+const TRACKER_ITEM = NAV_ITEMS.find((i) => i.id === "tracker")!;
+const CENTER_ITEMS = NAV_ITEMS.filter(
+  (i) => i.id !== "planet-walk" && i.id !== "tracker",
+);
+
 function scrollToId(id: string) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -15,20 +21,12 @@ function scrollToId(id: string) {
 }
 
 /**
- * Fixed site menu. Destinations live in lib/nav.ts — swap fonts via CSS vars.
+ * Fixed frosted-glass site menu — home pill left, links center, Tracker CTA right.
  */
 export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Honor hash links on home (e.g. /#explore from another page)
   useEffect(() => {
@@ -58,69 +56,76 @@ export function SiteHeader() {
   };
 
   return (
-    <header
-      className={cn(
-        "pointer-events-none fixed inset-x-0 top-0 z-50 transition-[background,border-color,backdrop-filter] duration-300",
-        scrolled || open
-          ? "border-b border-border bg-glass/90 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent",
-      )}
-    >
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-5 sm:h-16 sm:px-8">
+    <header className="pointer-events-none fixed top-0 z-50 w-full border-b border-white/10 bg-black/5 backdrop-blur-md">
+      <div className="flex w-full items-center justify-between px-6 py-4">
+        {/* Left — Home pill */}
         <Link
-          href="/#hero"
-          onClick={(e) =>
-            onNavClick(
-              NAV_ITEMS.find((i) => i.id === "planet-walk")!,
-              e,
-            )
-          }
-          className="pointer-events-auto font-display text-sm font-medium tracking-[0.08em] text-star transition-colors hover:text-accent sm:text-[0.95rem]"
+          href={HOME_ITEM.href}
+          onClick={(e) => onNavClick(HOME_ITEM, e)}
+          className="pointer-events-auto rounded-full border border-white/20 px-5 py-2 font-display text-sm font-medium tracking-[0.08em] text-star transition-colors hover:bg-white/10"
         >
           {SITE.name}
         </Link>
 
+        {/* Center — primary links (Planet Walk + Tracker removed) */}
         <nav
-          className="pointer-events-auto hidden items-center gap-1 md:flex"
+          className="pointer-events-auto absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex"
           aria-label="Primary"
         >
-          {NAV_ITEMS.map((item) => (
+          {CENTER_ITEMS.map((item) => (
             <Link
               key={item.id}
               href={item.href}
               onClick={(e) => onNavClick(item, e)}
-              className="pointer-events-auto rounded-sm px-3 py-2 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
+              className="rounded-full px-4 py-2 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:bg-white/10 hover:text-star"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <button
-          type="button"
-          className="pointer-events-auto inline-flex items-center justify-center rounded-sm p-2 text-star md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
-        </button>
+        {/* Right — Tracker CTA + mobile menu */}
+        <div className="pointer-events-auto flex items-center gap-2">
+          <Link
+            href={TRACKER_ITEM.href}
+            onClick={() => setOpen(false)}
+            className={cn(
+              "rounded-full bg-white px-6 py-2 font-nav text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-black transition-all hover:bg-gray-200",
+            )}
+          >
+            {TRACKER_ITEM.label}
+          </Link>
+
+          <button
+            type="button"
+            className="inline-flex items-center justify-center rounded-full border border-white/20 p-2 text-star transition-colors hover:bg-white/10 md:hidden"
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            aria-label={open ? "Close menu" : "Open menu"}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? (
+              <X size={18} strokeWidth={1.5} />
+            ) : (
+              <Menu size={18} strokeWidth={1.5} />
+            )}
+          </button>
+        </div>
       </div>
 
       {open ? (
         <nav
           id="mobile-nav"
-          className="pointer-events-auto border-t border-border bg-background-elevated/95 px-5 py-4 backdrop-blur-md md:hidden"
+          className="pointer-events-auto border-t border-white/10 bg-black/5 px-6 py-4 backdrop-blur-md md:hidden"
           aria-label="Mobile"
         >
           <ul className="flex flex-col gap-1">
-            {NAV_ITEMS.map((item) => (
+            {CENTER_ITEMS.map((item) => (
               <li key={item.id}>
                 <Link
                   href={item.href}
                   onClick={(e) => onNavClick(item, e)}
-                  className="block rounded-sm px-2 py-3 font-nav text-xs uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
+                  className="block rounded-full px-4 py-3 text-center font-nav text-xs uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:bg-white/10 hover:text-star"
                 >
                   {item.label}
                 </Link>

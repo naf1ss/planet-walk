@@ -167,7 +167,12 @@ export function HeroOverlay({
           transition={{ duration: 1.25, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="font-display text-5xl font-medium tracking-tight text-star drop-shadow-[0_0_40px_rgba(3,4,10,0.9)] sm:text-7xl md:text-8xl"
         >
-          {SITE.name}
+          <span className="text-star drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+            Planet
+          </span>{" "}
+          <span className="text-[#c084fc] drop-shadow-[0_0_15px_rgba(192,132,252,0.5)]">
+            Walk
+          </span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 16 }}
