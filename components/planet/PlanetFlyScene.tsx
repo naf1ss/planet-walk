@@ -2,10 +2,11 @@
 
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Stars, useTexture } from "@react-three/drei";
+import { useTexture } from "@react-three/drei";
 import gsap from "gsap";
 import * as THREE from "three";
 import { MilkyWay } from "@/components/canvas/MilkyWay";
+import { SoftStars } from "@/components/canvas/SoftStars";
 import type { BodyContent } from "@/lib/planet-content";
 import { useDayNight } from "@/components/providers/DayNightProvider";
 import { CAMERA_END } from "@/lib/scroll-camera";
@@ -183,16 +184,16 @@ export function PlanetFlyScene({
         <ambientLight intensity={ambientIntensity + 0.1} />
         <Suspense fallback={null}>
           <MilkyWay />
+          <SoftStars
+            radius={480}
+            depth={90}
+            count={isDay ? 1400 : 1800}
+            factor={isDay ? 1.6 : 2}
+            saturation={0}
+            fade
+            speed={0.12}
+          />
         </Suspense>
-        <Stars
-          radius={480}
-          depth={90}
-          count={isDay ? 1400 : 1800}
-          factor={isDay ? 1.6 : 2}
-          saturation={0}
-          fade
-          speed={0.12}
-        />
         <Suspense fallback={null}>
           <BodyMesh body={body} radius={meshRadius} />
         </Suspense>

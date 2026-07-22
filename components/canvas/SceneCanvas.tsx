@@ -1,12 +1,12 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Stars } from "@react-three/drei";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MilkyWay } from "@/components/canvas/MilkyWay";
+import { SoftStars } from "@/components/canvas/SoftStars";
 import {
   SolarSystem,
   type BodySelectPayload,
@@ -53,7 +53,7 @@ function Experience({
       <ScrollCamera />
       <MilkyWay />
       <SolarSystem onSelectBody={onSelectBody} />
-      <Stars
+      <SoftStars
         radius={480}
         depth={90}
         count={isDay ? 1400 : 1800}

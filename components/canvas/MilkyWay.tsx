@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { useCirclePointTexture } from "@/lib/circle-point-texture";
+import { applyCircularPointDiscard } from "@/lib/circle-point-texture";
 
 const STAR_COUNT = 9000;
 const ARM_COUNT = 4;
@@ -12,15 +12,24 @@ const GALAXY_RADIUS = 220;
 
 /**
  * Milky Way sky dome + spiral star disk.
- * Star points use a circular alpha map so they stay round when zoomed.
+ * Star points use /textures/particle.png + gl_PointCoord discard so they stay round in production.
  */
 export function MilkyWay() {
   const groupRef = useRef<THREE.Group>(null);
-  const skyMap = useTexture("/textures/milky-way.jpg");
+  const materialRef = useRef<THREE.PointsMaterial>(null);
+  const [skyMap, circleMap] = useTexture([
+    "/textures/milky-way.jpg",
+    "/textures/particle.png",
+  ]);
   skyMap.colorSpace = THREE.SRGBColorSpace;
   skyMap.anisotropy = 8;
 
-  const circleMap = useCirclePointTexture();
+  circleMap.colorSpace = THREE.NoColorSpace;
+  circleMap.magFilter = THREE.LinearFilter;
+  circleMap.minFilter = THREE.LinearFilter;
+  circleMap.generateMipmaps = false;
+  circleMap.premultiplyAlpha = true;
+  circleMap.needsUpdate = true;
 
   const geometry = useMemo(() => {
     const positions = new Float32Array(STAR_COUNT * 3);
@@ -78,6 +87,12 @@ export function MilkyWay() {
     return geo;
   }, []);
 
+  useEffect(() => {
+    const mat = materialRef.current;
+    if (!mat) return;
+    applyCircularPointDiscard(mat);
+  }, [circleMap]);
+
   useFrame((_, delta) => {
     if (!groupRef.current) return;
     groupRef.current.rotation.y += delta * 0.008;
@@ -115,8 +130,9 @@ export function MilkyWay() {
 
       <points geometry={geometry} frustumCulled={false}>
         <pointsMaterial
-          map={circleMap ?? undefined}
-          alphaMap={circleMap ?? undefined}
+          ref={materialRef}
+          map={circleMap}
+          alphaMap={circleMap}
           size={1.2}
           sizeAttenuation
           vertexColors
@@ -126,6 +142,7 @@ export function MilkyWay() {
           blending={THREE.AdditiveBlending}
           alphaTest={0.01}
           fog={false}
+          toneMapped={false}
         />
       </points>
     </group>
