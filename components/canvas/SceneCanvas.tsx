@@ -2,12 +2,19 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
-import { Suspense, useEffect } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MilkyWay } from "@/components/canvas/MilkyWay";
-import { SolarSystem } from "@/components/canvas/SolarSystem";
+import {
+  SolarSystem,
+  type BodySelectPayload,
+} from "@/components/canvas/SolarSystem";
 import { ScrollCamera } from "@/components/canvas/ScrollCamera";
+import { PlanetTransitOverlay } from "@/components/landing/PlanetTransitOverlay";
+import { useDayNight } from "@/components/providers/DayNightProvider";
+import { cn } from "@/lib/utils";
 import {
   CAMERA_END,
   CAMERA_START,
@@ -15,24 +22,34 @@ import {
 } from "@/lib/scroll-camera";
 
 type SceneCanvasProps = {
-  scrollTrackRef: React.RefObject<HTMLElement | null>;
+  zoomTrackRef: React.RefObject<HTMLElement | null>;
+  /** When true, canvas receives clicks (Explore) and forwards wheel to the page */
+  interactive?: boolean;
 };
 
-function Experience() {
+function Experience({
+  onSelectBody,
+}: {
+  onSelectBody: (payload: BodySelectPayload) => void;
+}) {
+  const { spaceColor, ambientIntensity, isDay } = useDayNight();
+
   return (
     <>
-      <color attach="background" args={["#020308"]} />
-      <fog attach="fog" args={["#020308", 160, 720]} />
-      {/* Dim ambient so sun-lit / night sides read clearly on planets */}
-      <ambientLight intensity={0.06} />
+      <color attach="background" args={[spaceColor]} />
+      <fog
+        attach="fog"
+        args={[spaceColor, isDay ? 180 : 160, isDay ? 760 : 720]}
+      />
+      <ambientLight intensity={ambientIntensity} />
       <ScrollCamera />
       <MilkyWay />
-      <SolarSystem />
+      <SolarSystem onSelectBody={onSelectBody} />
       <Stars
         radius={480}
         depth={90}
-        count={1800}
-        factor={2}
+        count={isDay ? 1400 : 1800}
+        factor={isDay ? 1.6 : 2}
         saturation={0}
         fade
         speed={0.12}
@@ -42,19 +59,28 @@ function Experience() {
 }
 
 /**
- * Fixed full-viewport R3F canvas + GSAP ScrollTrigger camera dive.
+ * Fixed R3F canvas + polished click→planet dive transition.
  */
-export function SceneCanvas({ scrollTrackRef }: SceneCanvasProps) {
+export function SceneCanvas({
+  zoomTrackRef,
+  interactive = false,
+}: SceneCanvasProps) {
+  const { spaceColor } = useDayNight();
+  const router = useRouter();
+  const scrubRef = useRef<gsap.core.Tween | null>(null);
+  const divingRef = useRef(false);
+  const [transitLabel, setTransitLabel] = useState<string | null>(null);
+
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    const track = scrollTrackRef.current;
+    const track = zoomTrackRef.current;
     if (!track) return;
 
     Object.assign(scrollCamera, { progress: 0, ...CAMERA_START });
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
+      scrubRef.current = gsap.fromTo(
         scrollCamera,
         { progress: 0, ...CAMERA_START },
         {
@@ -65,47 +91,98 @@ export function SceneCanvas({ scrollTrackRef }: SceneCanvasProps) {
             trigger: track,
             start: "top top",
             end: "bottom bottom",
-            scrub: 0.8,
+            scrub: 0.85,
             invalidateOnRefresh: true,
           },
         },
       );
     }, track);
 
-    // Defer refresh until layout settles (avoids broken first paint)
     const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
 
     return () => {
       cancelAnimationFrame(raf);
+      scrubRef.current = null;
       ctx.revert();
       Object.assign(scrollCamera, { progress: 0, ...CAMERA_START });
     };
-  }, [scrollTrackRef]);
+  }, [zoomTrackRef]);
+
+  const onSelectBody = useCallback(
+    (payload: BodySelectPayload) => {
+      if (divingRef.current) return;
+      divingRef.current = true;
+      setTransitLabel(payload.name);
+      document.body.style.cursor = "auto";
+
+      // Freeze scroll-scrub so it doesn't fight the dive
+      scrubRef.current?.scrollTrigger?.disable(false);
+      scrubRef.current?.kill();
+      scrubRef.current = null;
+
+      const { position, size, slug } = payload;
+      const end = {
+        posX: position.x + size * 0.35,
+        posY: position.y + Math.max(0.6, size * 0.55),
+        posZ: position.z + Math.max(2.8, size * 3.4),
+        lookX: position.x,
+        lookY: position.y,
+        lookZ: position.z,
+        fov: 34,
+      };
+
+      gsap.to(scrollCamera, {
+        ...end,
+        duration: 1.7,
+        ease: "power3.inOut",
+        onComplete: () => {
+          router.push(`/planet/${slug}`);
+        },
+      });
+    },
+    [router],
+  );
 
   return (
-    <div className="canvas-root" aria-hidden>
-      <Canvas
-        dpr={[1, 1.5]}
-        gl={{
-          antialias: true,
-          alpha: false,
-          powerPreference: "high-performance",
-          failIfMajorPerformanceCaveat: false,
-        }}
-        camera={{
-          position: [CAMERA_START.posX, CAMERA_START.posY, CAMERA_START.posZ],
-          fov: CAMERA_START.fov,
-          near: 0.1,
-          far: 2500,
-        }}
-        onCreated={({ gl }) => {
-          gl.setClearColor("#020308");
-        }}
+    <>
+      <PlanetTransitOverlay
+        active={transitLabel !== null}
+        label={transitLabel}
+      />
+      <div
+        className={cn("canvas-root", interactive && "canvas-root--interactive")}
+        aria-hidden={!interactive}
+        onWheel={
+          interactive && !divingRef.current
+            ? (e) => {
+                window.scrollBy(0, e.deltaY);
+              }
+            : undefined
+        }
       >
-        <Suspense fallback={null}>
-          <Experience />
-        </Suspense>
-      </Canvas>
-    </div>
+        <Canvas
+          dpr={[1, 1.5]}
+          gl={{
+            antialias: true,
+            alpha: false,
+            powerPreference: "high-performance",
+            failIfMajorPerformanceCaveat: false,
+          }}
+          camera={{
+            position: [CAMERA_START.posX, CAMERA_START.posY, CAMERA_START.posZ],
+            fov: CAMERA_START.fov,
+            near: 0.1,
+            far: 2500,
+          }}
+          onCreated={({ gl }) => {
+            gl.setClearColor(spaceColor);
+          }}
+        >
+          <Suspense fallback={null}>
+            <Experience onSelectBody={onSelectBody} />
+          </Suspense>
+        </Canvas>
+      </div>
+    </>
   );
 }

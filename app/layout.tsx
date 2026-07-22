@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Space_Grotesk } from "next/font/google";
+import { AppProviders } from "@/components/providers/AppProviders";
+import { SiteShell } from "@/components/layout/SiteShell";
 import "./globals.css";
 
+/**
+ * Fonts — change site-wide type here, then map CSS vars in globals.css
+ * (--font-display, --font-body, --font-nav) to the new next/font variables.
+ */
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
@@ -29,11 +35,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body
         className={`${spaceGrotesk.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AppProviders>
+          <SiteShell>{children}</SiteShell>
+        </AppProviders>
       </body>
     </html>
   );

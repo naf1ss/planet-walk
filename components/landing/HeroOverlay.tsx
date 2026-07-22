@@ -4,23 +4,51 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { SITE } from "@/lib/constants";
 
+type HeroOverlayProps = {
+  zoomTrackRef: React.RefObject<HTMLElement | null>;
+};
+
+function clamp01(n: number) {
+  return Math.min(1, Math.max(0, n));
+}
+
 /**
- * Planet Walk intro stays locked on screen until the user actually scrolls.
- * Uses window.scrollY (not Framer target progress) so hydration / layout
- * measurement can't wipe the intro after ~1s.
+ * Landing hero copy — centered over the 3D canvas.
+ * Fades as the user scrolls into the galaxy zoom.
  */
-export function HeroOverlay() {
-  const [progress, setProgress] = useState(0);
+export function HeroOverlay({ zoomTrackRef }: HeroOverlayProps) {
+  const [introOpacity, setIntroOpacity] = useState(1);
+  const [introY, setIntroY] = useState(0);
+  const [zoomProgress, setZoomProgress] = useState(0);
 
   useEffect(() => {
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
-    }
-    window.scrollTo(0, 0);
-
     const update = () => {
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      setProgress(Math.min(1, Math.max(0, window.scrollY / max)));
+      const track = zoomTrackRef.current;
+      if (!track) {
+        setIntroOpacity(1);
+        setIntroY(0);
+        setZoomProgress(0);
+        return;
+      }
+
+      const zoomTop = track.getBoundingClientRect().top;
+      const vh = window.innerHeight;
+      const fadeDistance = vh * 0.55;
+
+      if (zoomTop >= fadeDistance) {
+        setIntroOpacity(1);
+        setIntroY(0);
+      } else if (zoomTop <= 0) {
+        setIntroOpacity(0);
+        setIntroY(-36);
+      } else {
+        const t = zoomTop / fadeDistance;
+        setIntroOpacity(t);
+        setIntroY(-36 * (1 - t));
+      }
+
+      const trackHeight = Math.max(1, track.offsetHeight - vh);
+      setZoomProgress(clamp01(-zoomTop / trackHeight));
     };
 
     update();
@@ -30,34 +58,31 @@ export function HeroOverlay() {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [zoomTrackRef]);
 
-  // Hold intro fully opaque until ~8% scroll, then fade out by ~28%
-  const introOpacity =
-    progress <= 0.08 ? 1 : progress >= 0.28 ? 0 : 1 - (progress - 0.08) / 0.2;
-  const scrimOpacity = introOpacity * 0.75;
-  const introY = progress <= 0.08 ? 0 : -36 * Math.min(1, (progress - 0.08) / 0.2);
+  const scrimOpacity = introOpacity * 0.78;
 
   const midOpacity =
-    progress < 0.34
+    zoomProgress < 0.18
       ? 0
-      : progress < 0.45
-        ? (progress - 0.34) / 0.11
-        : progress < 0.58
+      : zoomProgress < 0.3
+        ? (zoomProgress - 0.18) / 0.12
+        : zoomProgress < 0.5
           ? 1
-          : progress < 0.7
-            ? 1 - (progress - 0.58) / 0.12
+          : zoomProgress < 0.62
+            ? 1 - (zoomProgress - 0.5) / 0.12
             : 0;
 
   const endOpacity =
-    progress < 0.78 ? 0 : progress > 0.9 ? 1 : (progress - 0.78) / 0.12;
-  const endY = progress < 0.78 ? 24 : Math.max(0, 24 * (1 - (progress - 0.78) / 0.17));
+    zoomProgress < 0.72 ? 0 : zoomProgress > 0.88 ? 1 : (zoomProgress - 0.72) / 0.16;
+  const endY =
+    zoomProgress < 0.72 ? 24 : Math.max(0, 24 * (1 - (zoomProgress - 0.72) / 0.2));
 
   return (
-    <div className="ui-layer pointer-events-none fixed inset-0 z-20 flex items-center justify-center px-6">
+    <div className="pointer-events-none fixed inset-0 z-10 flex flex-col items-center justify-center px-6">
       <div
         style={{ opacity: scrimOpacity }}
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(3,4,10,0.55)_0%,rgba(3,4,10,0.78)_55%,rgba(3,4,10,0.92)_100%)] transition-opacity duration-150"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,var(--hero-scrim)_75%,var(--void)_100%)]"
       />
 
       <div
@@ -65,7 +90,7 @@ export function HeroOverlay() {
           opacity: introOpacity,
           transform: `translateY(${introY}px)`,
         }}
-        className="absolute inset-0 flex flex-col items-center justify-center text-center transition-[opacity,transform] duration-150"
+        className="relative flex flex-col items-center text-center"
       >
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -122,7 +147,7 @@ export function HeroOverlay() {
           The Solar System
         </h2>
         <p className="mt-3 max-w-sm text-sm text-foreground-muted">
-          Each world maps to a tile on the Gettysburg campus walk.
+          Click any world to begin its guided journey.
         </p>
       </div>
     </div>

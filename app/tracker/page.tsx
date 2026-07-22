@@ -1,18 +1,12 @@
-/**
- * Tracker / digital passport — Phase 1 stub.
- * Later: localStorage progress, elapsed time, miles walked.
- */
+import type { Metadata } from "next";
+import { WalkTracker } from "@/components/tracker/WalkTracker";
+
+export const metadata: Metadata = {
+  title: "Tracker",
+  description:
+    "Digital passport for the Gettysburg Planet Walk — checklist, timer, and miles walked.",
+};
+
 export default function TrackerPage() {
-  return (
-    <main className="ui-layer flex min-h-screen flex-col items-center justify-center px-6 text-center">
-      <p className="mb-3 text-sm uppercase tracking-[0.28em] text-accent">
-        Passport
-      </p>
-      <h1 className="font-display text-4xl text-star sm:text-6xl">Tracker</h1>
-      <p className="mt-4 max-w-sm text-foreground-muted">
-        Route stub for <code className="text-accent">/tracker</code>. Progress
-        persistence lands in a later phase.
-      </p>
-    </main>
-  );
+  return <WalkTracker />;
 }

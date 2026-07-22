@@ -6,7 +6,7 @@
 ───────────────────────────────────────────── */
 
 :root {
-  /* Core surfaces */
+  /* Core surfaces — night defaults (overridden by [data-theme]) */
   --background: #03040a;
   --background-elevated: #0a0c16;
   --foreground: #e8ecf5;
@@ -22,15 +22,55 @@
   --nebula: #1a1040;
   --star: #f5f7ff;
   --orbit: rgba(110, 182, 255, 0.18);
+  --hero-scrim: rgba(3, 4, 10, 0.78);
+  --space-glow: rgba(110, 182, 255, 0.04);
 
   /* UI chrome */
   --border: rgba(232, 236, 245, 0.08);
   --glass: rgba(10, 12, 22, 0.72);
   --glow: 0 0 40px rgba(110, 182, 255, 0.25);
 
-  /* Typography scale hooks (filled by next/font CSS variables) */
+  /*
+   * Typography — swap fonts in app/layout.tsx, then remap these aliases.
+   * Components use font-display / font-nav / font-sans so one change updates all.
+   */
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-nav: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Local nighttime — deep cool blues + true black */
+html[data-theme="night"] {
+  --background: #03040a;
+  --background-elevated: #070912;
+  --void: #010208;
+  --nebula: #12182e;
+  --accent: #6eb6ff;
+  --accent-dim: #3d6a9e;
+  --hero-scrim: rgba(1, 2, 8, 0.82);
+  --space-glow: rgba(90, 140, 220, 0.05);
+  --glass: rgba(6, 8, 16, 0.78);
+  --glow: 0 0 40px rgba(90, 150, 255, 0.22);
+}
+
+/* Local daytime — warmer, slightly brighter space UI */
+html[data-theme="day"] {
+  --background: #0c1018;
+  --background-elevated: #141a26;
+  --foreground: #f2efe6;
+  --foreground-muted: #a39b8c;
+  --void: #080b12;
+  --nebula: #3a2818;
+  --accent: #7ec4ff;
+  --accent-warm: #f5c97a;
+  --accent-dim: #8a6a3d;
+  --star: #fffaf0;
+  --orbit: rgba(240, 192, 106, 0.2);
+  --hero-scrim: rgba(18, 14, 8, 0.62);
+  --space-glow: rgba(240, 180, 90, 0.08);
+  --border: rgba(245, 232, 210, 0.1);
+  --glass: rgba(20, 16, 10, 0.7);
+  --glow: 0 0 44px rgba(240, 192, 106, 0.28);
 }
 
 @theme inline {
@@ -50,6 +90,7 @@
   --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-nav: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 }
 
 *,
@@ -73,15 +114,16 @@ body {
   margin: 0;
   background-color: var(--background);
   background-image:
-    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(26, 16, 64, 0.55), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(61, 106, 158, 0.12), transparent 50%),
-    radial-gradient(circle at 20% 70%, rgba(110, 182, 255, 0.04), transparent 35%);
+    radial-gradient(ellipse 120% 80% at 50% -20%, var(--nebula), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, var(--space-glow), transparent 50%),
+    radial-gradient(circle at 20% 70%, var(--space-glow), transparent 35%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color 0.6s ease, color 0.6s ease;
 }
 
 /* Selection */
@@ -104,6 +146,12 @@ body {
   pointer-events: none;
 }
 
+/* Enabled near Explore so planets/Sun are clickable; wheel still scrolls the page */
+.canvas-root--interactive {
+  pointer-events: auto;
+  cursor: grab;
+}
+
 .canvas-root canvas {
   display: block;
   width: 100% !important;
@@ -120,6 +168,10 @@ body {
 .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
+}
+
+.font-nav {
+  font-family: var(--font-nav);
 }
 
 .text-muted {

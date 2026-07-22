@@ -9,6 +9,8 @@ export type PlanetVisual = {
   texture: string;
   /** Fallback tint if texture fails */
   color: string;
+  /** Sidereal orbital period in Earth days (real physics ratio) */
+  periodDays: number;
 };
 
 export const SUN = {
@@ -17,15 +19,15 @@ export const SUN = {
   color: "#ffcc66",
 } as const;
 
-/** Readable scene scale — not true astronomical ratios */
+/** Readable scene scale — periods drive relative orbital speeds */
 export const PLANET_VISUALS: PlanetVisual[] = [
-  { slug: "mercury", name: "Mercury", orbit: 3.0, size: 0.28, texture: "/textures/mercury.jpg", color: "#a8a29e" },
-  { slug: "venus", name: "Venus", orbit: 4.0, size: 0.38, texture: "/textures/venus.jpg", color: "#e8c07a" },
-  { slug: "earth", name: "Earth", orbit: 5.2, size: 0.4, texture: "/textures/earth.jpg", color: "#3b82c4" },
-  { slug: "mars", name: "Mars", orbit: 6.4, size: 0.32, texture: "/textures/mars.jpg", color: "#c45c3a" },
-  { slug: "jupiter", name: "Jupiter", orbit: 8.8, size: 0.95, texture: "/textures/jupiter.jpg", color: "#d4a574" },
-  { slug: "saturn", name: "Saturn", orbit: 11.2, size: 0.82, texture: "/textures/saturn.jpg", color: "#e6d5a8" },
-  { slug: "uranus", name: "Uranus", orbit: 13.4, size: 0.52, texture: "/textures/uranus.jpg", color: "#7ec8c8" },
-  { slug: "neptune", name: "Neptune", orbit: 15.2, size: 0.5, texture: "/textures/neptune.jpg", color: "#4169e1" },
-  { slug: "pluto", name: "Pluto", orbit: 17.0, size: 0.2, texture: "/textures/pluto.jpg", color: "#c4b5a0" },
+  { slug: "mercury", name: "Mercury", orbit: 3.0, size: 0.28, texture: "/textures/mercury.jpg", color: "#a8a29e", periodDays: 87.969 },
+  { slug: "venus", name: "Venus", orbit: 4.0, size: 0.38, texture: "/textures/venus.jpg", color: "#e8c07a", periodDays: 224.701 },
+  { slug: "earth", name: "Earth", orbit: 5.2, size: 0.4, texture: "/textures/earth.jpg", color: "#3b82c4", periodDays: 365.256 },
+  { slug: "mars", name: "Mars", orbit: 6.4, size: 0.32, texture: "/textures/mars.jpg", color: "#c45c3a", periodDays: 686.98 },
+  { slug: "jupiter", name: "Jupiter", orbit: 8.8, size: 0.95, texture: "/textures/jupiter.jpg", color: "#d4a574", periodDays: 4332.59 },
+  { slug: "saturn", name: "Saturn", orbit: 11.2, size: 0.82, texture: "/textures/saturn.jpg", color: "#e6d5a8", periodDays: 10759.22 },
+  { slug: "uranus", name: "Uranus", orbit: 13.4, size: 0.52, texture: "/textures/uranus.jpg", color: "#7ec8c8", periodDays: 30688.5 },
+  { slug: "neptune", name: "Neptune", orbit: 15.2, size: 0.5, texture: "/textures/neptune.jpg", color: "#4169e1", periodDays: 60182 },
+  { slug: "pluto", name: "Pluto", orbit: 17.0, size: 0.2, texture: "/textures/pluto.jpg", color: "#c4b5a0", periodDays: 90560 },
 ];
