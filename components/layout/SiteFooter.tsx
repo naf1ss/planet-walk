@@ -6,13 +6,13 @@ import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/nav";
 
 /**
- * Standard site footer — mirrors primary nav; hidden on the landing page.
+ * Standard site footer — mirrors primary nav; hidden on landing and planet pages.
  */
 export function SiteFooter() {
   const pathname = usePathname();
   const year = new Date().getFullYear();
 
-  if (pathname === "/") return null;
+  if (pathname === "/" || pathname.startsWith("/planet")) return null;
 
   return (
     <footer className="relative z-30 border-t border-border bg-background-elevated">

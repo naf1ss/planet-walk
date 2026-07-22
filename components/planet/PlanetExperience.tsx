@@ -20,7 +20,7 @@ const SCROLL_TOP_TIMEOUT_MS = 1400;
 
 /**
  * Guided planet page: spinning hero backdrop + sparse center copy,
- * details and vinyl tile further down the page.
+ * details and marker placeholder revealed via horizontal scroll.
  */
 export function PlanetExperience({ body }: PlanetExperienceProps) {
   const router = useRouter();
