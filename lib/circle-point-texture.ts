@@ -78,3 +78,55 @@ export function applyCircularPointDiscard(material: THREE.PointsMaterial) {
   };
   material.needsUpdate = true;
 }
+
+/**
+ * Hard-edged circular points — no soft glow / blur (sharp galaxy stars).
+ */
+export function applySharpPointDisc(material: THREE.PointsMaterial) {
+  if (material.userData.sharpPointDiscApplied) return;
+
+  material.transparent = true;
+  material.depthWrite = false;
+  material.alphaTest = 0.5;
+  material.userData.sharpPointDiscApplied = true;
+
+  const prev = material.onBeforeCompile;
+  material.onBeforeCompile = (shader, renderer) => {
+    prev?.(shader, renderer);
+    if (shader.fragmentShader.includes("gl_PointCoord sharp-disc")) return;
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "vec4 diffuseColor = vec4( diffuse, opacity );",
+      /* glsl */ `
+      vec4 diffuseColor = vec4( diffuse, opacity );
+      // gl_PointCoord sharp-disc
+      vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+      if (dot(cxy, cxy) > 1.0) discard;
+      `,
+    );
+  };
+  material.needsUpdate = true;
+}
+
+/**
+ * Multiply PointsMaterial size by per-vertex `aParticleScale` (for entrance depth).
+ */
+export function applyPerParticleScale(material: THREE.PointsMaterial) {
+  if (material.userData.perParticleScaleApplied) return;
+  material.userData.perParticleScaleApplied = true;
+
+  const prev = material.onBeforeCompile;
+  material.onBeforeCompile = (shader, renderer) => {
+    prev?.(shader, renderer);
+    if (shader.vertexShader.includes("aParticleScale")) return;
+
+    shader.vertexShader = shader.vertexShader.replace(
+      "void main() {",
+      "attribute float aParticleScale;\nvoid main() {",
+    );
+    shader.vertexShader = shader.vertexShader.replace(
+      "gl_PointSize = size;",
+      "gl_PointSize = size * aParticleScale;",
+    );
+  };
+  material.needsUpdate = true;
+}

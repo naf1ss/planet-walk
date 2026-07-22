@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import * as THREE from "three";
 import { MilkyWay } from "@/components/canvas/MilkyWay";
 import { SoftStars } from "@/components/canvas/SoftStars";
 import {
@@ -37,10 +38,13 @@ type SceneCanvasProps = {
 
 function Experience({
   onSelectBody,
+  startAtSolarSystem = false,
 }: {
   onSelectBody: (payload: BodySelectPayload) => void;
+  startAtSolarSystem?: boolean;
 }) {
   const { spaceColor, ambientIntensity, isDay } = useDayNight();
+  const solarSystemRef = useRef<THREE.Group>(null);
 
   return (
     <>
@@ -51,8 +55,13 @@ function Experience({
       />
       <ambientLight intensity={ambientIntensity} />
       <ScrollCamera />
-      <MilkyWay />
-      <SolarSystem onSelectBody={onSelectBody} />
+      <MilkyWay
+        solarSystemRef={solarSystemRef}
+        playEntrance={!startAtSolarSystem}
+      />
+      <group ref={solarSystemRef}>
+        <SolarSystem onSelectBody={onSelectBody} />
+      </group>
       <SoftStars
         radius={480}
         depth={90}
@@ -205,7 +214,10 @@ export function SceneCanvas({
           }}
         >
           <Suspense fallback={null}>
-            <Experience onSelectBody={onSelectBody} />
+            <Experience
+              onSelectBody={onSelectBody}
+              startAtSolarSystem={startAtSolarSystem}
+            />
           </Suspense>
         </Canvas>
       </div>

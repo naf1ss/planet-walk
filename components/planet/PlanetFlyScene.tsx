@@ -183,7 +183,7 @@ export function PlanetFlyScene({
         />
         <ambientLight intensity={ambientIntensity + 0.1} />
         <Suspense fallback={null}>
-          <MilkyWay />
+          <MilkyWay playEntrance={false} />
           <SoftStars
             radius={480}
             depth={90}
