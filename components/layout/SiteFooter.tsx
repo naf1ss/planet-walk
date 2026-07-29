@@ -12,7 +12,8 @@ export function SiteFooter() {
   const pathname = usePathname();
   const year = new Date().getFullYear();
 
-  if (pathname === "/" || pathname.startsWith("/planet")) return null;
+  if (pathname === "/" || pathname === "/map" || pathname.startsWith("/planet"))
+    return null;
 
   const destinations = NAV_ITEMS.filter((item) => item.id !== "planet-walk");
 

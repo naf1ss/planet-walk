@@ -100,12 +100,15 @@ export function SiteHeader() {
     return isItemActive(item, pathname);
   };
 
+  const light = pathname === "/map";
+
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
       <div
         className={cn(
           "mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 pt-4 transition-all duration-500 sm:px-6 sm:pt-5",
           scrolled && "pt-3 sm:pt-3",
+          light && "max-w-[90rem]",
         )}
       >
         {/* Brand — cool blue wordmark, distinct from gold Track CTA */}
@@ -119,13 +122,32 @@ export function SiteHeader() {
         >
           <span
             aria-hidden
-            className="h-8 w-[2px] rounded-full bg-gradient-to-b from-accent via-accent/70 to-accent/20 shadow-[0_0_12px_rgba(110,182,255,0.45)] transition-all group-hover:shadow-[0_0_18px_rgba(110,182,255,0.65)]"
+            className={cn(
+              "h-8 w-[2px] rounded-full bg-gradient-to-b transition-all",
+              light
+                ? "from-[#3b82c4] via-[#3b82c4]/70 to-[#3b82c4]/20 shadow-[0_0_12px_rgba(59,130,196,0.35)] group-hover:shadow-[0_0_18px_rgba(59,130,196,0.5)]"
+                : "from-accent via-accent/70 to-accent/20 shadow-[0_0_12px_rgba(110,182,255,0.45)] group-hover:shadow-[0_0_18px_rgba(110,182,255,0.65)]",
+            )}
           />
           <span className="flex flex-col gap-0.5">
-            <span className="font-nav text-[0.55rem] uppercase tracking-[0.32em] text-accent/80 transition-colors group-hover:text-accent">
+            <span
+              className={cn(
+                "font-nav text-[0.55rem] uppercase tracking-[0.32em] transition-colors",
+                light
+                  ? "text-[#3b82c4] group-hover:text-[#1d4ed8]"
+                  : "text-accent/80 group-hover:text-accent",
+              )}
+            >
               Home
             </span>
-            <span className="font-display text-[0.95rem] font-medium tracking-tight text-star transition-colors group-hover:text-accent sm:text-base">
+            <span
+              className={cn(
+                "font-display text-[0.95rem] font-medium tracking-tight transition-colors sm:text-base",
+                light
+                  ? "text-[#121826] group-hover:text-[#1d4ed8]"
+                  : "text-star group-hover:text-accent",
+              )}
+            >
               Planet Walk
             </span>
           </span>
@@ -135,9 +157,13 @@ export function SiteHeader() {
         <nav
           className={cn(
             "pointer-events-auto absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 rounded-full border px-1.5 py-1.5 transition-all duration-300 md:flex",
-            scrolled
-              ? "border-white/12 bg-black/50 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl"
-              : "border-white/10 bg-white/[0.05] backdrop-blur-lg",
+            light
+              ? scrolled
+                ? "border-[#c9d3e2] bg-white/90 shadow-[0_12px_40px_rgba(18,24,38,0.1)] backdrop-blur-xl"
+                : "border-[#d5dde8] bg-white/75 backdrop-blur-lg"
+              : scrolled
+                ? "border-white/12 bg-black/50 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl"
+                : "border-white/10 bg-white/[0.05] backdrop-blur-lg",
           )}
           aria-label="Primary"
         >
@@ -150,15 +176,22 @@ export function SiteHeader() {
                 onClick={(e) => onNavClick(item, e)}
                 className={cn(
                   "relative rounded-full px-4 py-2 font-nav text-[0.65rem] uppercase tracking-[0.22em] transition-colors",
-                  active
-                    ? "text-star"
-                    : "text-foreground-muted hover:text-star",
+                  light
+                    ? active
+                      ? "text-[#121826]"
+                      : "text-[#5b6577] hover:text-[#121826]"
+                    : active
+                      ? "text-star"
+                      : "text-foreground-muted hover:text-star",
                 )}
               >
                 {active ? (
                   <span
                     aria-hidden
-                    className="absolute inset-0 rounded-full bg-white/10"
+                    className={cn(
+                      "absolute inset-0 rounded-full",
+                      light ? "bg-[#e8edf3]" : "bg-white/10",
+                    )}
                   />
                 ) : null}
                 <span className="relative">{item.label}</span>
@@ -174,9 +207,13 @@ export function SiteHeader() {
             onClick={() => setOpen(false)}
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-4 py-2.5 font-nav text-[0.65rem] font-medium uppercase tracking-[0.2em] transition-all sm:px-5",
-              activeFor(TRACKER_ITEM)
-                ? "bg-accent-warm text-void shadow-[0_0_24px_rgba(240,192,106,0.35)]"
-                : "border border-accent-warm/35 bg-accent-warm/10 text-accent-warm hover:border-accent-warm/60 hover:bg-accent-warm/20",
+              light
+                ? activeFor(TRACKER_ITEM)
+                  ? "bg-[#1d4ed8] text-white shadow-[0_0_24px_rgba(29,78,216,0.25)]"
+                  : "border border-[#1d4ed8]/30 bg-[#1d4ed8]/8 text-[#1d4ed8] hover:border-[#1d4ed8]/50 hover:bg-[#1d4ed8]/14"
+                : activeFor(TRACKER_ITEM)
+                  ? "bg-accent-warm text-void shadow-[0_0_24px_rgba(240,192,106,0.35)]"
+                  : "border border-accent-warm/35 bg-accent-warm/10 text-accent-warm hover:border-accent-warm/60 hover:bg-accent-warm/20",
             )}
           >
             <span
@@ -188,7 +225,12 @@ export function SiteHeader() {
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/40 text-star backdrop-blur-md transition-colors hover:border-white/30 hover:bg-white/10 md:hidden"
+            className={cn(
+              "inline-flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-md transition-colors md:hidden",
+              light
+                ? "border-[#c9d3e2] bg-white/85 text-[#121826] hover:bg-white"
+                : "border-white/15 bg-black/40 text-star hover:border-white/30 hover:bg-white/10",
+            )}
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -212,18 +254,43 @@ export function SiteHeader() {
           <button
             type="button"
             aria-label="Close menu"
-            className="absolute inset-0 bg-void/75 backdrop-blur-sm"
+            className={cn(
+              "absolute inset-0 backdrop-blur-sm",
+              light ? "bg-[#121826]/35" : "bg-void/75",
+            )}
             onClick={() => setOpen(false)}
           />
           <nav
-            className="absolute inset-x-4 top-20 overflow-hidden rounded-2xl border border-white/12 bg-[#070912]/92 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+            className={cn(
+              "absolute inset-x-4 top-20 overflow-hidden rounded-2xl border shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl",
+              light
+                ? "border-[#d5dde8] bg-white/95"
+                : "border-white/12 bg-[#070912]/92 shadow-[0_24px_80px_rgba(0,0,0,0.55)]",
+            )}
             aria-label="Mobile"
           >
-            <div className="border-b border-white/8 px-5 py-4">
-              <p className="font-mono text-[0.55rem] uppercase tracking-[0.4em] text-star/45">
+            <div
+              className={cn(
+                "border-b px-5 py-4",
+                light ? "border-[#e8edf3]" : "border-white/8",
+              )}
+            >
+              <p
+                className={cn(
+                  "font-mono text-[0.55rem] uppercase tracking-[0.4em]",
+                  light ? "text-[#5b6577]" : "text-star/45",
+                )}
+              >
                 Navigate
               </p>
-              <p className="font-display mt-1 text-lg text-star">{SITE.name}</p>
+              <p
+                className={cn(
+                  "font-display mt-1 text-lg",
+                  light ? "text-[#121826]" : "text-star",
+                )}
+              >
+                {SITE.name}
+              </p>
             </div>
             <ul className="flex flex-col p-2">
               {[HOME_ITEM, ...CENTER_ITEMS, TRACKER_ITEM].map((item) => {
@@ -235,16 +302,25 @@ export function SiteHeader() {
                       onClick={(e) => onNavClick(item, e)}
                       className={cn(
                         "flex items-center justify-between rounded-xl px-4 py-3.5 transition-colors",
-                        active
-                          ? "bg-white/8 text-star"
-                          : "text-foreground-muted hover:bg-white/5 hover:text-star",
+                        light
+                          ? active
+                            ? "bg-[#e8edf3] text-[#121826]"
+                            : "text-[#5b6577] hover:bg-[#f3f6fa] hover:text-[#121826]"
+                          : active
+                            ? "bg-white/8 text-star"
+                            : "text-foreground-muted hover:bg-white/5 hover:text-star",
                       )}
                     >
                       <span className="font-nav text-[0.7rem] uppercase tracking-[0.22em]">
                         {item.label}
                       </span>
                       {active ? (
-                        <span className="h-1.5 w-1.5 rounded-full bg-accent-warm" />
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full",
+                            light ? "bg-[#1d4ed8]" : "bg-accent-warm",
+                          )}
+                        />
                       ) : null}
                     </Link>
                   </li>
