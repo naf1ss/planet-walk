@@ -303,7 +303,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     role: "observatory",
     facts: [
       "New Horizons revealed a heart-shaped nitrogen glacier (Sputnik Planitia).",
-      "You walk ~0.36 miles to stand in for ~3.67 billion real miles.",
+      "You walk about 1.43 miles (7,561 ft) to stand in for ~3.67 billion real miles.",
       "Light still needs ~5.5 hours to cross the real Sun–Pluto gap.",
       "Pluto's largest moon, Charon, is so massive that both bodies orbit a point in space between them.",
     ],

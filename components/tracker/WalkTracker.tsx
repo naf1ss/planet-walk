@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
-import { Check, Sparkles, RotateCcw, Play, Pause } from "lucide-react";
+import { Check, Sparkles, RotateCcw, Play, Pause, AlertCircle } from "lucide-react";
 import { BODY_CONTENT } from "@/lib/planet-content";
 import {
   completionPercent,
@@ -13,13 +13,14 @@ import {
   WALK_STOPS,
   WALK_TOTAL_FT,
   WALK_TOTAL_LABEL,
+  type WalkStop,
 } from "@/lib/planetData";
 import { formatElapsed, useWalkTracker } from "@/lib/tracker-storage";
 import { cn } from "@/lib/utils";
 
 /**
  * Digital passport for the physical Gettysburg Planet Walk.
- * Progress + timer persist in localStorage; Pluto check freezes the clock.
+ * Progress + timer persist in localStorage; full 11/11 freezes the clock.
  */
 export function WalkTracker() {
   const {
@@ -28,11 +29,13 @@ export function WalkTracker() {
     elapsedMs,
     isWalkComplete,
     justCompleted,
+    incompleteHint,
     startWalk,
     pauseWalk,
     resetWalk,
     toggleVisited,
     dismissCelebration,
+    dismissIncompleteHint,
   } = useWalkTracker();
 
   const visitedCount = state.visited.length;
@@ -41,6 +44,14 @@ export function WalkTracker() {
   const distance = formatWalkDistance(feet);
   const hasStarted =
     state.running || state.accumulatedMs > 0 || state.startedAt != null;
+
+  useEffect(() => {
+    if (!isWalkComplete) return;
+    const id = window.setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 80);
+    return () => window.clearTimeout(id);
+  }, [isWalkComplete]);
 
   if (!hydrated) {
     return (
@@ -55,6 +66,16 @@ export function WalkTracker() {
       <AnimatePresence>
         {justCompleted ? (
           <CompletionBurst key="burst" onDone={dismissCelebration} />
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {incompleteHint && incompleteHint.length > 0 ? (
+          <IncompleteOrbitNudge
+            key="incomplete"
+            missing={incompleteHint}
+            onDismiss={dismissIncompleteHint}
+          />
         ) : null}
       </AnimatePresence>
 
@@ -96,6 +117,7 @@ export function WalkTracker() {
                       ? "Paused"
                       : "Not started"
                 }
+                mono
               />
               <Stat
                 label="Distance"
@@ -314,7 +336,7 @@ function CompletionSummary({
           data-reveal
           className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3"
         >
-          <Stat label="Final time" value={formatElapsed(elapsedMs)} hint="Planet Walk" />
+          <Stat label="Final time" value={formatElapsed(elapsedMs)} hint="Planet Walk" mono />
           <Stat
             label="Distance"
             value={WALK_TOTAL_LABEL.feetLabel}
@@ -337,6 +359,8 @@ function CompletionSummary({
           from Earth to the Moon.
         </p>
 
+        <WalkMissionDebrief elapsedMs={elapsedMs} />
+
         <div data-reveal className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/#explore"
@@ -355,6 +379,181 @@ function CompletionSummary({
         </div>
       </div>
     </motion.section>
+  );
+}
+
+function WalkMissionDebrief({ elapsedMs }: { elapsedMs: number }) {
+  const hops = Math.max(1, WALK_STOPS.length - 1);
+  const avgHopMs = elapsedMs / hops;
+  /** Playful campus-walk benchmark (~42 min for the full 1.43 mi route). */
+  const CAMPUS_AVG_MS = 42 * 60 * 1000;
+  const deltaMs = elapsedMs - CAMPUS_AVG_MS;
+  const faster = deltaMs < 0;
+  const paceFtPerMin =
+    elapsedMs > 0 ? WALK_TOTAL_FT / (elapsedMs / 60000) : 0;
+  const yourMinutes = Math.max(1, elapsedMs / 60000);
+  const lightHoursEquivalent = ((5.5 * 60) / yourMinutes).toFixed(1);
+
+  const verdict = faster
+    ? deltaMs > -3 * 60 * 1000
+      ? "Neck-and-neck with the campus average — a measured cruise past every world."
+      : "You outpaced the typical campus passerby. The outer planets never stood a chance."
+    : deltaMs < 5 * 60 * 1000
+      ? "A little slower than average — the scenic route through the solar system paid off."
+      : "You took your time among the giants. Slow orbits still count as discovery.";
+
+  const avgLabel =
+    avgHopMs >= 60000
+      ? formatElapsed(avgHopMs).replace(/\.\d+$/, "")
+      : formatElapsed(avgHopMs);
+
+  return (
+    <div
+      data-reveal
+      className="mt-4 rounded-sm border border-accent/25 bg-accent/5 px-4 py-4"
+    >
+      <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent">
+        Mission debrief
+      </p>
+      <ul className="mt-3 space-y-2.5 text-sm leading-relaxed text-foreground-muted">
+        <li>
+          Average hop between stamps:{" "}
+          <span className="text-star">{avgLabel}</span> per planet.
+        </li>
+        <li>
+          Campus pace:{" "}
+          <span className="text-star">{paceFtPerMin.toFixed(0)} ft/min</span>{" "}
+          along the 7,561 ft scale model.
+        </li>
+        <li>
+          Versus a typical 42:00 campus walk: you finished{" "}
+          <span className="text-star">
+            {formatElapsed(Math.abs(deltaMs)).replace(/\.\d+$/, "")}
+          </span>{" "}
+          {faster ? "faster" : "slower"}.
+        </li>
+        <li>
+          Real sunlight needs ~5.5 hours for Sun → Pluto; your campus crossing
+          ran about <span className="text-star">{lightHoursEquivalent}×</span>{" "}
+          quicker than that photon commute.
+        </li>
+      </ul>
+      <p className="mt-3 border-t border-white/10 pt-3 text-sm leading-relaxed text-foreground">
+        {verdict}
+      </p>
+    </div>
+  );
+}
+
+function IncompleteOrbitNudge({
+  missing,
+  onDismiss,
+}: {
+  missing: WalkStop[];
+  onDismiss: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onDismiss();
+    };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onDismiss]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center px-5"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="incomplete-orbit-title"
+    >
+      <button
+        type="button"
+        aria-label="Dismiss"
+        className="absolute inset-0 bg-[#08040a]/80 backdrop-blur-sm"
+        onClick={onDismiss}
+      />
+
+      <motion.div
+        className="relative w-full max-w-md overflow-hidden rounded-sm border border-[#f07178]/35 bg-background-elevated shadow-[0_24px_80px_rgba(0,0,0,0.65),0_0_48px_rgba(232,90,98,0.18)]"
+        initial={{ opacity: 0, scale: 0.94, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.97, y: 8 }}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(232,90,98,0.16),transparent_58%)]"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f07178]/70 to-transparent"
+        />
+
+        <div className="relative px-5 pb-5 pt-6 sm:px-6 sm:pb-6 sm:pt-7">
+          <div className="flex items-start gap-3.5">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[#f07178]/45 bg-[#e85a62]/15 text-[#ff8a90]">
+              <AlertCircle className="h-5 w-5" strokeWidth={2} aria-hidden />
+            </div>
+            <div className="min-w-0 pt-0.5">
+              <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-[#ff8a90]">
+                Incomplete orbit
+              </p>
+              <h2
+                id="incomplete-orbit-title"
+                className="font-display mt-2 text-2xl tracking-tight text-star"
+              >
+                Not so fast
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-foreground-muted">
+                Pluto is stamped, but your passport still has{" "}
+                <span className="text-[#ffb0b4]">
+                  {missing.length} unvisited{" "}
+                  {missing.length === 1 ? "world" : "worlds"}
+                </span>
+                . Hit every stop before the walk can close.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-sm border border-[#f07178]/20 bg-black/30 px-3 py-3">
+            <p className="font-nav text-[0.55rem] uppercase tracking-[0.24em] text-[#ff8a90]/90">
+              Still missing
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {missing.map((stop) => (
+                <li key={stop.slug}>
+                  <span className="inline-flex items-center gap-1.5 rounded-sm border border-[#f07178]/30 bg-[#e85a62]/10 px-2.5 py-1.5 font-display text-sm text-star">
+                    <span
+                      aria-hidden
+                      className="h-1.5 w-1.5 rounded-full bg-[#ff8a90]"
+                    />
+                    {stop.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="mt-6 flex min-h-12 w-full items-center justify-center rounded-sm border border-[#f07178]/50 bg-[#e85a62]/20 px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-[#ffc4c7] transition-colors hover:border-[#f07178] hover:bg-[#e85a62]/30 hover:text-star"
+          >
+            Got it — keep walking
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -400,11 +599,13 @@ function Stat({
   value,
   hint,
   className,
+  mono = false,
 }: {
   label: string;
   value: string;
   hint: string;
   className?: string;
+  mono?: boolean;
 }) {
   return (
     <div
@@ -416,7 +617,14 @@ function Stat({
       <p className="font-nav text-[0.6rem] uppercase tracking-[0.2em] text-accent">
         {label}
       </p>
-      <p className="mt-2 font-display text-xl text-star sm:text-2xl">{value}</p>
+      <p
+        className={cn(
+          "mt-2 font-display tracking-tight text-star",
+          mono ? "text-base tabular-nums sm:text-lg" : "text-xl sm:text-2xl",
+        )}
+      >
+        {value}
+      </p>
       <p className="mt-1 text-[0.65rem] text-foreground-muted">{hint}</p>
     </div>
   );
