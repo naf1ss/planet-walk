@@ -26,7 +26,7 @@ export const CAMERA_START: Omit<ScrollCameraState, "progress"> = {
 export const CAMERA_END: Omit<ScrollCameraState, "progress"> = {
   posX: 2,
   posY: 9,
-  posZ: 28,
+  posZ: 40,
   lookX: 0,
   lookY: 0,
   lookZ: 0,
