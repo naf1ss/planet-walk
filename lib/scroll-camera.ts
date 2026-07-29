@@ -33,6 +33,14 @@ export const CAMERA_END: Omit<ScrollCameraState, "progress"> = {
   fov: 40,
 };
 
+/** Macro view — solar system appears as a speck within the Milky Way disk */
+export const SOLAR_SYSTEM_MACRO_SCALE = 0.02;
+
+/** GSAP-driven uniform scale for the solar-system group (macro → 1 at Explore) */
+export const solarSystemScroll = {
+  scale: SOLAR_SYSTEM_MACRO_SCALE,
+};
+
 export const scrollCamera: ScrollCameraState = {
   progress: 0,
   ...CAMERA_START,

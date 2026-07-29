@@ -1,6 +1,6 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
@@ -19,7 +19,9 @@ import { cn } from "@/lib/utils";
 import {
   CAMERA_END,
   CAMERA_START,
+  SOLAR_SYSTEM_MACRO_SCALE,
   scrollCamera,
+  solarSystemScroll,
 } from "@/lib/scroll-camera";
 import {
   getDiveEndCamera,
@@ -44,18 +46,31 @@ function Experience({
   startAtSolarSystem?: boolean;
 }) {
   const { spaceColor, ambientIntensity, isDay } = useDayNight();
-  const solarSystemRef = useRef<THREE.Group>(null);
+  const solarSystemGroupRef = useRef<THREE.Group>(null);
+
+  useLayoutEffect(() => {
+    const root = solarSystemGroupRef.current;
+    if (!root) return;
+    const scale = startAtSolarSystem ? 1 : SOLAR_SYSTEM_MACRO_SCALE;
+    root.scale.setScalar(scale);
+    solarSystemScroll.scale = scale;
+  }, [startAtSolarSystem]);
+
+  useFrame(() => {
+    const root = solarSystemGroupRef.current;
+    if (root) root.scale.setScalar(solarSystemScroll.scale);
+  });
 
   useLayoutEffect(() => {
     if (!startAtSolarSystem) return;
-    const root = solarSystemRef.current;
+    const root = solarSystemGroupRef.current;
     if (root) resetSolarSystemVisibility(root);
   }, [startAtSolarSystem]);
 
   useEffect(() => {
     if (!startAtSolarSystem) return;
     const id = requestAnimationFrame(() => {
-      const root = solarSystemRef.current;
+      const root = solarSystemGroupRef.current;
       if (root) resetSolarSystemVisibility(root);
     });
     return () => cancelAnimationFrame(id);
@@ -71,10 +86,10 @@ function Experience({
       <ambientLight intensity={ambientIntensity} />
       <ScrollCamera />
       <MilkyWay
-        solarSystemRef={solarSystemRef}
+        solarSystemRef={solarSystemGroupRef}
         playEntrance={!startAtSolarSystem}
       />
-      <group ref={solarSystemRef}>
+      <group ref={solarSystemGroupRef}>
         <SolarSystem onSelectBody={onSelectBody} />
       </group>
       <SoftStars
@@ -101,6 +116,7 @@ export function SceneCanvas({
   const { spaceColor } = useDayNight();
   const router = useRouter();
   const scrubRef = useRef<gsap.core.Tween | null>(null);
+  const scaleScrubRef = useRef<gsap.core.Tween | null>(null);
   const divingRef = useRef(false);
   const [transitLabel, setTransitLabel] = useState<string | null>(null);
 
@@ -116,6 +132,15 @@ export function SceneCanvas({
         ? { progress: 1, ...CAMERA_END }
         : { progress: 0, ...CAMERA_START },
     );
+    solarSystemScroll.scale = startAtSolarSystem ? 1 : SOLAR_SYSTEM_MACRO_SCALE;
+
+    const scrollTriggerConfig = {
+      trigger: track,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.85,
+      invalidateOnRefresh: true,
+    };
 
     const ctx = gsap.context(() => {
       scrubRef.current = gsap.fromTo(
@@ -127,13 +152,17 @@ export function SceneCanvas({
           progress: 1,
           ...CAMERA_END,
           ease: "none",
-          scrollTrigger: {
-            trigger: track,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 0.85,
-            invalidateOnRefresh: true,
-          },
+          scrollTrigger: scrollTriggerConfig,
+        },
+      );
+
+      scaleScrubRef.current = gsap.fromTo(
+        solarSystemScroll,
+        { scale: startAtSolarSystem ? 1 : SOLAR_SYSTEM_MACRO_SCALE },
+        {
+          scale: 1,
+          ease: "power2.inOut",
+          scrollTrigger: scrollTriggerConfig,
         },
       );
     }, track);
@@ -143,8 +172,10 @@ export function SceneCanvas({
     return () => {
       cancelAnimationFrame(raf);
       scrubRef.current = null;
+      scaleScrubRef.current = null;
       ctx.revert();
       Object.assign(scrollCamera, { progress: 0, ...CAMERA_START });
+      solarSystemScroll.scale = SOLAR_SYSTEM_MACRO_SCALE;
     };
   }, [zoomTrackRef, startAtSolarSystem]);
 
@@ -159,6 +190,10 @@ export function SceneCanvas({
       scrubRef.current?.scrollTrigger?.disable(false);
       scrubRef.current?.kill();
       scrubRef.current = null;
+      scaleScrubRef.current?.scrollTrigger?.disable(false);
+      scaleScrubRef.current?.kill();
+      scaleScrubRef.current = null;
+      solarSystemScroll.scale = 1;
 
       const { position, size, slug } = payload;
       const bodySlug = slug as BodySlug;
