@@ -30,6 +30,7 @@ const RAW: { slug: BodySlug; name: string; au: number }[] = [
   { slug: "venus", name: "Venus", au: 0.723 },
   { slug: "earth", name: "Earth", au: 1.0 },
   { slug: "mars", name: "Mars", au: 1.524 },
+  { slug: "ceres", name: "Ceres", au: 2.77 },
   { slug: "jupiter", name: "Jupiter", au: 5.203 },
   { slug: "saturn", name: "Saturn", au: 9.537 },
   { slug: "uranus", name: "Uranus", au: 19.19 },

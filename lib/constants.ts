@@ -4,6 +4,7 @@ export const PLANET_SLUGS = [
   "venus",
   "earth",
   "mars",
+  "ceres",
   "jupiter",
   "saturn",
   "uranus",

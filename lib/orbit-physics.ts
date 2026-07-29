@@ -10,6 +10,7 @@ export const ORBIT_PERIOD_DAYS: Record<string, number> = {
   venus: 224.701,
   earth: 365.256,
   mars: 686.98,
+  ceres: 1680.18,
   jupiter: 4332.59,
   saturn: 10759.22,
   uranus: 30688.5,

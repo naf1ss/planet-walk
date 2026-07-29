@@ -23,7 +23,13 @@ export type BodySelectPayload = {
 const ORBIT_SEGMENTS = 512;
 const ORBIT_OPACITY = 0.17;
 
-function OrbitRing({ radius }: { radius: number }) {
+function OrbitRing({
+  radius,
+  emphasized = false,
+}: {
+  radius: number;
+  emphasized?: boolean;
+}) {
   const points = useMemo(() => {
     const pts: [number, number, number][] = [];
     for (let i = 0; i <= ORBIT_SEGMENTS; i++) {
@@ -36,23 +42,23 @@ function OrbitRing({ radius }: { radius: number }) {
   return (
     <Line
       points={points}
-      color="#8eb4d8"
+      color={emphasized ? "#c4b5a0" : "#8eb4d8"}
       transparent
-      opacity={ORBIT_OPACITY}
+      opacity={emphasized ? 0.38 : ORBIT_OPACITY}
       depthWrite={false}
       lineWidth={1}
     />
   );
 }
 
-/** Outer-system bodies keep a forgiving hit target at distance */
-const OUTER_HITBOX_SLUGS = new Set<PlanetSlug>(["uranus", "neptune", "pluto"]);
-const OUTER_MIN_HIT_RADIUS = 0.55;
+/** Small / distant bodies — enlarged invisible hit target for raycasting */
+const SMALL_HITBOX_SLUGS = new Set<PlanetSlug>(["ceres", "uranus", "neptune", "pluto"]);
+const SMALL_MIN_HIT_RADIUS = 0.55;
 
 function hitRadius(slug: PlanetSlug | "sun", visualSize: number) {
   if (slug === "sun") return visualSize * 1.05;
-  if (OUTER_HITBOX_SLUGS.has(slug)) {
-    return Math.max(visualSize * 2.0, OUTER_MIN_HIT_RADIUS);
+  if (SMALL_HITBOX_SLUGS.has(slug)) {
+    return Math.max(visualSize * 2.0, SMALL_MIN_HIT_RADIUS);
   }
   return visualSize * 1.05;
 }
@@ -321,7 +327,7 @@ export function SolarSystem({
 
       {PLANET_VISUALS.map((planet) => (
         <group key={planet.slug}>
-          <OrbitRing radius={planet.orbit} />
+          <OrbitRing radius={planet.orbit} emphasized={planet.slug === "ceres"} />
           <PlanetBody planet={planet} onSelect={onSelectBody} />
         </group>
       ))}

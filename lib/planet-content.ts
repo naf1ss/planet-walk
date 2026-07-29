@@ -1,12 +1,7 @@
 import { PLANET_SLUGS } from "@/lib/constants";
 
-/** Route bodies: Sun + planets + Ceres + Pluto (Observatory) */
-export const BODY_SLUGS = [
-  "sun",
-  ...PLANET_SLUGS.slice(0, 4),
-  "ceres",
-  ...PLANET_SLUGS.slice(4),
-] as const;
+/** Route bodies: Sun + all walk stops (including Ceres) */
+export const BODY_SLUGS = ["sun", ...PLANET_SLUGS] as const;
 export type BodySlug = (typeof BODY_SLUGS)[number];
 
 export type CampusMarker = {
@@ -177,16 +172,16 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "Glatfelter Lodge",
     heroFact:
       "On the campus walk, Ceres is marked at Glatfelter Lodge — bridging the rocky inner worlds and the gas giants.",
-    tileImage: "/tiles/earth.jpg",
+    tileImage: "/tiles/ceres.png",
     tileCaption: "7×5″ vinyl tile · Ceres",
-    texture: "/textures/pluto.jpg",
-    color: "#9ca3af",
-    size: 0.35,
+    texture: "/textures/ceres.jpg",
+    color: "#c4b5a0",
+    size: 0.14,
     facts: [
-      "Ceres is the largest object in the asteroid belt between Mars and Jupiter.",
-      "NASA's Dawn spacecraft orbited Ceres from 2015 to 2018, mapping bright salt deposits and organic material.",
-      "It accounts for about a third of the asteroid belt's total mass.",
-      "Bright spots in Occator Crater suggest recent brine activity beneath Ceres's surface.",
+      "Ceres is the largest body in the asteroid belt and was the first object discovered there — Giuseppe Piazzi spotted it on January 1, 1801.",
+      "The IAU classifies Ceres as a dwarf planet; it contains roughly a third of the asteroid belt's total mass.",
+      "NASA's Dawn spacecraft orbited Ceres from 2015 to 2018, mapping bright salt deposits in Occator Crater.",
+      "Ahuna Mons is a cryovolcano on Ceres — a dome of salty ice thought to have erupted from a briny subsurface reservoir.",
     ],
     campus: {
       x: 56,

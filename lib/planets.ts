@@ -25,6 +25,16 @@ export const PLANET_VISUALS: PlanetVisual[] = [
   { slug: "venus", name: "Venus", orbit: 4.0, size: 0.38, texture: "/textures/venus.jpg", color: "#e8c07a", periodDays: 224.701 },
   { slug: "earth", name: "Earth", orbit: 5.2, size: 0.4, texture: "/textures/earth.jpg", color: "#3b82c4", periodDays: 365.256 },
   { slug: "mars", name: "Mars", orbit: 6.4, size: 0.32, texture: "/textures/mars.jpg", color: "#c45c3a", periodDays: 686.98 },
+  {
+    slug: "ceres",
+    name: "Ceres",
+    orbit: 7.21,
+    /** True scale ≈0.03; readability floor keeps it visible in the belt */
+    size: 0.14,
+    texture: "/textures/ceres.jpg",
+    color: "#c4b5a0",
+    periodDays: 1680.18,
+  },
   { slug: "jupiter", name: "Jupiter", orbit: 8.8, size: 0.95, texture: "/textures/jupiter.jpg", color: "#d4a574", periodDays: 4332.59 },
   { slug: "saturn", name: "Saturn", orbit: 11.2, size: 0.82, texture: "/textures/saturn.jpg", color: "#e6d5a8", periodDays: 10759.22 },
   { slug: "uranus", name: "Uranus", orbit: 13.4, size: 0.52, texture: "/textures/uranus.jpg", color: "#7ec8c8", periodDays: 30688.5 },

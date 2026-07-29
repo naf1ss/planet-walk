@@ -165,20 +165,14 @@ export function PlanetDetailOverlay({
 
               <figure className="relative">
                 <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-sm border border-white/10 bg-[#f4f4f6] p-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:p-6">
-                  {body.slug === "ceres" ? (
-                    <p className="px-4 text-center font-nav text-[0.7rem] uppercase tracking-[0.28em] text-foreground-muted">
-                      Tile marker coming soon
-                    </p>
-                  ) : (
-                    <Image
-                      src={body.tileImage}
-                      alt={`${body.name} campus walk marker tile`}
-                      width={1024}
-                      height={1024}
-                      className="h-full w-full object-contain"
-                      sizes="(max-width: 1024px) 90vw, 420px"
-                    />
-                  )}
+                  <Image
+                    src={body.tileImage}
+                    alt={`${body.name} campus walk marker tile`}
+                    width={1024}
+                    height={1024}
+                    className="h-full w-full object-contain"
+                    sizes="(max-width: 1024px) 90vw, 420px"
+                  />
                 </div>
               </figure>
             </div>
