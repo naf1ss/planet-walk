@@ -2,14 +2,14 @@ import type { BodySlug } from "@/lib/planet-content";
 
 /**
  * Physical Planet Walk scale data.
- * Source: solar-system-walk-model.html (Sun → Pluto = 1923.94 ft).
- * Swap / extend intervals here when you get final field measurements.
+ * Campus corridor Sun → Pluto totals 7,561.3 ft (~1.43 mi).
+ * Stop distances scale from real solar-system AU ratios.
  */
 
-export const WALK_TOTAL_FT = 1923.94;
-export const WALK_TOTAL_MI = WALK_TOTAL_FT / 5280; // ~0.364 mi
+export const WALK_TOTAL_FT = 7561.3;
+export const WALK_TOTAL_MI = WALK_TOTAL_FT / 5280; // ≈ 1.432 mi
 export const PLUTO_AU = 39.482;
-export const FT_PER_AU = WALK_TOTAL_FT / PLUTO_AU; // ~48.73 ft per AU on the walk
+export const FT_PER_AU = WALK_TOTAL_FT / PLUTO_AU;
 
 export type WalkStop = {
   slug: BodySlug;
@@ -53,17 +53,40 @@ export const WALK_STOPS: WalkStop[] = RAW.map((b, i) => {
   };
 });
 
-/** Miles from Sun to the farthest visited stop (assumes path starts at the Planetarium). */
-export function milesWalkedFromVisited(visited: Iterable<string>): number {
+/** Feet from Sun to the farthest visited stop. */
+export function feetWalkedFromVisited(visited: Iterable<string>): number {
   const set = new Set(visited);
   let max = 0;
   for (const stop of WALK_STOPS) {
-    if (set.has(stop.slug) && stop.walkMi > max) max = stop.walkMi;
+    if (set.has(stop.slug) && stop.walkFt > max) max = stop.walkFt;
   }
   return max;
+}
+
+/** Miles from Sun to the farthest visited stop. */
+export function milesWalkedFromVisited(visited: Iterable<string>): number {
+  return feetWalkedFromVisited(visited) / 5280;
 }
 
 export function completionPercent(visitedCount: number): number {
   if (WALK_STOPS.length === 0) return 0;
   return Math.round((visitedCount / WALK_STOPS.length) * 100);
 }
+
+/** Format campus walk distance for UI (e.g. "7,561 ft · 1.43 mi"). */
+export function formatWalkDistance(feet: number): {
+  feetLabel: string;
+  milesLabel: string;
+  combined: string;
+} {
+  const mi = feet / 5280;
+  const feetLabel = `${Math.round(feet).toLocaleString("en-US")} ft`;
+  const milesLabel = `${mi.toFixed(mi >= 1 ? 2 : 2)} mi`;
+  return {
+    feetLabel,
+    milesLabel,
+    combined: `${feetLabel} · ${milesLabel}`,
+  };
+}
+
+export const WALK_TOTAL_LABEL = formatWalkDistance(WALK_TOTAL_FT);
