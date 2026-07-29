@@ -23,6 +23,7 @@ const STOP_COORDS: Record<BodySlug, [number, number]> = {
   venus: [39.83602, -77.23668],
   earth: [39.83628, -77.23696],
   mars: [39.83662, -77.23735],
+  ceres: [39.83698, -77.23778],
   jupiter: [39.83735, -77.2382],
   saturn: [39.83815, -77.239],
   uranus: [39.839, -77.23965],

@@ -40,10 +40,49 @@ function setGroupOpacity(root: THREE.Object3D, opacity: number, init = false) {
       const m = mat as THREE.Material & { opacity: number; transparent: boolean };
       if (init || m.userData._entranceBaseOpacity === undefined) {
         m.userData._entranceBaseOpacity = m.opacity;
+        m.userData._entranceWasTransparent = m.transparent;
       }
       m.transparent = true;
       m.opacity = (m.userData._entranceBaseOpacity as number) * opacity;
       m.needsUpdate = true;
+    }
+  });
+}
+
+/** Restore materials faded by the Milky Way entrance — does not touch hit proxies or layout. */
+export function resetSolarSystemVisibility(root: THREE.Object3D) {
+  root.visible = true;
+  root.traverse((obj) => {
+    const mesh = obj as THREE.Mesh;
+    if (!mesh.material) return;
+    const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    for (const mat of mats) {
+      if (!mat || !("opacity" in mat)) continue;
+      const m = mat as THREE.Material & {
+        opacity: number;
+        transparent?: boolean;
+        map?: THREE.Texture | null;
+      };
+
+      const base = m.userData._entranceBaseOpacity as number | undefined;
+      if (base !== undefined) {
+        m.opacity = base;
+        const wasTransparent = m.userData._entranceWasTransparent as
+          | boolean
+          | undefined;
+        m.transparent = wasTransparent ?? base < 1;
+        delete m.userData._entranceBaseOpacity;
+        delete m.userData._entranceWasTransparent;
+        m.needsUpdate = true;
+        continue;
+      }
+
+      // Textured body stuck at 0 after interrupted fade — skip invisible hit proxies.
+      if (m.map && m.opacity < 0.01) {
+        m.opacity = 1;
+        m.transparent = false;
+        m.needsUpdate = true;
+      }
     }
   });
 }
@@ -103,7 +142,11 @@ export function MilkyWay({
     const arm = new THREE.Color("#9eb8ff");
     const outer = new THREE.Color("#6a7fd4");
     const dust = new THREE.Color("#ff9b6b");
+    const violet = new THREE.Color("#5b21b6");
+    const magenta = new THREE.Color("#d946ef");
+    const electric = new THREE.Color("#a855f7");
     const mix = new THREE.Color();
+    const purpleMix = new THREE.Color();
 
     // ——— Existing spiral / halo coordinate math (unchanged) ———
     for (let i = 0; i < STAR_COUNT; i++) {
@@ -117,7 +160,8 @@ export function MilkyWay({
         targetPositions[i3] = r * Math.sin(phi) * Math.cos(theta);
         targetPositions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.3;
         targetPositions[i3 + 2] = r * Math.cos(phi);
-        mix.copy(outer);
+        // Halo: retain cool blue outer, lightly tinted with violet
+        mix.copy(outer).lerp(violet, 0.12 + Math.random() * 0.18);
 
         isHaloArr[i] = 1;
         armOffsetArr[i] = theta;
@@ -141,10 +185,29 @@ export function MilkyWay({
           Math.sin(angle) * radius + Math.sin(angle + Math.PI / 2) * spread;
 
         const coreFactor = 1 - Math.min(radius / GALAXY_RADIUS, 1);
-        if (Math.random() > 0.85) mix.copy(dust);
-        else {
+        // Mid-arm density peaks — stronger purple nebula glow there
+        const radialNorm = Math.min(radius / GALAXY_RADIUS, 1);
+        const armDensity = Math.pow(Math.sin(radialNorm * Math.PI), 1.35);
+        const colorRoll = Math.random();
+
+        if (colorRoll > 0.88) {
+          // Retain original warm orange dust
+          mix.copy(dust);
+          mix.lerp(magenta, 0.08 + Math.random() * 0.12);
+        } else if (colorRoll > 0.7 && armDensity > 0.35) {
+          // Distinct purple nebula pockets in denser arm bands
+          purpleMix.copy(violet).lerp(electric, Math.random());
+          purpleMix.lerp(magenta, Math.random() * 0.5);
+          mix.copy(arm).lerp(purpleMix, 0.55 + armDensity * 0.35);
+          mix.lerp(dust, 0.06);
+        } else {
+          // Original blue↔core↔outer mapping, with purple bias in dense arms
           mix.copy(arm).lerp(core, coreFactor * coreFactor);
           mix.lerp(outer, (1 - coreFactor) * 0.4);
+          const purpleBias = armDensity * (0.22 + Math.random() * 0.38);
+          mix.lerp(electric, purpleBias * 0.55);
+          mix.lerp(violet, purpleBias * 0.4);
+          if (Math.random() > 0.82) mix.lerp(magenta, 0.18);
         }
 
         isHaloArr[i] = 0;
@@ -300,7 +363,7 @@ export function MilkyWay({
     if (!playEntrance) {
       settleFinal();
       rotationMulRef.current = 1;
-      if (solarRoot) setGroupOpacity(solarRoot, 1, true);
+      if (solarRoot) resetSolarSystemVisibility(solarRoot);
       return;
     }
 
@@ -367,6 +430,13 @@ export function MilkyWay({
     startPositions,
     targetPositions,
   ]);
+
+  // Return-from-planet: solar ref may attach after MilkyWay layout — retry reset.
+  useEffect(() => {
+    if (playEntrance) return;
+    const root = solarSystemRef?.current;
+    if (root) resetSolarSystemVisibility(root);
+  }, [playEntrance, solarSystemRef]);
 
   // Continuous galaxy rotation — always active (base speed × entrance mul).
   useFrame((_, delta) => {

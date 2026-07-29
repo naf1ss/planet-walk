@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { BodyContent } from "@/lib/planet-content";
-import { markReturnToSolarSystem, RETURN_PARAM } from "@/lib/planet-transition";
+import { markReturnToSolarSystem } from "@/lib/planet-transition";
 import { PlanetFlyScene } from "@/components/planet/PlanetFlyScene";
 import { PlanetDetailOverlay } from "@/components/planet/PlanetDetailOverlay";
 
@@ -27,7 +27,6 @@ export function PlanetExperience({ body }: PlanetExperienceProps) {
   const [exiting, setExiting] = useState(false);
   const exitIntentRef = useRef<ExitIntent | null>(null);
   const hasBackGuardRef = useRef(false);
-  const skipNextPopRef = useRef(false);
 
   const waitForScrollTop = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -76,7 +75,7 @@ export function PlanetExperience({ body }: PlanetExperienceProps) {
     }
 
     const onPopState = () => {
-      if (skipNextPopRef.current || exiting) return;
+      if (exiting) return;
       void triggerExitTransition({ type: "history-back" });
     };
 
@@ -105,22 +104,14 @@ export function PlanetExperience({ body }: PlanetExperienceProps) {
   }, [exiting, triggerExitTransition]);
 
   const onExitComplete = useCallback(() => {
-    const intent = exitIntentRef.current;
     exitIntentRef.current = null;
 
     markReturnToSolarSystem();
-
-    if (intent?.type === "history-back") {
-      skipNextPopRef.current = true;
-      window.history.go(-1);
-      return;
-    }
-
-    router.push(`/?${RETURN_PARAM}=true`);
+    router.push("/#explore");
   }, [router]);
 
   return (
-    <main className="relative min-h-[100dvh] w-full">
+    <main className="relative min-h-[200dvh] w-full">
       <PlanetFlyScene
         key={body.slug}
         body={body}

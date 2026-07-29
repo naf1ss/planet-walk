@@ -34,9 +34,7 @@ export function LandingExperience() {
     setReturnFromPlanet(isReturn);
 
     if (isReturn) {
-      if (fromQuery) {
-        router.replace("/#explore", { scroll: false });
-      }
+      router.replace("/#explore", { scroll: false });
     } else {
       window.scrollTo(0, 0);
     }

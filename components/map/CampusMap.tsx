@@ -11,7 +11,7 @@ export function CampusMap() {
   const router = useRouter();
 
   return (
-    <div className="overflow-hidden rounded-sm border border-border bg-background-elevated shadow-[0_28px_70px_rgba(0,0,0,0.45)]">
+    <div className="campus-map-root overflow-hidden rounded-sm border border-border bg-background-elevated shadow-[0_28px_70px_rgba(0,0,0,0.45)]">
       <MapContainer
         center={GETTYSBURG_COLLEGE_CENTER}
         zoom={16}

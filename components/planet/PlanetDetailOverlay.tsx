@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -73,71 +74,56 @@ export function PlanetDetailOverlay({
           <section className="relative flex h-[100dvh] w-screen shrink-0 flex-col items-center justify-center px-6 text-center">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,var(--void)_78%)]" />
 
-            {/* Fade hero copy quickly as the camera zoom-out begins */}
             <motion.div
               initial={false}
               animate={{ opacity: exiting ? 0 : 1 }}
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full"
+              className="relative mx-auto w-full max-w-2xl rounded-lg border border-white/12 bg-[rgba(3,4,10,0.84)] px-6 py-8 shadow-[0_12px_48px_rgba(0,0,0,0.65)] backdrop-blur-md sm:px-8"
             >
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.9,
-                  delay: 0.15,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="font-nav text-[0.7rem] uppercase tracking-[0.32em] text-accent"
-              >
+              <p className="font-nav text-[0.7rem] uppercase tracking-[0.32em] text-accent">
                 {body.subtitle}
-              </motion.p>
+              </p>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 1.1,
-                  delay: 0.3,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="mt-4 font-display text-5xl tracking-tight text-star drop-shadow-[0_0_40px_rgba(0,0,0,0.65)] sm:text-7xl md:text-8xl"
-              >
+              <h1 className="mt-4 font-display text-4xl tracking-tight text-star sm:text-6xl md:text-7xl">
                 {body.name}
-              </motion.h1>
+              </h1>
 
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 0.55 }}
-                className="mx-auto mt-6 w-full max-w-lg text-center text-sm text-foreground-muted sm:text-base"
-              >
+              <p className="mt-6 font-nav text-[0.65rem] uppercase tracking-[0.28em] text-accent">
+                Campus marker
+              </p>
+              <p className="mt-2 text-base leading-relaxed text-foreground sm:text-lg">
+                {body.markerLocation}
+              </p>
+
+              <p className="mx-auto mt-6 max-w-lg text-sm leading-relaxed text-foreground-muted sm:text-base">
                 {body.facts[0]}
-              </motion.p>
+              </p>
 
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 1 }}
-                className="mt-16 font-nav text-[0.65rem] uppercase tracking-[0.3em] text-foreground-muted/80"
-              >
-                Scroll for more
-              </motion.p>
+              <p className="mt-10 font-nav text-[0.65rem] uppercase tracking-[0.3em] text-foreground-muted/80">
+                Scroll for scientific notes
+              </p>
             </motion.div>
           </section>
 
           {/* Details — revealed by horizontal slide */}
-          <section className="relative flex h-[100dvh] w-screen shrink-0 flex-col justify-center overflow-y-auto border-l border-border bg-background/90 px-5 py-20 backdrop-blur-md sm:px-8">
+          <section className="relative flex h-[100dvh] w-screen shrink-0 flex-col justify-center overflow-y-auto border-l border-border bg-[rgba(3,4,10,0.94)] px-5 py-20 backdrop-blur-md sm:px-8">
             <div className="mx-auto grid w-full max-w-5xl gap-14 lg:grid-cols-2 lg:items-start">
               <div>
                 <p className="font-nav text-[0.65rem] uppercase tracking-[0.28em] text-accent">
+                  Campus marker
+                </p>
+                <p className="mt-3 text-base font-medium leading-relaxed text-star sm:text-lg">
+                  {body.markerLocation}
+                </p>
+
+                <p className="mt-10 font-nav text-[0.65rem] uppercase tracking-[0.28em] text-accent">
                   Scientific notes
                 </p>
                 <ul className="mt-6 space-y-5">
                   {body.facts.map((fact) => (
                     <li
                       key={fact}
-                      className="border-l border-accent/35 pl-4 text-sm leading-relaxed text-foreground-muted sm:text-base"
+                      className="border-l-2 border-accent/40 py-1 pl-4 text-sm leading-relaxed text-foreground-muted sm:text-base"
                     >
                       {fact}
                     </li>
@@ -155,13 +141,21 @@ export function PlanetDetailOverlay({
               </div>
 
               <figure className="relative">
-                <div className="relative flex aspect-[7/5] w-full items-center justify-center overflow-hidden rounded-sm border border-border shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
-                  <p className="px-4 text-center font-nav text-[0.7rem] uppercase tracking-[0.28em] text-foreground-muted">
-                    Tile marker coming soon
-                  </p>
-                  <p className="absolute bottom-4 left-0 right-0 text-center text-xs tracking-wide text-foreground-muted">
-                    {body.name}
-                  </p>
+                <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-sm border border-white/10 bg-[#f4f4f6] p-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:p-6">
+                  {body.slug === "ceres" ? (
+                    <p className="px-4 text-center font-nav text-[0.7rem] uppercase tracking-[0.28em] text-foreground-muted">
+                      Tile marker coming soon
+                    </p>
+                  ) : (
+                    <Image
+                      src={body.tileImage}
+                      alt={`${body.name} campus walk marker tile`}
+                      width={1024}
+                      height={1024}
+                      className="h-full w-full object-contain"
+                      sizes="(max-width: 1024px) 90vw, 420px"
+                    />
+                  )}
                 </div>
               </figure>
             </div>

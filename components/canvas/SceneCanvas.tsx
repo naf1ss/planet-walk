@@ -1,12 +1,12 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as THREE from "three";
-import { MilkyWay } from "@/components/canvas/MilkyWay";
+import { MilkyWay, resetSolarSystemVisibility } from "@/components/canvas/MilkyWay";
 import { SoftStars } from "@/components/canvas/SoftStars";
 import {
   SolarSystem,
@@ -45,6 +45,21 @@ function Experience({
 }) {
   const { spaceColor, ambientIntensity, isDay } = useDayNight();
   const solarSystemRef = useRef<THREE.Group>(null);
+
+  useLayoutEffect(() => {
+    if (!startAtSolarSystem) return;
+    const root = solarSystemRef.current;
+    if (root) resetSolarSystemVisibility(root);
+  }, [startAtSolarSystem]);
+
+  useEffect(() => {
+    if (!startAtSolarSystem) return;
+    const id = requestAnimationFrame(() => {
+      const root = solarSystemRef.current;
+      if (root) resetSolarSystemVisibility(root);
+    });
+    return () => cancelAnimationFrame(id);
+  }, [startAtSolarSystem]);
 
   return (
     <>
