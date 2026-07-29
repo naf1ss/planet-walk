@@ -23,6 +23,8 @@ export type BodyContent = {
   subtitle: string;
   /** Physical campus location of the walk marker */
   markerLocation: string;
+  /** Campus-tied narrative shown under the marker on the hero screen */
+  heroFact: string;
   /** Vinyl / ceramic tile art */
   tileImage: string;
   tileCaption: string;
@@ -30,6 +32,7 @@ export type BodyContent = {
   texture: string;
   color: string;
   size: number;
+  /** Bulleted facts (minimum 4; excludes heroFact) */
   facts: string[];
   campus: CampusMarker;
   /** Special narrative roles */
@@ -46,6 +49,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "The Sun",
     subtitle: "Planetarium · journey origin",
     markerLocation: "The center of the planetarium",
+    heroFact:
+      "On the campus walk, the journey begins with the Sun, located in the center of the Gettysburg College planetarium.",
     tileImage: "/tiles/sun.png",
     tileCaption: "7×5″ vinyl tile · Solar disc",
     texture: "/textures/sun.jpg",
@@ -54,9 +59,9 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     role: "planetarium",
     facts: [
       "Contains about 99.86% of all mass in the solar system.",
-      "On the campus walk, the journey begins with the Sun, located in the center of the Gettysburg College planetarium.",
       "At true walk scale the Sun would be microscopic; the tile stands in so you can see the star.",
       "Light leaving the Sun takes about 8 minutes to reach Earth — and 5.5 hours to reach Pluto.",
+      "The Sun fuses about 600 million tons of hydrogen into helium every second.",
     ],
     campus: {
       x: 18,
@@ -70,6 +75,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Mercury",
     subtitle: "Innermost World - Planetarium Wall",
     markerLocation: "The wall of the planetarium",
+    heroFact:
+      "On the campus walk, Mercury's marker is mounted on the wall of the planetarium — the first stop outward from the Sun.",
     tileImage: "/tiles/mercury.png",
     tileCaption: "7×5″ vinyl tile · Caloris Basin",
     texture: "/textures/mercury.jpg",
@@ -93,6 +100,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Venus",
     subtitle: "Earth’s twin · cloud world",
     markerLocation: "The Physics and Astronomy Atrium",
+    heroFact:
+      "On the campus walk, Venus is marked in the Physics and Astronomy Atrium.",
     tileImage: "/tiles/venus.png",
     tileCaption: "7×5″ vinyl tile · Cloud swirls",
     texture: "/textures/venus.jpg",
@@ -116,6 +125,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Earth",
     subtitle: "Home · 1 Astronomical Unit",
     markerLocation: "Physics Student Lounge",
+    heroFact:
+      "\"That's home. That's us. On it everyone you love, everyone you know, everyone you ever heard of, every human being who ever was, lived out their lives.\" — Carl Sagan",
     tileImage: "/tiles/earth.png",
     tileCaption: "7×5″ vinyl tile · Americas / Atlantic",
     texture: "/textures/earth.jpg",
@@ -124,8 +135,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     facts: [
       "Earth sits about 1 Astronomical Unit from the Sun — about 93 million miles, the measuring stick for the whole walk.",
       "At this scale, the Moon would sit only ~1.3 inches from a pea-sized Earth.",
-      "\"That's home. That's us. On it everyone you love, everyone you know, everyone you ever heard of, every human being who ever was, lived out their lives.\" — Carl Sagan",
       "Liquid water and a protective magnetic field make Earth uniquely habitable (so far).",
+      "Earth's atmosphere is about 78% nitrogen and 21% oxygen — a rare balance that supports complex life.",
     ],
     campus: {
       x: 42,
@@ -139,6 +150,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Mars",
     subtitle: "The Red Planet",
     markerLocation: "Plank Basement",
+    heroFact: "On the campus walk, Mars is marked in Plank Basement.",
     tileImage: "/tiles/mars.png",
     tileCaption: "7×5″ vinyl tile · Valles Marineris",
     texture: "/textures/mars.jpg",
@@ -163,6 +175,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Ceres",
     subtitle: "Dwarf planet · asteroid belt",
     markerLocation: "Glatfelter Lodge",
+    heroFact:
+      "On the campus walk, Ceres is marked at Glatfelter Lodge — bridging the rocky inner worlds and the gas giants.",
     tileImage: "/tiles/earth.jpg",
     tileCaption: "7×5″ vinyl tile · Ceres",
     texture: "/textures/pluto.jpg",
@@ -172,7 +186,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
       "Ceres is the largest object in the asteroid belt between Mars and Jupiter.",
       "NASA's Dawn spacecraft orbited Ceres from 2015 to 2018, mapping bright salt deposits and organic material.",
       "It accounts for about a third of the asteroid belt's total mass.",
-      "On the campus walk, Ceres marks the transition from the rocky inner worlds toward the gas giants.",
+      "Bright spots in Occator Crater suggest recent brine activity beneath Ceres's surface.",
     ],
     campus: {
       x: 56,
@@ -186,6 +200,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Jupiter",
     subtitle: "King of planets",
     markerLocation: "Science Center Walkway",
+    heroFact:
+      "On the campus walk, Jupiter is marked along the Science Center Walkway.",
     tileImage: "/tiles/jupiter.png",
     tileCaption: "7×5″ vinyl tile · Great Red Spot",
     texture: "/textures/jupiter.jpg",
@@ -209,6 +225,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Saturn",
     subtitle: "Ringed giant",
     markerLocation: "Glatfelter basement",
+    heroFact: "On the campus walk, Saturn is marked in Glatfelter basement.",
     tileImage: "/tiles/saturn.png",
     tileCaption: "7×5″ vinyl tile · Cloud bands",
     texture: "/textures/saturn.jpg",
@@ -232,6 +249,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Uranus",
     subtitle: "Ice giant · tipped world",
     markerLocation: "Outside Schmucker Ceramics Studio",
+    heroFact:
+      "On the campus walk, Uranus is marked outside Schmucker Ceramics Studio.",
     tileImage: "/tiles/uranus.png",
     tileCaption: "7×5″ vinyl tile · Atmosphere",
     texture: "/textures/uranus.jpg",
@@ -255,6 +274,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Neptune",
     subtitle: "Windiest world",
     markerLocation: "Outside Admissions",
+    heroFact: "On the campus walk, Neptune is marked outside Admissions.",
     tileImage: "/tiles/neptune.png",
     tileCaption: "7×5″ vinyl tile · Dark Spot region",
     texture: "/textures/neptune.jpg",
@@ -278,6 +298,8 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     name: "Pluto",
     subtitle: "Observatory finale · Tombaugh Regio",
     markerLocation: "Gettysburg College Observatory",
+    heroFact:
+      "The campus walk ends at the Gettysburg College Observatory — Pluto's physical station.",
     tileImage: "/tiles/pluto.png",
     tileCaption: "7×5″ vinyl tile · Heart glacier",
     texture: "/textures/pluto.jpg",
@@ -285,10 +307,10 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     size: 0.5,
     role: "observatory",
     facts: [
-      "The campus walk ends at the Observatory — Pluto’s physical station.",
       "New Horizons revealed a heart-shaped nitrogen glacier (Sputnik Planitia).",
       "You walk ~0.36 miles to stand in for ~3.67 billion real miles.",
       "Light still needs ~5.5 hours to cross the real Sun–Pluto gap.",
+      "Pluto's largest moon, Charon, is so massive that both bodies orbit a point in space between them.",
     ],
     campus: {
       x: 92,

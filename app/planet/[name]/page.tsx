@@ -19,7 +19,7 @@ export async function generateMetadata({
   if (!body) return { title: "Unknown body" };
   return {
     title: body.name,
-    description: `${body.name} — ${body.subtitle}. ${body.facts[0]}`,
+    description: `${body.name} — ${body.subtitle}. ${body.heroFact}`,
   };
 }
 
