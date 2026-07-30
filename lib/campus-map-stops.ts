@@ -54,6 +54,7 @@ export const CAMPUS_MAP_STOPS: CampusMapStop[] = BODY_SLUGS.map((slug, index) =>
     lat,
     lng,
     index,
+    locationImage: `/locations/${slug}.jpg`,
   };
 });
 

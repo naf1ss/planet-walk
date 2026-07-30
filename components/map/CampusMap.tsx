@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
+import { motion } from "framer-motion";
 import {
   MapContainer,
   Marker,
@@ -21,6 +22,8 @@ import type { BodySlug } from "@/lib/planet-content";
 type CampusMapProps = {
   selectedSlug: BodySlug | null;
   onSelect: (slug: BodySlug) => void;
+  previewSlug: BodySlug | null;
+  onPreviewPhoto: (stop: CampusMapStop) => void;
 };
 
 function FitWalkBounds() {
@@ -70,7 +73,12 @@ function stopIcon(stop: CampusMapStop, selected: boolean) {
 /**
  * Light campus map — Voyager basemap, walk path, numbered stop markers.
  */
-export function CampusMap({ selectedSlug, onSelect }: CampusMapProps) {
+export function CampusMap({
+  selectedSlug,
+  onSelect,
+  previewSlug,
+  onPreviewPhoto,
+}: CampusMapProps) {
   const markerRefs = useRef<Partial<Record<BodySlug, L.Marker>>>({});
   const selected =
     CAMPUS_MAP_STOPS.find((s) => s.slug === selectedSlug) ?? null;
@@ -142,12 +150,39 @@ export function CampusMap({ selectedSlug, onSelect }: CampusMapProps) {
                 <div className="campus-map-popup__photo">
                   <p className="campus-map-popup__photo-label">Location Picture</p>
                   {stop.locationImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={stop.locationImage}
-                      alt={`${stop.name} campus location`}
-                      className="campus-map-popup__photo-img"
-                    />
+                    <button
+                      type="button"
+                      className="campus-map-popup__photo-btn"
+                      aria-label={`Expand ${stop.name} location picture`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onPreviewPhoto(stop);
+                      }}
+                    >
+                      {previewSlug === stop.slug ? (
+                        <span className="campus-map-popup__photo-spacer" />
+                      ) : (
+                        <motion.span
+                          layoutId={`location-photo-${stop.slug}`}
+                          className="campus-map-popup__photo-frame"
+                          transition={{
+                            type: "spring",
+                            stiffness: 320,
+                            damping: 34,
+                            mass: 0.85,
+                          }}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={stop.locationImage}
+                            alt={`${stop.name} campus location`}
+                            className="campus-map-popup__photo-img"
+                            draggable={false}
+                          />
+                        </motion.span>
+                      )}
+                    </button>
                   ) : (
                     <div className="campus-map-popup__photo-blank" aria-hidden />
                   )}

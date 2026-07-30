@@ -319,6 +319,37 @@ html.map-light .map-page-light {
   background: #f3f6fa;
 }
 
+.campus-map-popup__photo-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: zoom-in !important;
+}
+
+.campus-map-popup__photo-frame {
+  display: block;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(18, 24, 38, 0.12);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.campus-map-popup__photo-btn:hover .campus-map-popup__photo-frame {
+  box-shadow: 0 10px 28px rgba(18, 24, 38, 0.18);
+  transform: translateY(-1px);
+}
+
+.campus-map-popup__photo-spacer {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  background: #e8edf3;
+}
+
 .campus-map-popup__photo-img {
   display: block;
   width: 100%;
