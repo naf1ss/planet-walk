@@ -80,7 +80,7 @@ function PlanetBody({
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
-    angleRef.current += omega * delta;
+    angleRef.current -= omega * delta;
     const a = angleRef.current;
     groupRef.current.position.x = Math.cos(a) * planet.orbit;
     groupRef.current.position.z = Math.sin(a) * planet.orbit;
