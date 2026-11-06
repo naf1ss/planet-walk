@@ -5,6 +5,19 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SITE } from "@/lib/constants";
 
+/** One inline-block span per letter so the intro can animate them. */
+function Letters({ text }: { text: string }) {
+  return (
+    <>
+      {Array.from(text).map((ch, i) => (
+        <span key={i} className="hero-letter inline-block will-change-[transform,filter,opacity]">
+          {ch}
+        </span>
+      ))}
+    </>
+  );
+}
+
 type HeroOverlayProps = {
   zoomTrackRef: React.RefObject<HTMLElement | null>;
   startAtSolarSystem?: boolean;
@@ -25,31 +38,45 @@ export function HeroOverlay({
 
   const [introReady, setIntroReady] = useState(startAtSolarSystem);
   const [introOpacity, setIntroOpacity] = useState(0);
-  const [introY, setIntroY] = useState(startAtSolarSystem ? -36 : -100);
+  const [introY, setIntroY] = useState(startAtSolarSystem ? -36 : 0);
 
   useLayoutEffect(() => {
     if (startAtSolarSystem) return;
     const el = heroBlockRef.current;
     if (!el) return;
 
-    gsap.set(el, { opacity: 0, y: -100 });
+    const letters = el.querySelectorAll<HTMLElement>(".hero-letter");
+    const fades = el.querySelectorAll<HTMLElement>(".hero-fade");
+    const finish = () => {
+      setIntroOpacity(1);
+      setIntroY(0);
+      setIntroReady(true);
+      gsap.set([el, ...letters, ...fades], {
+        clearProps: "opacity,transform,filter",
+      });
+    };
 
-    const tl = gsap.timeline();
-    tl.to(
-      el,
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1.05,
-        ease: "power3.out",
-        onComplete: () => {
-          setIntroOpacity(1);
-          setIntroY(0);
-          setIntroReady(true);
-          gsap.set(el, { clearProps: "opacity,y,transform" });
-        },
-      },
-      1.2,
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finish();
+      return;
+    }
+
+    // Letters sharpen into place one by one, then the eyebrow + tagline follow
+    gsap.set(letters, { opacity: 0, y: 46, filter: "blur(14px)" });
+    gsap.set(fades, { opacity: 0, y: 12 });
+
+    const tl = gsap.timeline({ delay: 1.2, onComplete: finish });
+    tl.to(letters, {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: 1.15,
+      ease: "power3.out",
+      stagger: 0.065,
+    }).to(
+      fades,
+      { opacity: 1, y: 0, duration: 0.8, ease: "power2.out", stagger: 0.12 },
+      "-=0.75",
     );
 
     return () => {
@@ -111,7 +138,7 @@ export function HeroOverlay({
 
     if (startAtSolarSystem) {
       gsap.set(scrollPrompt, { opacity: 0 });
-      gsap.set(midText, { opacity: 0 });
+      gsap.set(midText, { opacity: 0, filter: "blur(12px)" });
       gsap.set(endSection, { opacity: 1 });
       return;
     }
@@ -139,23 +166,36 @@ export function HeroOverlay({
         "diveBegin",
       );
 
+      // Comes into focus as the dive begins, then dissolves back into blur
       tl.fromTo(
         midText,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.12, ease: "power2.inOut" },
+        { opacity: 0, filter: "blur(12px)", letterSpacing: "0.18em" },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          letterSpacing: "0em",
+          duration: 0.14,
+          ease: "power2.out",
+        },
         "diveBegin",
       );
 
       tl.to(
         midText,
-        { opacity: 0, duration: 0.12, ease: "power2.inOut" },
+        {
+          opacity: 0,
+          filter: "blur(10px)",
+          letterSpacing: "0.12em",
+          duration: 0.12,
+          ease: "power2.in",
+        },
         0.5,
       );
 
       tl.fromTo(
         endSection,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.12, ease: "power2.inOut" },
+        { opacity: 0, filter: "blur(8px)", y: 10 },
+        { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.12, ease: "power2.out" },
         ">",
       );
     }, track);
@@ -189,7 +229,7 @@ export function HeroOverlay({
         }
         className="absolute top-[max(5.75rem,calc(4.5rem+env(safe-area-inset-top)))] left-1/2 flex w-full max-w-3xl -translate-x-1/2 flex-col items-center text-center sm:top-36"
       >
-        <div className="mb-4 flex items-center gap-2 sm:mb-6 sm:gap-3">
+        <div className="hero-fade mb-4 flex items-center gap-2 sm:mb-6 sm:gap-3">
           <span
             aria-hidden
             className="h-px w-6 bg-gradient-to-r from-transparent to-accent/70 sm:w-12"
@@ -203,16 +243,19 @@ export function HeroOverlay({
           />
         </div>
 
-        <h1 className="font-display text-[clamp(3.25rem,15vw,7.5rem)] leading-[0.9]">
-          <span className="text-star drop-shadow-[0_0_40px_rgba(245,247,255,0.2)]">
-            Planet
+        <h1
+          aria-label="Planet Walk"
+          className="font-display text-[clamp(3.25rem,15vw,7.5rem)] leading-[0.9]"
+        >
+          <span aria-hidden className="text-star drop-shadow-[0_0_40px_rgba(245,247,255,0.2)]">
+            <Letters text="Planet" />
           </span>{" "}
-          <span className="italic text-accent-warm drop-shadow-[0_0_48px_rgba(240,192,106,0.28)]">
-            Walk
+          <span aria-hidden className="italic text-accent-warm drop-shadow-[0_0_48px_rgba(240,192,106,0.28)]">
+            <Letters text="Walk" />
           </span>
         </h1>
 
-        <p className="mt-4 max-w-[18rem] font-display text-xl italic leading-snug text-foreground-muted sm:mt-6 sm:max-w-md sm:text-2xl">
+        <p className="hero-fade mt-4 max-w-[18rem] font-display text-xl italic leading-snug text-foreground-muted sm:mt-6 sm:max-w-md sm:text-2xl">
           {SITE.tagline}
         </p>
       </div>

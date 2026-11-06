@@ -29,6 +29,7 @@ import {
   savePlanetTransition,
 } from "@/lib/planet-transition";
 import type { BodySlug } from "@/lib/planet-content";
+import { setHoveredBody } from "@/lib/body-hover";
 
 type SceneCanvasProps = {
   zoomTrackRef: React.RefObject<HTMLElement | null>;
@@ -184,6 +185,7 @@ export function SceneCanvas({
       if (divingRef.current) return;
       divingRef.current = true;
       setTransitLabel(payload.name);
+      setHoveredBody(null);
       document.body.style.cursor = "auto";
 
       // Freeze scroll-scrub so it doesn't fight the dive

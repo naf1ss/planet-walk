@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import { Line, useTexture } from "@react-three/drei";
+import { Html, Line, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { AtmosphereGlow } from "@/components/canvas/AtmosphereGlow";
 import { PLANET_VISUALS, SUN, type PlanetVisual } from "@/lib/planets";
@@ -12,6 +12,7 @@ import {
   orbitPhase,
 } from "@/lib/orbit-physics";
 import { useDayNight } from "@/components/providers/DayNightProvider";
+import { WALK_STOPS, WALK_TOTAL_FT, formatWalkDistance } from "@/lib/planetData";
 import {
   registerBodySelect,
   setHoveredBody,
@@ -28,13 +29,20 @@ export type BodySelectPayload = {
 const ORBIT_SEGMENTS = 512;
 const ORBIT_OPACITY = 0.17;
 
+const ORBIT_HOVER_OPACITY = 0.65;
+
 function OrbitRing({
   radius,
+  slug,
   emphasized = false,
 }: {
   radius: number;
+  slug: PlanetSlug;
   emphasized?: boolean;
 }) {
+  const lineRef = useRef<{ material: THREE.Material & { opacity: number; color: THREE.Color } } | null>(null);
+  const active = useHoveredBody() === slug;
+  const baseOpacity = emphasized ? 0.38 : ORBIT_OPACITY;
   const points = useMemo(() => {
     const pts: [number, number, number][] = [];
     for (let i = 0; i <= ORBIT_SEGMENTS; i++) {
@@ -44,16 +52,61 @@ function OrbitRing({
     return pts;
   }, [radius]);
 
+  // Ease the ring's opacity toward bright while its planet is hovered
+  useFrame((_, delta) => {
+    const m = lineRef.current?.material;
+    if (!m) return;
+    const target = active ? ORBIT_HOVER_OPACITY : baseOpacity;
+    m.opacity += (target - m.opacity) * (1 - Math.exp(-delta * 8));
+  });
+
   return (
     <Line
+      // drei's Line2 type isn't exported cleanly; we only touch .material
+      ref={lineRef as never}
       points={points}
       color={emphasized ? "#c4b5a0" : "#8eb4d8"}
       transparent
-      opacity={emphasized ? 0.38 : ORBIT_OPACITY}
+      opacity={baseOpacity}
       depthWrite={false}
-      lineWidth={1}
+      lineWidth={active ? 1.6 : 1}
     />
   );
+}
+
+/** Name + walk distance, floating just above a hovered body. */
+function BodyLabel({
+  name,
+  detail,
+  height,
+  visible,
+}: {
+  name: string;
+  detail: string;
+  height: number;
+  visible: boolean;
+}) {
+  return (
+    <Html
+      position={[0, height, 0]}
+      center
+      zIndexRange={[30, 0]}
+      style={{ pointerEvents: "none" }}
+    >
+      <div className={`planet-label${visible ? " is-visible" : ""}`}>
+        <span className="planet-label__name">{name}</span>
+        <span className="planet-label__detail">{detail}</span>
+      </div>
+    </Html>
+  );
+}
+
+function walkDetail(slug: string) {
+  if (slug === "sun") {
+    return `Start · ${formatWalkDistance(WALK_TOTAL_FT).feetLabel} to Pluto`;
+  }
+  const stop = WALK_STOPS.find((s) => s.slug === slug);
+  return stop ? `${formatWalkDistance(stop.walkFt).feetLabel} from the Sun` : "";
 }
 
 /** Small / distant bodies — enlarged invisible hit target for raycasting */
@@ -159,6 +212,13 @@ function PlanetBody({
       </group>
 
       {planet.slug === "saturn" ? <SaturnRings size={planet.size} /> : null}
+
+      <BodyLabel
+        name={planet.name}
+        detail={walkDetail(planet.slug)}
+        height={planet.size + 0.55}
+        visible={hovered}
+      />
     </group>
   );
 }
@@ -321,6 +381,13 @@ function SunBody({
         <meshBasicMaterial />
       </mesh>
 
+      <BodyLabel
+        name="The Sun"
+        detail={walkDetail("sun")}
+        height={SUN.size + 0.75}
+        visible={hovered}
+      />
+
       <pointLight
         color="#fff1d0"
         intensity={90 * sunLightBoost}
@@ -351,7 +418,11 @@ export function SolarSystem({
 
       {PLANET_VISUALS.map((planet) => (
         <group key={planet.slug}>
-          <OrbitRing radius={planet.orbit} emphasized={planet.slug === "ceres"} />
+          <OrbitRing
+            radius={planet.orbit}
+            slug={planet.slug}
+            emphasized={planet.slug === "ceres"}
+          />
           <PlanetBody planet={planet} onSelect={onSelectBody} />
         </group>
       ))}
