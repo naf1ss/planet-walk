@@ -102,6 +102,47 @@ function BodyMesh({ body, radius }: { body: BodyContent; radius: number }) {
   );
 }
 
+/**
+ * Moves the planet aside as the page scrolls past the hero, so the facts
+ * have room: right + smaller on wide screens, up + smaller on phones.
+ * Offsets are fractions of the visible frame at the planet's depth.
+ */
+function ScrollDrift({
+  children,
+  cameraZ,
+  fov,
+}: {
+  children: React.ReactNode;
+  cameraZ: number;
+  fov: number;
+}) {
+  const group = useRef<THREE.Group>(null);
+  const eased = useRef(0);
+  const { size } = useThree();
+
+  useFrame((_, delta) => {
+    const g = group.current;
+    if (!g) return;
+    const vh = window.innerHeight || 1;
+    const target = Math.min(1, Math.max(0, window.scrollY / vh));
+    // Smooth toward the scroll position (frame-rate independent)
+    eased.current += (target - eased.current) * (1 - Math.exp(-delta * 6));
+    const p = eased.current;
+    const t = p * p * (3 - 2 * p); // smoothstep
+
+    const aspect = size.width / Math.max(1, size.height);
+    const halfH = Math.tan(THREE.MathUtils.degToRad(fov / 2)) * cameraZ;
+    const halfW = halfH * aspect;
+    const wide = aspect > 1.1;
+
+    g.position.x = wide ? t * halfW * 0.5 : 0;
+    g.position.y = wide ? 0 : t * halfH * 0.62;
+    g.scale.setScalar(1 - t * (wide ? 0.38 : 0.5));
+  });
+
+  return <group ref={group}>{children}</group>;
+}
+
 type PlanetFlySceneProps = {
   body: BodyContent;
   exiting?: boolean;
@@ -195,7 +236,9 @@ export function PlanetFlyScene({
           />
         </Suspense>
         <Suspense fallback={null}>
-          <BodyMesh body={body} radius={meshRadius} />
+          <ScrollDrift cameraZ={cameraPosition[2]} fov={cameraFov}>
+            <BodyMesh body={body} radius={meshRadius} />
+          </ScrollDrift>
         </Suspense>
       </Canvas>
     </div>

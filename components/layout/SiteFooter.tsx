@@ -29,24 +29,16 @@ export function SiteFooter() {
       />
 
       <div className="relative mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-12">
-        <p className="font-nav text-[0.68rem] uppercase tracking-[0.4em] text-accent">
+        <p className="font-nav text-[0.68rem] uppercase tracking-[0.22em] text-accent">
           Gettysburg College
         </p>
 
         {/* Title + blurb side by side */}
         <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-12">
-          <h2 className="shrink-0 leading-none">
-            <span className="block font-mono text-[0.7rem] uppercase tracking-[0.55em] text-star/55 sm:text-xs">
-              Planet
-            </span>
-            <span className="mt-1 block font-display text-[clamp(2.75rem,7vw,4.25rem)] font-medium tracking-[-0.04em] text-accent-warm drop-shadow-[0_0_32px_rgba(240,192,106,0.28)]">
+          <h2 className="shrink-0 font-display text-[clamp(3rem,8vw,5rem)] leading-none">
+            <span className="text-star">Planet</span>{" "}
+            <span className="italic text-accent-warm drop-shadow-[0_0_32px_rgba(240,192,106,0.28)]">
               Walk
-              <span
-                aria-hidden
-                className="ml-1 inline-block align-super font-mono text-[0.55em] tracking-normal text-accent"
-              >
-                ☉
-              </span>
             </span>
           </h2>
 
@@ -58,7 +50,7 @@ export function SiteFooter() {
 
         {/* Compact path */}
         <div className="mt-8 flex items-center gap-3 sm:gap-5">
-          <p className="shrink-0 font-nav text-[0.65rem] uppercase tracking-[0.26em] text-accent-warm">
+          <p className="shrink-0 font-nav text-[0.65rem] uppercase tracking-[0.16em] text-accent-warm">
             Masters Hall
           </p>
           <div
@@ -68,7 +60,7 @@ export function SiteFooter() {
             <span className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent-warm" />
             <span className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent" />
           </div>
-          <p className="shrink-0 font-nav text-[0.65rem] uppercase tracking-[0.26em] text-accent">
+          <p className="shrink-0 font-nav text-[0.65rem] uppercase tracking-[0.16em] text-accent">
             Observatory
           </p>
         </div>
@@ -86,7 +78,7 @@ export function SiteFooter() {
                 ) : null}
                 <Link
                   href={item.href}
-                  className="font-nav text-[0.72rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
+                  className="font-nav text-[0.72rem] uppercase tracking-[0.14em] text-foreground-muted transition-colors hover:text-star"
                 >
                   {item.label}
                 </Link>

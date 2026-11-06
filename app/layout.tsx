@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist_Mono, Instrument_Serif, Space_Grotesk } from "next/font/google";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { SiteShell } from "@/components/layout/SiteShell";
 import "./globals.css";
@@ -11,6 +11,15 @@ import "./globals.css";
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
+  display: "swap",
+});
+
+/** Display face for big titles — planet names, page headings, wordmark */
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -54,10 +63,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body
-        className={`${spaceGrotesk.variable} ${geistMono.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`dark ${spaceGrotesk.variable} ${instrumentSerif.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased">
         <AppProviders>
           <SiteShell>{children}</SiteShell>
         </AppProviders>

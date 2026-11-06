@@ -46,7 +46,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "The center of the planetarium",
     heroFact:
       "On the campus walk, the journey begins with the Sun, located in the center of the Gettysburg College planetarium.",
-    tileImage: "/tiles/sun.png",
+    tileImage: "/tiles/cut/sun.jpg",
     tileCaption: "7×5″ vinyl tile · Solar disc",
     texture: "/textures/sun.jpg",
     color: "#ffcc66",
@@ -72,7 +72,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "The wall of the planetarium",
     heroFact:
       "On the campus walk, Mercury's marker is mounted on the wall of the planetarium — the first stop outward from the Sun.",
-    tileImage: "/tiles/mercury.png",
+    tileImage: "/tiles/cut/mercury.jpg",
     tileCaption: "7×5″ vinyl tile · Caloris Basin",
     texture: "/textures/mercury.jpg",
     color: "#a8a29e",
@@ -97,7 +97,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "The Physics and Astronomy Atrium",
     heroFact:
       "Venus is the hottest planet — about 870°F at the surface, hotter than Mercury even though it orbits nearly twice as far from the Sun.",
-    tileImage: "/tiles/venus.png",
+    tileImage: "/tiles/cut/venus.jpg",
     tileCaption: "7×5″ vinyl tile · Cloud swirls",
     texture: "/textures/venus.jpg",
     color: "#e8c07a",
@@ -122,7 +122,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "Physics Student Lounge",
     heroFact:
       "\"That's home. That's us. On it everyone you love, everyone you know, everyone you ever heard of, every human being who ever was, lived out their lives.\" — Carl Sagan",
-    tileImage: "/tiles/earth.png",
+    tileImage: "/tiles/cut/earth.jpg",
     tileCaption: "7×5″ vinyl tile · Americas / Atlantic",
     texture: "/textures/earth.jpg",
     color: "#3b82c4",
@@ -146,7 +146,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     subtitle: "The Red Planet",
     markerLocation: "Plank Basement",
     heroFact: "Mars is red because it's rusty — iron-oxide dust coats the surface and tints its sky a pale butterscotch.",
-    tileImage: "/tiles/mars.png",
+    tileImage: "/tiles/cut/mars.jpg",
     tileCaption: "7×5″ vinyl tile · Valles Marineris",
     texture: "/textures/mars.jpg",
     color: "#c45c3a",
@@ -172,7 +172,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "Glatfelter Lodge",
     heroFact:
       "On the campus walk, Ceres is marked at Glatfelter Lodge — bridging the rocky inner worlds and the gas giants.",
-    tileImage: "/tiles/ceres.png",
+    tileImage: "/tiles/cut/ceres.jpg",
     tileCaption: "7×5″ vinyl tile · Ceres",
     texture: "/textures/ceres.jpg",
     color: "#c4b5a0",
@@ -197,7 +197,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "Science Center Walkway",
     heroFact:
       "Jupiter is more than twice as massive as all the other planets in the solar system combined.",
-    tileImage: "/tiles/jupiter.png",
+    tileImage: "/tiles/cut/jupiter.jpg",
     tileCaption: "7×5″ vinyl tile · Great Red Spot",
     texture: "/textures/jupiter.jpg",
     color: "#d4a574",
@@ -221,7 +221,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     subtitle: "Ringed giant",
     markerLocation: "Glatfelter basement",
     heroFact: "Saturn has more known moons than any other planet — over 270 and counting.",
-    tileImage: "/tiles/saturn.png",
+    tileImage: "/tiles/cut/saturn.jpg",
     tileCaption: "7×5″ vinyl tile · Cloud bands",
     texture: "/textures/saturn.jpg",
     color: "#e6d5a8",
@@ -246,7 +246,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "Outside Schmucker Ceramics Studio",
     heroFact:
       "Because Uranus is tipped on its side, each pole gets about 42 years of nonstop sunlight, then 42 years of darkness.",
-    tileImage: "/tiles/uranus.png",
+    tileImage: "/tiles/cut/uranus.jpg",
     tileCaption: "7×5″ vinyl tile · Atmosphere",
     texture: "/textures/uranus.jpg",
     color: "#7ec8c8",
@@ -270,7 +270,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     subtitle: "Windiest world",
     markerLocation: "Outside Admissions",
     heroFact: "Neptune was found with math before anyone saw it — astronomers predicted its position from tugs on Uranus's orbit and spotted it in 1846.",
-    tileImage: "/tiles/neptune.png",
+    tileImage: "/tiles/cut/neptune.jpg",
     tileCaption: "7×5″ vinyl tile · Dark Spot region",
     texture: "/textures/neptune.jpg",
     color: "#4169e1",
@@ -295,7 +295,7 @@ export const BODY_CONTENT: Record<BodySlug, BodyContent> = {
     markerLocation: "Gettysburg College Observatory",
     heroFact:
       "The campus walk ends at the Gettysburg College Observatory — Pluto's physical station.",
-    tileImage: "/tiles/pluto.png",
+    tileImage: "/tiles/cut/pluto.jpg",
     tileCaption: "7×5″ vinyl tile · Heart glacier",
     texture: "/textures/pluto.jpg",
     color: "#c4b5a0",

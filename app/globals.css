@@ -35,7 +35,7 @@
    * Typography — swap fonts in app/layout.tsx, then remap these aliases.
    * Components use font-display / font-nav / font-sans so one change updates all.
    */
-  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument-serif), ui-serif, Georgia, serif;
   --font-body: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-nav: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 
@@ -94,7 +94,7 @@ html[data-theme="day"] {
   --color-glass: var(--glass);
   --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument-serif), ui-serif, Georgia, serif;
   --font-nav: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -474,4 +474,18 @@ html.map-light .map-page-light {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Serif display titles: no faux-bold, gentler tracking than the old grotesk */
+.font-display {
+  font-weight: 400 !important;
+  letter-spacing: -0.01em;
+}
+
+/* Planet page scroll cue — line draws down, then fades */
+@keyframes scrollcue {
+  0% { transform: scaleY(0); opacity: 0; }
+  30% { opacity: 1; }
+  70% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
 }

@@ -95,7 +95,7 @@ export function LocationPhotoLightbox({
               transition={{ delay: 0.08, duration: 0.28 }}
             >
               <div>
-                <p className="font-nav text-[0.72rem] uppercase tracking-[0.28em] text-white/55">
+                <p className="font-nav text-[0.72rem] uppercase tracking-[0.16em] text-white/55">
                   Location Picture · Stop {stop.index + 1}
                 </p>
                 <p className="mt-1 font-display text-xl text-white sm:text-2xl">

@@ -194,7 +194,7 @@ export function HeroOverlay({
             aria-hidden
             className="h-px w-6 bg-gradient-to-r from-transparent to-accent/70 sm:w-12"
           />
-          <p className="font-nav text-[0.68rem] uppercase tracking-[0.32em] text-accent sm:text-[0.7rem] sm:tracking-[0.4em]">
+          <p className="font-nav text-[0.68rem] uppercase tracking-[0.2em] text-accent sm:text-[0.7rem] sm:tracking-[0.22em]">
             {SITE.campus}
           </p>
           <span
@@ -203,16 +203,16 @@ export function HeroOverlay({
           />
         </div>
 
-        <h1 className="font-display text-[clamp(2.35rem,11vw,5.5rem)] font-medium tracking-[-0.04em] leading-none">
+        <h1 className="font-display text-[clamp(3.25rem,15vw,7.5rem)] leading-[0.9]">
           <span className="text-star drop-shadow-[0_0_40px_rgba(245,247,255,0.2)]">
             Planet
           </span>{" "}
-          <span className="text-accent-warm drop-shadow-[0_0_48px_rgba(240,192,106,0.28)]">
+          <span className="italic text-accent-warm drop-shadow-[0_0_48px_rgba(240,192,106,0.28)]">
             Walk
           </span>
         </h1>
 
-        <p className="mt-5 max-w-[17rem] text-sm leading-relaxed text-foreground-muted sm:mt-8 sm:max-w-md sm:text-base">
+        <p className="mt-4 max-w-[18rem] font-display text-xl italic leading-snug text-foreground-muted sm:mt-6 sm:max-w-md sm:text-2xl">
           {SITE.tagline}
         </p>
       </div>
@@ -221,8 +221,8 @@ export function HeroOverlay({
         ref={scrollPromptRef}
         className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 flex w-full -translate-x-1/2 flex-col items-center gap-2 sm:bottom-10 sm:gap-3"
       >
-        <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent/90 sm:text-[0.72rem] sm:tracking-[0.38em]">
-          <span className="sm:hidden">Swipe up to enter</span>
+        <p className="font-display text-lg italic text-accent/95 sm:text-xl">
+          <span className="sm:hidden">Swipe up to enter the galaxy</span>
           <span className="hidden sm:inline">Scroll to enter the galaxy</span>
         </p>
         <span
@@ -233,7 +233,7 @@ export function HeroOverlay({
 
       <p
         ref={midTextRef}
-        className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 w-full -translate-x-1/2 text-center font-nav text-[0.68rem] uppercase tracking-[0.28em] text-foreground-muted/90 sm:bottom-10 sm:text-[0.72rem] sm:tracking-[0.38em]"
+        className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 w-full -translate-x-1/2 text-center font-display text-lg italic text-foreground-muted sm:bottom-10 sm:text-xl"
       >
         Diving through the Milky Way
       </p>
@@ -242,7 +242,7 @@ export function HeroOverlay({
         ref={endSectionRef}
         className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 flex w-full -translate-x-1/2 flex-col items-center gap-2 sm:bottom-10 sm:gap-3"
       >
-        <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent-warm/95 sm:text-[0.72rem] sm:tracking-[0.38em]">
+        <p className="font-display text-lg italic text-accent-warm sm:text-xl">
           <span className="sm:hidden">Tap any world to begin</span>
           <span className="hidden sm:inline">Click any world to begin</span>
         </p>

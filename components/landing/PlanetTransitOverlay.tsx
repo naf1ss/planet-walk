@@ -64,10 +64,10 @@ export function PlanetTransitOverlay({
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)", y: 0 }}
             transition={{ duration: 0.75, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="font-nav text-[0.72rem] uppercase tracking-[0.38em] text-accent">
+            <p className="font-display text-xl italic text-accent sm:text-2xl">
               Entering orbit
             </p>
-            <p className="font-display mt-3 text-4xl text-star sm:text-6xl md:text-7xl">
+            <p className="font-display mt-1 text-6xl text-star sm:text-8xl md:text-9xl">
               {label}
             </p>
           </motion.div>

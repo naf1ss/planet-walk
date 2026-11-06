@@ -79,7 +79,7 @@ export function WalkTracker() {
         ) : null}
       </AnimatePresence>
 
-      <p className="font-nav text-[0.7rem] uppercase tracking-[0.32em] text-accent">
+      <p className="font-nav text-[0.7rem] uppercase tracking-[0.2em] text-accent">
         Passport
       </p>
       <h1 className="font-display mt-3 text-3xl text-star sm:text-5xl">
@@ -145,7 +145,7 @@ export function WalkTracker() {
                 <button
                   type="button"
                   onClick={startWalk}
-                  className="inline-flex min-h-12 items-center gap-2 rounded-sm bg-accent px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-void transition-opacity hover:opacity-90"
+                  className="inline-flex min-h-12 items-center gap-2 rounded-sm bg-accent px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-void transition-opacity hover:opacity-90"
                 >
                   <Play className="h-3.5 w-3.5" aria-hidden />
                   {hasStarted ? "Resume Walk" : "Start Walk"}
@@ -154,7 +154,7 @@ export function WalkTracker() {
                 <button
                   type="button"
                   onClick={pauseWalk}
-                  className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border bg-glass px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-star transition-colors hover:border-accent"
+                  className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border bg-glass px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-star transition-colors hover:border-accent"
                 >
                   <Pause className="h-3.5 w-3.5" aria-hidden />
                   Pause
@@ -163,7 +163,7 @@ export function WalkTracker() {
               <button
                 type="button"
                 onClick={resetWalk}
-                className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
+                className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-foreground-muted transition-colors hover:text-star"
               >
                 <RotateCcw className="h-3.5 w-3.5" aria-hidden />
                 Reset
@@ -174,7 +174,7 @@ export function WalkTracker() {
       </AnimatePresence>
 
       <section className="mt-12">
-        <p className="font-nav text-[0.72rem] uppercase tracking-[0.28em] text-accent">
+        <p className="font-nav text-[0.72rem] uppercase tracking-[0.16em] text-accent">
           Planetary stops
         </p>
         <ul className="mt-5 space-y-3">
@@ -228,7 +228,7 @@ export function WalkTracker() {
 
                   <div className="min-w-0 flex-1 py-0.5">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-nav text-[0.65rem] uppercase tracking-[0.2em] text-foreground-muted">
+                      <span className="font-nav text-[0.65rem] uppercase tracking-[0.14em] text-foreground-muted">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <p className="font-display text-lg leading-tight text-star sm:text-xl">
@@ -312,14 +312,14 @@ function CompletionSummary({
       <div className="relative">
         <p
           data-reveal
-          className="inline-flex items-center gap-2 font-nav text-[0.72rem] uppercase tracking-[0.28em] text-accent-warm"
+          className="inline-flex items-center gap-2 font-nav text-[0.72rem] uppercase tracking-[0.16em] text-accent-warm"
         >
           <Sparkles className="h-3.5 w-3.5" aria-hidden />
           Journey complete
         </p>
         <h2
           data-reveal
-          className="font-display mt-3 text-3xl tracking-tight text-star sm:text-4xl"
+          className="font-display mt-3 text-4xl text-star sm:text-5xl"
         >
           Congratulations
         </h2>
@@ -364,14 +364,14 @@ function CompletionSummary({
         <div data-reveal className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/#explore"
-            className="inline-flex min-h-12 items-center rounded-sm bg-accent px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-void transition-opacity hover:opacity-90"
+            className="inline-flex min-h-12 items-center rounded-sm bg-accent px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-void transition-opacity hover:opacity-90"
           >
             Back to Solar System
           </Link>
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
+            className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-foreground-muted transition-colors hover:text-star"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden />
             Start a new walk
@@ -412,7 +412,7 @@ function WalkMissionDebrief({ elapsedMs }: { elapsedMs: number }) {
       data-reveal
       className="mt-4 rounded-sm border border-accent/25 bg-accent/5 px-4 py-4"
     >
-      <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent">
+      <p className="font-nav text-[0.68rem] uppercase tracking-[0.16em] text-accent">
         Mission debrief
       </p>
       <ul className="mt-3 space-y-2.5 text-sm leading-relaxed text-foreground-muted">
@@ -505,12 +505,12 @@ function IncompleteOrbitNudge({
               <AlertCircle className="h-5 w-5" strokeWidth={2} aria-hidden />
             </div>
             <div className="min-w-0 pt-0.5">
-              <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-[#ff8a90]">
+              <p className="font-nav text-[0.68rem] uppercase tracking-[0.16em] text-[#ff8a90]">
                 Incomplete orbit
               </p>
               <h2
                 id="incomplete-orbit-title"
-                className="font-display mt-2 text-2xl tracking-tight text-star"
+                className="font-display mt-2 text-3xl text-star"
               >
                 Not so fast
               </h2>
@@ -526,7 +526,7 @@ function IncompleteOrbitNudge({
           </div>
 
           <div className="mt-5 rounded-sm border border-[#f07178]/20 bg-black/30 px-3 py-3">
-            <p className="font-nav text-[0.65rem] uppercase tracking-[0.24em] text-[#ff8a90]/90">
+            <p className="font-nav text-[0.65rem] uppercase tracking-[0.14em] text-[#ff8a90]/90">
               Still missing
             </p>
             <ul className="mt-3 flex flex-wrap gap-2">
@@ -547,7 +547,7 @@ function IncompleteOrbitNudge({
           <button
             type="button"
             onClick={onDismiss}
-            className="mt-6 flex min-h-12 w-full items-center justify-center rounded-sm border border-[#f07178]/50 bg-[#e85a62]/20 px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-[#ffc4c7] transition-colors hover:border-[#f07178] hover:bg-[#e85a62]/30 hover:text-star"
+            className="mt-6 flex min-h-12 w-full items-center justify-center rounded-sm border border-[#f07178]/50 bg-[#e85a62]/20 px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-[#ffc4c7] transition-colors hover:border-[#f07178] hover:bg-[#e85a62]/30 hover:text-star"
           >
             Got it — keep walking
           </button>
@@ -614,12 +614,12 @@ function Stat({
         className,
       )}
     >
-      <p className="font-nav text-[0.65rem] uppercase tracking-[0.16em] text-accent sm:text-[0.68rem] sm:tracking-[0.2em]">
+      <p className="font-nav text-[0.65rem] uppercase tracking-[0.16em] text-accent sm:text-[0.68rem] sm:tracking-[0.14em]">
         {label}
       </p>
       <p
         className={cn(
-          "mt-1.5 font-display tracking-tight text-star sm:mt-2",
+          "mt-1.5 font-display text-star sm:mt-2",
           mono
             ? "text-[0.8rem] tabular-nums leading-tight sm:text-lg"
             : "text-lg sm:text-2xl",

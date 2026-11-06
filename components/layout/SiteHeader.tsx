@@ -125,9 +125,20 @@ export function SiteHeader() {
 
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
+      {/* Frosted band behind the header once the page scrolls, so text
+          underneath never collides with the brand or nav. Hidden on the
+          home page, where the 3D scene is the backdrop. */}
+      <div
+        aria-hidden
+        className={cn(
+          "absolute inset-x-0 top-0 h-[calc(100%+0.75rem)] backdrop-blur-xl transition-opacity duration-500 [mask-image:linear-gradient(to_bottom,black_65%,transparent)]",
+          light ? "bg-[#eef2f6]/80" : "bg-[#03040a]/70",
+          scrolled && pathname !== "/" ? "opacity-100" : "opacity-0",
+        )}
+      />
       <div
         className={cn(
-          "mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] transition-all duration-500 sm:gap-3 sm:px-6 sm:pt-5",
+          "relative mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))] transition-all duration-500 sm:gap-3 sm:px-6 sm:pt-5",
           scrolled && "sm:pt-3",
           light && "max-w-[90rem]",
         )}
@@ -153,7 +164,7 @@ export function SiteHeader() {
           <span className="flex min-w-0 flex-col gap-0.5">
             <span
               className={cn(
-                "hidden font-nav text-[0.65rem] uppercase tracking-[0.32em] transition-colors sm:block",
+                "hidden font-nav text-[0.65rem] uppercase tracking-[0.2em] transition-colors sm:block",
                 light
                   ? "text-[#3b82c4] group-hover:text-[#1d4ed8]"
                   : "text-accent/80 group-hover:text-accent",
@@ -163,7 +174,7 @@ export function SiteHeader() {
             </span>
             <span
               className={cn(
-                "truncate font-display text-[0.9rem] font-medium tracking-tight transition-colors sm:text-base",
+                "truncate font-display text-[1.15rem] leading-none transition-colors sm:text-[1.3rem]",
                 light
                   ? "text-[#121826] group-hover:text-[#1d4ed8]"
                   : "text-star group-hover:text-accent",
@@ -196,7 +207,7 @@ export function SiteHeader() {
                 href={item.href}
                 onClick={(e) => onNavClick(item, e)}
                 className={cn(
-                  "relative rounded-full px-4 py-2 font-nav text-[0.72rem] uppercase tracking-[0.22em] transition-colors",
+                  "relative rounded-full px-4 py-2 font-nav text-[0.72rem] uppercase tracking-[0.14em] transition-colors",
                   light
                     ? active
                       ? "text-[#121826]"
@@ -227,7 +238,7 @@ export function SiteHeader() {
             href={TRACKER_ITEM.href}
             onClick={() => setOpen(false)}
             className={cn(
-              "inline-flex min-h-10 items-center gap-2 rounded-full px-3 py-2 font-nav text-[0.68rem] font-medium uppercase tracking-[0.18em] transition-all sm:px-5 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.2em]",
+              "inline-flex min-h-10 items-center gap-2 rounded-full px-3 py-2 font-nav text-[0.68rem] font-medium uppercase tracking-[0.18em] transition-all sm:px-5 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.14em]",
               light
                 ? activeFor(TRACKER_ITEM)
                   ? "bg-[#1d4ed8] text-white shadow-[0_0_24px_rgba(29,78,216,0.25)]"
@@ -298,7 +309,7 @@ export function SiteHeader() {
             >
               <p
                 className={cn(
-                  "font-mono text-[0.65rem] uppercase tracking-[0.4em]",
+                  "font-mono text-[0.65rem] uppercase tracking-[0.22em]",
                   light ? "text-[#5b6577]" : "text-star/45",
                 )}
               >
@@ -332,7 +343,7 @@ export function SiteHeader() {
                             : "text-foreground-muted hover:bg-white/5 hover:text-star",
                       )}
                     >
-                      <span className="font-nav text-[0.7rem] uppercase tracking-[0.22em]">
+                      <span className="font-nav text-[0.7rem] uppercase tracking-[0.14em]">
                         {item.label}
                       </span>
                       {active ? (

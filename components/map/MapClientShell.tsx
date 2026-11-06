@@ -40,10 +40,10 @@ export function MapClientShell() {
       <div className="map-page-shell flex min-h-[calc(100dvh-4.75rem)] flex-col gap-3 sm:gap-5 lg:h-[calc(100dvh-5.25rem)] lg:min-h-0 lg:flex-row lg:gap-0">
         <aside className="flex w-full shrink-0 flex-col lg:w-[22rem] lg:border-r lg:border-[#d5dde8]">
           <div className="border-b border-[#d5dde8] px-4 py-3 sm:px-6 sm:py-5">
-            <p className="font-nav text-[0.68rem] uppercase tracking-[0.32em] text-[#3b82c4] sm:text-[0.72rem]">
+            <p className="font-nav text-[0.68rem] uppercase tracking-[0.2em] text-[#3b82c4] sm:text-[0.72rem]">
               Campus route
             </p>
-            <h1 className="mt-1.5 font-display text-2xl tracking-tight text-[#121826] sm:mt-2 sm:text-4xl">
+            <h1 className="mt-1.5 font-display text-3xl text-[#121826] sm:mt-2 sm:text-5xl">
               Planet Walk Map
             </h1>
             <p className="mt-1.5 hidden text-sm leading-relaxed text-[#5b6577] sm:mt-2 sm:block">
@@ -90,7 +90,7 @@ export function MapClientShell() {
                       {stop.index + 1}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-display text-sm font-medium">
+                      <span className="block truncate font-display text-base">
                         {stop.name}
                       </span>
                       <span
@@ -114,7 +114,7 @@ export function MapClientShell() {
             </p>
             <Link
               href="/tracker"
-              className="mt-2 inline-flex font-nav text-[0.72rem] uppercase tracking-[0.22em] text-[#1d4ed8] transition-colors hover:text-[#1e3a8a]"
+              className="mt-2 inline-flex font-nav text-[0.72rem] uppercase tracking-[0.14em] text-[#1d4ed8] transition-colors hover:text-[#1e3a8a]"
             >
               Track your walk →
             </Link>
@@ -136,7 +136,7 @@ export function MapClientShell() {
           </p>
           <Link
             href="/tracker"
-            className="inline-flex min-h-10 items-center font-nav text-[0.72rem] uppercase tracking-[0.22em] text-[#1d4ed8]"
+            className="inline-flex min-h-10 items-center font-nav text-[0.72rem] uppercase tracking-[0.14em] text-[#1d4ed8]"
           >
             Track →
           </Link>
