@@ -210,7 +210,7 @@ html.map-light .map-page-light {
 }
 
 .campus-map-root .leaflet-container {
-  background: #e8edf3;
+  background: #f2f3f0;
   font-family: var(--font-body);
 }
 
@@ -243,31 +243,89 @@ html.map-light .map-page-light {
 }
 
 .campus-stop-pin {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
   border-radius: 999px;
-  background: #fff;
-  color: #121826;
+  /* lit sphere in the planet's colour */
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.75), transparent 42%),
+    radial-gradient(circle at 50% 50%, var(--stop-color, #3b82c4) 55%, color-mix(in srgb, var(--stop-color, #3b82c4) 55%, #0b1020) 100%);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 14px color-mix(in srgb, var(--stop-color, #3b82c4) 70%, transparent),
+    0 6px 14px rgba(18, 24, 38, 0.28);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.campus-stop-pin__num {
+  position: relative;
+  color: #fff;
   font-size: 11px;
   font-weight: 700;
   font-family: var(--font-nav);
-  box-shadow:
-    0 0 0 2.5px var(--stop-color, #3b82c4),
-    0 6px 16px rgba(18, 24, 38, 0.22);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 6px rgba(0, 0, 0, 0.35);
 }
 
-.campus-stop-pin.is-selected {
-  transform: scale(1.08);
-  background: #121826;
-  color: #fff;
-  box-shadow:
-    0 0 0 3px var(--stop-color, #3b82c4),
-    0 0 0 6px rgba(29, 78, 216, 0.2),
-    0 10px 24px rgba(18, 24, 38, 0.28);
+.campus-stop-marker:hover .campus-stop-pin {
+  transform: scale(1.12);
+}
+
+.campus-stop-pin.is-selected .campus-stop-pin__num {
+  font-size: 13px;
+}
+
+/* expanding ring around the selected stop */
+.campus-stop-pin.is-selected::before,
+.campus-stop-pin.is-selected::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  border: 2px solid var(--stop-color, #3b82c4);
+  animation: stop-pulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  pointer-events: none;
+}
+
+.campus-stop-pin.is-selected::after {
+  animation-delay: 1.1s;
+}
+
+@keyframes stop-pulse {
+  0% { transform: scale(1); opacity: 0.85; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Muted, cool-grey OSM tiles so the route and planet pins carry the colour */
+.map-tiles-muted {
+  filter: grayscale(0.85) sepia(0.12) hue-rotate(185deg) saturate(0.7)
+    brightness(1.06) contrast(0.86);
+}
+
+/* light dots streaming Sun → Pluto along the route */
+.walk-path-flow {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.walk-path-flow.is-on {
+  opacity: 1;
+  animation: walk-flow 1.6s linear infinite;
+}
+
+@keyframes walk-flow {
+  to { stroke-dashoffset: -18.1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .walk-path-flow.is-on,
+  .campus-stop-pin.is-selected::before,
+  .campus-stop-pin.is-selected::after {
+    animation: none;
+  }
 }
 
 .campus-map-root .leaflet-popup-content-wrapper {

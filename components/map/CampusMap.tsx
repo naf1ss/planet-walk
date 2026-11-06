@@ -31,10 +31,98 @@ function FitWalkBounds() {
 
   useEffect(() => {
     const bounds = L.latLngBounds(WALK_PATH);
-    map.fitBounds(bounds, { padding: [56, 56], maxZoom: 17 });
+    map.fitBounds(bounds, { padding: [56, 56], maxZoom: 17, animate: false });
   }, [map]);
 
   return null;
+}
+
+const DRAW_MS = 2600;
+
+/**
+ * Walk route: soft glow + solid core that draws itself Sun → Pluto on load,
+ * then a stream of light dots flowing outward along it.
+ */
+function WalkPath() {
+  const glowRef = useRef<L.Polyline>(null);
+  const coreRef = useRef<L.Polyline>(null);
+  const flowRef = useRef<L.Polyline>(null);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const paths = [glowRef.current, coreRef.current]
+      .map((l) => l?.getElement() as SVGPathElement | undefined)
+      .filter((el): el is SVGPathElement => Boolean(el));
+    const flow = flowRef.current?.getElement() as SVGPathElement | undefined;
+
+    if (reduce) {
+      flow?.classList.add("is-on");
+      return;
+    }
+
+    for (const el of paths) {
+      const len = el.getTotalLength();
+      el.style.strokeDasharray = `${len}`;
+      el.style.strokeDashoffset = `${len}`;
+      el.getBoundingClientRect(); // commit start state before transitioning
+      el.style.transition = `stroke-dashoffset ${DRAW_MS}ms cubic-bezier(0.65, 0, 0.35, 1)`;
+      el.style.strokeDashoffset = "0";
+    }
+
+    const done = window.setTimeout(() => {
+      // Leaflet redraws paths on zoom; drop the dash trick once drawn.
+      for (const el of paths) {
+        el.style.transition = "";
+        el.style.strokeDasharray = "";
+        el.style.strokeDashoffset = "";
+      }
+      flow?.classList.add("is-on");
+    }, DRAW_MS + 100);
+
+    return () => window.clearTimeout(done);
+  }, []);
+
+  return (
+    <>
+      <Polyline
+        ref={glowRef}
+        positions={WALK_PATH}
+        interactive={false}
+        pathOptions={{
+          color: "#3b82f6",
+          weight: 14,
+          opacity: 0.16,
+          lineCap: "round",
+          lineJoin: "round",
+        }}
+      />
+      <Polyline
+        ref={coreRef}
+        positions={WALK_PATH}
+        interactive={false}
+        pathOptions={{
+          color: "#1d4ed8",
+          weight: 3,
+          opacity: 0.85,
+          lineCap: "round",
+          lineJoin: "round",
+        }}
+      />
+      <Polyline
+        ref={flowRef}
+        positions={WALK_PATH}
+        interactive={false}
+        pathOptions={{
+          className: "walk-path-flow",
+          color: "#ffffff",
+          weight: 2.5,
+          opacity: 0.95,
+          dashArray: "0.1 18",
+          lineCap: "round",
+        }}
+      />
+    </>
+  );
 }
 
 function FocusSelected({
@@ -59,19 +147,21 @@ function FocusSelected({
   return null;
 }
 
+/** Each stop is a tiny planet in its own colour; the selected one pulses. */
 function stopIcon(stop: CampusMapStop, selected: boolean) {
-  const size = selected ? 34 : 28;
+  const size = selected ? 36 : 28;
   return L.divIcon({
     className: "campus-stop-marker",
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -size / 2],
-    html: `<span class="campus-stop-pin${selected ? " is-selected" : ""}" style="--stop-color:${stop.color}">${stop.index + 1}</span>`,
+    popupAnchor: [0, -size / 2 - 2],
+    html: `<span class="campus-stop-pin${selected ? " is-selected" : ""}" style="--stop-color:${stop.color}"><span class="campus-stop-pin__num">${stop.index + 1}</span></span>`,
   });
 }
 
 /**
- * Light campus map — OSM basemap (no API key), walk path, numbered stop markers.
+ * Light campus map — muted OSM basemap (no API key), animated walk
+ * path, planet-coloured stop markers.
  */
 export function CampusMap({
   selectedSlug,
@@ -101,41 +191,25 @@ export function CampusMap({
         scrollWheelZoom
         className="h-full w-full"
       >
+        {/* OpenStreetMap tiles (free, no key), muted in CSS (.map-tiles-muted)
+            so the walk path and planet pins carry the colour */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          className="map-tiles-muted"
           maxZoom={19}
         />
 
         <FitWalkBounds />
         <FocusSelected stop={selected} markerRefs={markerRefs} />
-
-        <Polyline
-          positions={WALK_PATH}
-          pathOptions={{
-            color: "#1d4ed8",
-            weight: 3.5,
-            opacity: 0.55,
-            lineCap: "round",
-            lineJoin: "round",
-          }}
-        />
-        <Polyline
-          positions={WALK_PATH}
-          pathOptions={{
-            color: "#93c5fd",
-            weight: 1.5,
-            opacity: 0.9,
-            dashArray: "2 10",
-            lineCap: "round",
-          }}
-        />
+        <WalkPath />
 
         {CAMPUS_MAP_STOPS.map((stop) => (
           <Marker
             key={stop.slug}
             position={[stop.lat, stop.lng]}
             icon={icons[stop.slug]}
+            zIndexOffset={stop.slug === selectedSlug ? 1000 : 0}
             ref={(ref) => {
               if (ref) markerRefs.current[stop.slug] = ref;
             }}
