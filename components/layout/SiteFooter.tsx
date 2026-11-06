@@ -1,15 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/nav";
 
 /**
- * Site footer — compact brand row + path line, shown on every page.
- * Solid background so it covers the fixed 3D canvas on home and planet pages.
+ * Site footer — compact brand row + path line, shown on every page except home.
+ * Solid background so it covers the fixed 3D canvas on planet pages.
  */
 export function SiteFooter() {
+  const pathname = usePathname();
   const year = new Date().getFullYear();
+
+  if (pathname === "/") return null;
 
   const destinations = NAV_ITEMS.filter((item) => item.id !== "planet-walk");
 
