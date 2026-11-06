@@ -102,26 +102,43 @@ html[data-theme="day"] {
 *::before,
 *::after {
   box-sizing: border-box;
-  cursor: var(--cursor-rocket), auto !important;
 }
 
-a,
+/* Custom rocket cursor only on fine pointers (desktop) — phones keep native touch cursors */
+@media (hover: hover) and (pointer: fine) {
+  *,
+  *::before,
+  *::after {
+    cursor: var(--cursor-rocket), auto !important;
+  }
+
+  a,
+  button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  label[for],
+  select,
+  summary,
+  .cursor-pointer {
+    cursor: var(--cursor-rocket-hover), pointer !important;
+  }
+}
+
 button,
-[role="button"],
-input[type="submit"],
-input[type="button"],
-input[type="reset"],
-label[for],
-select,
-summary,
-.cursor-pointer {
-  cursor: var(--cursor-rocket-hover), pointer !important;
+a,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 html {
   color-scheme: dark;
   /* auto — smooth scroll fights GSAP ScrollTrigger scrub */
   scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html,
@@ -402,6 +419,46 @@ html.map-light .map-page-light {
     radial-gradient(1.5px 1.5px at 45% 50%, rgba(110, 182, 255, 0.7), transparent),
     radial-gradient(1px 1px at 92% 25%, rgba(245, 247, 255, 0.65), transparent);
   background-size: 100% 100%;
+}
+
+/* Safe-area helpers for notched phones */
+.safe-px {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+.safe-pb {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* Horizontal stop chips on map — hide scrollbar, keep scroll */
+.map-stop-rail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.map-stop-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.map-stop-rail > li {
+  scroll-snap-align: start;
+}
+
+/* Leaflet touch targets */
+@media (max-width: 1023px) {
+  .campus-map-root .leaflet-control-zoom a {
+    width: 40px !important;
+    height: 40px !important;
+    line-height: 40px !important;
+    font-size: 18px !important;
+  }
+
+  .campus-map-popup {
+    max-width: min(16rem, 78vw);
+  }
 }
 
 /* Reduce motion for accessibility */

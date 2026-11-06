@@ -13,7 +13,7 @@ export const metadata: Metadata = {
  */
 export default function AboutPage() {
   return (
-    <main className="ui-layer relative mx-auto max-w-3xl px-5 pb-28 pt-28 sm:px-8">
+    <main className="ui-layer relative mx-auto max-w-3xl px-4 pb-[max(6rem,calc(4rem+env(safe-area-inset-bottom)))] pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pb-28 sm:pt-28">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgba(110,182,255,0.12),transparent_55%)]"
@@ -153,19 +153,19 @@ export default function AboutPage() {
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
             href="/#explore"
-            className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-star transition-colors hover:border-white/30 hover:bg-white/5"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-star transition-colors hover:border-white/30 hover:bg-white/5"
           >
             Explore
           </Link>
           <Link
             href="/map"
-            className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-star transition-colors hover:border-white/30 hover:bg-white/5"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-star transition-colors hover:border-white/30 hover:bg-white/5"
           >
             Map
           </Link>
           <Link
             href="/tracker"
-            className="inline-flex items-center justify-center rounded-full border border-accent-warm/40 bg-accent-warm/10 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-accent-warm transition-colors hover:border-accent-warm/60 hover:bg-accent-warm/20"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-accent-warm/40 bg-accent-warm/10 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-accent-warm transition-colors hover:border-accent-warm/60 hover:bg-accent-warm/20"
           >
             Track
           </Link>

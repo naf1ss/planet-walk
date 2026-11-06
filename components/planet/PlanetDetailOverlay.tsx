@@ -99,7 +99,7 @@ export function PlanetDetailOverlay({
                   delay: 0.3,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="mt-4 font-display text-4xl tracking-tight text-star drop-shadow-[0_2px_16px_rgba(0,0,0,0.9)] sm:text-6xl md:text-7xl"
+                className="mt-3 font-display text-[clamp(2rem,10vw,4.5rem)] tracking-tight text-star drop-shadow-[0_2px_16px_rgba(0,0,0,0.9)] sm:mt-4 sm:text-6xl md:text-7xl"
               >
                 {body.name}
               </motion.h1>
@@ -122,15 +122,15 @@ export function PlanetDetailOverlay({
                 {body.heroFact}
               </p>
 
-              <p className="mt-10 font-nav text-[0.65rem] uppercase tracking-[0.3em] text-foreground-muted/80 drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)]">
+              <p className="mt-8 font-nav text-[0.6rem] uppercase tracking-[0.24em] text-foreground-muted/80 drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)] sm:mt-10 sm:text-[0.65rem] sm:tracking-[0.3em]">
                 Scroll for more
               </p>
             </motion.div>
           </section>
 
           {/* Side-scroll panel — glass layout unchanged; heading renamed to Facts */}
-          <section className="relative flex h-[100dvh] w-screen shrink-0 flex-col justify-center overflow-y-auto border-l border-border bg-[rgba(3,4,10,0.94)] px-5 py-20 backdrop-blur-md sm:px-8">
-            <div className="mx-auto grid w-full max-w-5xl gap-14 lg:grid-cols-2 lg:items-start">
+          <section className="relative flex h-[100dvh] w-screen shrink-0 flex-col justify-center overflow-y-auto border-l border-border bg-[rgba(3,4,10,0.94)] px-4 py-16 backdrop-blur-md sm:px-8 sm:py-20 safe-pb">
+            <div className="mx-auto grid w-full max-w-5xl gap-10 sm:gap-14 lg:grid-cols-2 lg:items-start">
               <div>
                 <p className="font-nav text-[0.65rem] uppercase tracking-[0.28em] text-accent">
                   Campus marker
@@ -157,7 +157,7 @@ export function PlanetDetailOverlay({
                   type="button"
                   onClick={onBack}
                   disabled={exiting}
-                  className="mt-12 inline-flex items-center gap-2 rounded-sm border border-border bg-glass px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-star transition-colors hover:border-accent hover:text-accent disabled:cursor-wait disabled:opacity-60"
+                  className="mt-10 inline-flex min-h-12 items-center gap-2 rounded-sm border border-border bg-glass px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.22em] text-star transition-colors hover:border-accent hover:text-accent disabled:cursor-wait disabled:opacity-60 sm:mt-12"
                 >
                   ← Back to Solar System
                 </button>

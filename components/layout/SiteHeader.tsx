@@ -106,8 +106,8 @@ export function SiteHeader() {
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
       <div
         className={cn(
-          "mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 pt-4 transition-all duration-500 sm:px-6 sm:pt-5",
-          scrolled && "pt-3 sm:pt-3",
+          "mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] transition-all duration-500 sm:gap-3 sm:px-6 sm:pt-5",
+          scrolled && "sm:pt-3",
           light && "max-w-[90rem]",
         )}
       >
@@ -116,23 +116,23 @@ export function SiteHeader() {
           href={HOME_ITEM.href}
           onClick={(e) => onNavClick(HOME_ITEM, e)}
           className={cn(
-            "pointer-events-auto group relative flex items-center gap-2.5 pl-3 pr-1 transition-opacity duration-300",
+            "pointer-events-auto group relative flex min-w-0 items-center gap-2 pl-2 pr-1 transition-opacity duration-300 sm:gap-2.5 sm:pl-3",
             scrolled ? "opacity-95" : "opacity-100",
           )}
         >
           <span
             aria-hidden
             className={cn(
-              "h-8 w-[2px] rounded-full bg-gradient-to-b transition-all",
+              "h-7 w-[2px] shrink-0 rounded-full bg-gradient-to-b transition-all sm:h-8",
               light
                 ? "from-[#3b82c4] via-[#3b82c4]/70 to-[#3b82c4]/20 shadow-[0_0_12px_rgba(59,130,196,0.35)] group-hover:shadow-[0_0_18px_rgba(59,130,196,0.5)]"
                 : "from-accent via-accent/70 to-accent/20 shadow-[0_0_12px_rgba(110,182,255,0.45)] group-hover:shadow-[0_0_18px_rgba(110,182,255,0.65)]",
             )}
           />
-          <span className="flex flex-col gap-0.5">
+          <span className="flex min-w-0 flex-col gap-0.5">
             <span
               className={cn(
-                "font-nav text-[0.55rem] uppercase tracking-[0.32em] transition-colors",
+                "hidden font-nav text-[0.55rem] uppercase tracking-[0.32em] transition-colors sm:block",
                 light
                   ? "text-[#3b82c4] group-hover:text-[#1d4ed8]"
                   : "text-accent/80 group-hover:text-accent",
@@ -142,7 +142,7 @@ export function SiteHeader() {
             </span>
             <span
               className={cn(
-                "font-display text-[0.95rem] font-medium tracking-tight transition-colors sm:text-base",
+                "truncate font-display text-[0.9rem] font-medium tracking-tight transition-colors sm:text-base",
                 light
                   ? "text-[#121826] group-hover:text-[#1d4ed8]"
                   : "text-star group-hover:text-accent",
@@ -206,7 +206,7 @@ export function SiteHeader() {
             href={TRACKER_ITEM.href}
             onClick={() => setOpen(false)}
             className={cn(
-              "inline-flex items-center gap-2 rounded-full px-4 py-2.5 font-nav text-[0.65rem] font-medium uppercase tracking-[0.2em] transition-all sm:px-5",
+              "inline-flex min-h-10 items-center gap-2 rounded-full px-3 py-2 font-nav text-[0.6rem] font-medium uppercase tracking-[0.18em] transition-all sm:px-5 sm:py-2.5 sm:text-[0.65rem] sm:tracking-[0.2em]",
               light
                 ? activeFor(TRACKER_ITEM)
                   ? "bg-[#1d4ed8] text-white shadow-[0_0_24px_rgba(29,78,216,0.25)]"
@@ -218,7 +218,7 @@ export function SiteHeader() {
           >
             <span
               aria-hidden
-              className="h-1 w-1 rounded-full bg-current opacity-80"
+              className="hidden h-1 w-1 rounded-full bg-current opacity-80 sm:inline"
             />
             {TRACKER_ITEM.label}
           </Link>
@@ -226,7 +226,7 @@ export function SiteHeader() {
           <button
             type="button"
             className={cn(
-              "inline-flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-md transition-colors md:hidden",
+              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-md transition-colors md:hidden",
               light
                 ? "border-[#c9d3e2] bg-white/85 text-[#121826] hover:bg-white"
                 : "border-white/15 bg-black/40 text-star hover:border-white/30 hover:bg-white/10",

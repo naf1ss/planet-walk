@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Space_Grotesk } from "next/font/google";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { SiteShell } from "@/components/layout/SiteShell";
@@ -27,6 +27,16 @@ export const metadata: Metadata = {
   },
   description:
     "An interactive 3D solar system journey across Gettysburg College — from the Milky Way to Pluto.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#03040a" },
+    { media: "(prefers-color-scheme: light)", color: "#eef2f6" },
+  ],
 };
 
 export default function RootLayout({

@@ -171,7 +171,7 @@ export function HeroOverlay({
   const scrimOpacity = introOpacity * 0.72;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-10 px-6">
+    <div className="pointer-events-none fixed inset-0 z-10 px-4 sm:px-6">
       <div
         style={{ opacity: scrimOpacity }}
         className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_8%,var(--hero-scrim)_78%,var(--void)_100%)]"
@@ -187,23 +187,23 @@ export function HeroOverlay({
               }
             : undefined
         }
-        className="absolute top-[7.5rem] left-1/2 flex w-full max-w-3xl -translate-x-1/2 flex-col items-center text-center sm:top-36"
+        className="absolute top-[max(5.75rem,calc(4.5rem+env(safe-area-inset-top)))] left-1/2 flex w-full max-w-3xl -translate-x-1/2 flex-col items-center text-center sm:top-36"
       >
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-4 flex items-center gap-2 sm:mb-6 sm:gap-3">
           <span
             aria-hidden
-            className="h-px w-8 bg-gradient-to-r from-transparent to-accent/70 sm:w-12"
+            className="h-px w-6 bg-gradient-to-r from-transparent to-accent/70 sm:w-12"
           />
-          <p className="font-nav text-[0.65rem] uppercase tracking-[0.4em] text-accent sm:text-[0.7rem]">
+          <p className="font-nav text-[0.6rem] uppercase tracking-[0.32em] text-accent sm:text-[0.7rem] sm:tracking-[0.4em]">
             {SITE.campus}
           </p>
           <span
             aria-hidden
-            className="h-px w-8 bg-gradient-to-l from-transparent to-accent/70 sm:w-12"
+            className="h-px w-6 bg-gradient-to-l from-transparent to-accent/70 sm:w-12"
           />
         </div>
 
-        <h1 className="font-display text-[clamp(2.75rem,9vw,5.5rem)] font-medium tracking-[-0.04em] leading-none">
+        <h1 className="font-display text-[clamp(2.35rem,11vw,5.5rem)] font-medium tracking-[-0.04em] leading-none">
           <span className="text-star drop-shadow-[0_0_40px_rgba(245,247,255,0.2)]">
             Planet
           </span>{" "}
@@ -212,37 +212,39 @@ export function HeroOverlay({
           </span>
         </h1>
 
-        <p className="mt-7 max-w-sm text-sm leading-relaxed text-foreground-muted sm:mt-8 sm:max-w-md sm:text-base">
+        <p className="mt-5 max-w-[17rem] text-sm leading-relaxed text-foreground-muted sm:mt-8 sm:max-w-md sm:text-base">
           {SITE.tagline}
         </p>
       </div>
 
       <div
         ref={scrollPromptRef}
-        className="absolute bottom-10 left-1/2 flex w-full -translate-x-1/2 flex-col items-center gap-3"
+        className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 flex w-full -translate-x-1/2 flex-col items-center gap-2 sm:bottom-10 sm:gap-3"
       >
-        <p className="font-nav text-[0.65rem] uppercase tracking-[0.38em] text-accent/90">
-          Scroll to enter the galaxy
+        <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent/90 sm:text-[0.65rem] sm:tracking-[0.38em]">
+          <span className="sm:hidden">Swipe up to enter</span>
+          <span className="hidden sm:inline">Scroll to enter the galaxy</span>
         </p>
         <span
           aria-hidden
-          className="h-8 w-px origin-top animate-pulse bg-gradient-to-b from-accent/80 to-transparent"
+          className="h-6 w-px origin-top animate-pulse bg-gradient-to-b from-accent/80 to-transparent sm:h-8"
         />
       </div>
 
       <p
         ref={midTextRef}
-        className="absolute bottom-10 left-1/2 w-full -translate-x-1/2 text-center font-nav text-[0.65rem] uppercase tracking-[0.38em] text-foreground-muted/90"
+        className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 w-full -translate-x-1/2 text-center font-nav text-[0.6rem] uppercase tracking-[0.28em] text-foreground-muted/90 sm:bottom-10 sm:text-[0.65rem] sm:tracking-[0.38em]"
       >
         Diving through the Milky Way
       </p>
 
       <div
         ref={endSectionRef}
-        className="absolute bottom-10 left-1/2 flex w-full -translate-x-1/2 flex-col items-center gap-3"
+        className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 flex w-full -translate-x-1/2 flex-col items-center gap-2 sm:bottom-10 sm:gap-3"
       >
-        <p className="font-nav text-[0.65rem] uppercase tracking-[0.38em] text-accent-warm/95">
-          Click any world to begin
+        <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent-warm/95 sm:text-[0.65rem] sm:tracking-[0.38em]">
+          <span className="sm:hidden">Tap any world to begin</span>
+          <span className="hidden sm:inline">Click any world to begin</span>
         </p>
         <span
           aria-hidden

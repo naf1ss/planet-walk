@@ -55,14 +55,14 @@ export function WalkTracker() {
 
   if (!hydrated) {
     return (
-      <main className="ui-layer mx-auto max-w-2xl px-5 pb-24 pt-28 sm:px-8">
+      <main className="ui-layer mx-auto max-w-2xl px-4 pb-24 pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pt-28">
         <p className="text-sm text-foreground-muted">Loading passport…</p>
       </main>
     );
   }
 
   return (
-    <main className="ui-layer relative mx-auto max-w-2xl px-5 pb-28 pt-28 sm:px-8">
+      <main className="ui-layer relative mx-auto max-w-2xl px-4 pb-[max(6rem,calc(4rem+env(safe-area-inset-bottom)))] pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pb-28 sm:pt-28">
       <AnimatePresence>
         {justCompleted ? (
           <CompletionBurst key="burst" onDone={dismissCelebration} />
@@ -82,7 +82,7 @@ export function WalkTracker() {
       <p className="font-nav text-[0.7rem] uppercase tracking-[0.32em] text-accent">
         Passport
       </p>
-      <h1 className="font-display mt-3 text-4xl text-star sm:text-5xl">
+      <h1 className="font-display mt-3 text-3xl text-star sm:text-5xl">
         Walk Tracker
       </h1>
       <p className="mt-3 max-w-md text-sm leading-relaxed text-foreground-muted">
@@ -106,7 +106,7 @@ export function WalkTracker() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.35 }}
           >
-            <div className="mt-10 grid grid-cols-3 gap-3">
+            <div className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-3">
               <Stat
                 label="Elapsed"
                 value={formatElapsed(elapsedMs)}
@@ -610,22 +610,26 @@ function Stat({
   return (
     <div
       className={cn(
-        "rounded-sm border border-border bg-background-elevated/80 px-3 py-4",
+        "rounded-sm border border-border bg-background-elevated/80 px-2.5 py-3 sm:px-3 sm:py-4",
         className,
       )}
     >
-      <p className="font-nav text-[0.6rem] uppercase tracking-[0.2em] text-accent">
+      <p className="font-nav text-[0.55rem] uppercase tracking-[0.16em] text-accent sm:text-[0.6rem] sm:tracking-[0.2em]">
         {label}
       </p>
       <p
         className={cn(
-          "mt-2 font-display tracking-tight text-star",
-          mono ? "text-base tabular-nums sm:text-lg" : "text-xl sm:text-2xl",
+          "mt-1.5 font-display tracking-tight text-star sm:mt-2",
+          mono
+            ? "text-[0.8rem] tabular-nums leading-tight sm:text-lg"
+            : "text-lg sm:text-2xl",
         )}
       >
         {value}
       </p>
-      <p className="mt-1 text-[0.65rem] text-foreground-muted">{hint}</p>
+      <p className="mt-1 text-[0.6rem] leading-snug text-foreground-muted sm:text-[0.65rem]">
+        {hint}
+      </p>
     </div>
   );
 }

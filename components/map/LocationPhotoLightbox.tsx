@@ -46,7 +46,7 @@ export function LocationPhotoLightbox({
       {stop?.locationImage ? (
         <motion.div
           key={stop.slug}
-          className="pointer-events-auto fixed inset-0 flex items-center justify-center p-4 sm:p-8"
+          className="pointer-events-auto fixed inset-0 flex items-center justify-center p-[max(1rem,env(safe-area-inset-top))] px-[max(1rem,env(safe-area-inset-left))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-8"
           style={{ zIndex: 10000 }}
           role="dialog"
           aria-modal="true"
