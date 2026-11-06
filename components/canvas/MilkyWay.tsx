@@ -112,20 +112,7 @@ export function MilkyWay({
   circleMap.premultiplyAlpha = true;
   circleMap.needsUpdate = true;
 
-  const {
-    geometry,
-    startPositions,
-    lanePositions,
-    targetPositions,
-    armOffset,
-    finalRadius,
-    spinNoise,
-    spreadAmt,
-    finalY,
-    isHalo,
-    stage1Delay,
-    stage2Delay,
-  } = useMemo(() => {
+  const { geometry, startPositions, targetPositions } = useMemo(() => {
     const targetPositions = new Float32Array(STAR_COUNT * 3);
     const lanePositions = new Float32Array(STAR_COUNT * 3);
     const colors = new Float32Array(STAR_COUNT * 3);

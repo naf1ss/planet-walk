@@ -18,4 +18,5 @@ export const SITE = {
   name: "Planet Walk",
   tagline: "A solar system journey across Gettysburg College",
   campus: "Gettysburg College",
+  author: "Md Nafisul Hasan Sami",
 } as const;

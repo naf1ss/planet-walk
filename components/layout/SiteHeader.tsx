@@ -7,6 +7,11 @@ import { Menu, X } from "lucide-react";
 import { SITE } from "@/lib/constants";
 import { NAV_ITEMS, type NavItem } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { markReturnToSolarSystem } from "@/lib/planet-transition";
+
+/** Fired on the home page when "Planet Walk" is clicked; the landing page may
+ * cancel it to restart the intro itself (e.g. when it opened at Explore). */
+export const RESTART_INTRO_EVENT = "planetwalk:restart-intro";
 
 const HOME_ITEM = NAV_ITEMS.find((i) => i.id === "planet-walk")!;
 const TRACKER_ITEM = NAV_ITEMS.find((i) => i.id === "tracker")!;
@@ -44,7 +49,8 @@ export function SiteHeader() {
   useEffect(() => {
     if (pathname !== "/") return;
     const hashId = window.location.hash.replace("#", "");
-    if (!hashId) return;
+    // The landing page positions itself for #hero / #explore on load.
+    if (!hashId || hashId === "hero" || hashId === "explore") return;
     const t = window.setTimeout(() => scrollToId(hashId), 80);
     return () => window.clearTimeout(t);
   }, [pathname]);
@@ -73,6 +79,11 @@ export function SiteHeader() {
   }, [open]);
 
   const onNavClick = (item: NavItem, e: React.MouseEvent) => {
+    // A page (e.g. a planet's zoom-out exit) already took over this click.
+    if (e.defaultPrevented) {
+      setOpen(false);
+      return;
+    }
     if (!item.scrollTarget) {
       setOpen(false);
       return;
@@ -82,12 +93,22 @@ export function SiteHeader() {
     setOpen(false);
 
     if (pathname === "/") {
-      scrollToId(item.scrollTarget);
       window.history.replaceState(null, "", `/#${item.scrollTarget}`);
       setHash(item.scrollTarget);
+      if (item.scrollTarget === "hero") {
+        const notCancelled = window.dispatchEvent(
+          new Event(RESTART_INTRO_EVENT, { cancelable: true }),
+        );
+        if (!notCancelled) return;
+      }
+      scrollToId(item.scrollTarget);
       return;
     }
 
+    // Coming from another page: open Explore directly at the solar system
+    // instead of scrolling through the whole galaxy intro.
+    if (item.scrollTarget === "explore") markReturnToSolarSystem();
+    setHash(item.scrollTarget);
     router.push(`/#${item.scrollTarget}`);
   };
 
@@ -132,7 +153,7 @@ export function SiteHeader() {
           <span className="flex min-w-0 flex-col gap-0.5">
             <span
               className={cn(
-                "hidden font-nav text-[0.55rem] uppercase tracking-[0.32em] transition-colors sm:block",
+                "hidden font-nav text-[0.65rem] uppercase tracking-[0.32em] transition-colors sm:block",
                 light
                   ? "text-[#3b82c4] group-hover:text-[#1d4ed8]"
                   : "text-accent/80 group-hover:text-accent",
@@ -175,7 +196,7 @@ export function SiteHeader() {
                 href={item.href}
                 onClick={(e) => onNavClick(item, e)}
                 className={cn(
-                  "relative rounded-full px-4 py-2 font-nav text-[0.65rem] uppercase tracking-[0.22em] transition-colors",
+                  "relative rounded-full px-4 py-2 font-nav text-[0.72rem] uppercase tracking-[0.22em] transition-colors",
                   light
                     ? active
                       ? "text-[#121826]"
@@ -206,7 +227,7 @@ export function SiteHeader() {
             href={TRACKER_ITEM.href}
             onClick={() => setOpen(false)}
             className={cn(
-              "inline-flex min-h-10 items-center gap-2 rounded-full px-3 py-2 font-nav text-[0.6rem] font-medium uppercase tracking-[0.18em] transition-all sm:px-5 sm:py-2.5 sm:text-[0.65rem] sm:tracking-[0.2em]",
+              "inline-flex min-h-10 items-center gap-2 rounded-full px-3 py-2 font-nav text-[0.68rem] font-medium uppercase tracking-[0.18em] transition-all sm:px-5 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.2em]",
               light
                 ? activeFor(TRACKER_ITEM)
                   ? "bg-[#1d4ed8] text-white shadow-[0_0_24px_rgba(29,78,216,0.25)]"
@@ -277,7 +298,7 @@ export function SiteHeader() {
             >
               <p
                 className={cn(
-                  "font-mono text-[0.55rem] uppercase tracking-[0.4em]",
+                  "font-mono text-[0.65rem] uppercase tracking-[0.4em]",
                   light ? "text-[#5b6577]" : "text-star/45",
                 )}
               >

@@ -12,9 +12,7 @@ type PlanetExperienceProps = {
   body: BodyContent;
 };
 
-type ExitIntent =
-  | { type: "push-home" }
-  | { type: "history-back" };
+type ExitIntent = { type: "push-home" };
 
 const SCROLL_TOP_TIMEOUT_MS = 1400;
 
@@ -26,7 +24,6 @@ export function PlanetExperience({ body }: PlanetExperienceProps) {
   const router = useRouter();
   const [exiting, setExiting] = useState(false);
   const exitIntentRef = useRef<ExitIntent | null>(null);
-  const hasBackGuardRef = useRef(false);
 
   const waitForScrollTop = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -68,15 +65,10 @@ export function PlanetExperience({ body }: PlanetExperienceProps) {
   }, [triggerExitTransition]);
 
   useEffect(() => {
-    // Back-button guard: first native back stays on this route and lets us animate.
-    if (!hasBackGuardRef.current) {
-      window.history.pushState({ planetExitGuard: true }, "", window.location.href);
-      hasBackGuardRef.current = true;
-    }
-
+    // Native back/forward: let the browser navigate normally (no history
+    // tricks), but if it lands on the home page, reopen at the solar system.
     const onPopState = () => {
-      if (exiting) return;
-      void triggerExitTransition({ type: "history-back" });
+      if (window.location.pathname === "/") markReturnToSolarSystem();
     };
 
     const onDocumentClick = (event: MouseEvent) => {
@@ -88,8 +80,8 @@ export function PlanetExperience({ body }: PlanetExperienceProps) {
       const href = anchor.getAttribute("href");
       if (!href) return;
 
-      // Intercept home/explore style links while on a planet route.
-      if (href === "/" || href === "/#hero" || href === "/#explore") {
+      // Explore zooms back out to the solar system; Home goes to the intro.
+      if (href === "/#explore") {
         event.preventDefault();
         void triggerExitTransition({ type: "push-home" });
       }
@@ -111,7 +103,7 @@ export function PlanetExperience({ body }: PlanetExperienceProps) {
   }, [router]);
 
   return (
-    <main className="relative min-h-[200dvh] w-full">
+    <main className="relative w-full">
       <PlanetFlyScene
         key={body.slug}
         body={body}

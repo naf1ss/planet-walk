@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { BODY_CONTENT, BODY_SLUGS } from "@/lib/planet-content";
+import { cn } from "@/lib/utils";
 import { HeroOverlay } from "@/components/landing/HeroOverlay";
 import { SceneCanvas } from "@/components/canvas/SceneCanvas";
+import { RESTART_INTRO_EVENT } from "@/components/layout/SiteHeader";
 import {
   consumeReturnToSolarSystem,
   getSolarSystemScrollPosition,
@@ -22,6 +26,8 @@ export function LandingExperience() {
   const [mounted, setMounted] = useState(false);
   const [interactive, setInteractive] = useState(false);
   const [returnFromPlanet, setReturnFromPlanet] = useState(false);
+  /** Bumped to remount the 3D scene + hero when restarting the intro */
+  const [instance, setInstance] = useState(0);
 
   useEffect(() => {
     if ("scrollRestoration" in history) {
@@ -30,7 +36,8 @@ export function LandingExperience() {
 
     const fromQuery = searchParams.get(RETURN_PARAM) === "true";
     const fromSession = consumeReturnToSolarSystem();
-    const isReturn = fromQuery || fromSession;
+    const fromHash = window.location.hash === "#explore";
+    const isReturn = fromQuery || fromSession || fromHash;
     setReturnFromPlanet(isReturn);
 
     if (isReturn) {
@@ -41,6 +48,21 @@ export function LandingExperience() {
 
     setMounted(true);
   }, [router, searchParams]);
+
+  // "Planet Walk" clicked while the page opened at Explore: the scroll
+  // animation only runs forward from the solar system, so restart the intro.
+  useEffect(() => {
+    if (!returnFromPlanet) return;
+    const onRestart = (e: Event) => {
+      e.preventDefault();
+      window.scrollTo(0, 0);
+      setInteractive(false);
+      setReturnFromPlanet(false);
+      setInstance((n) => n + 1);
+    };
+    window.addEventListener(RESTART_INTRO_EVENT, onRestart);
+    return () => window.removeEventListener(RESTART_INTRO_EVENT, onRestart);
+  }, [returnFromPlanet]);
 
   useEffect(() => {
     if (!mounted || !returnFromPlanet) return;
@@ -87,15 +109,41 @@ export function LandingExperience() {
     <div className="relative">
       {mounted ? (
         <SceneCanvas
+          key={`scene-${instance}`}
           zoomTrackRef={zoomTrackRef}
           interactive={interactive}
           startAtSolarSystem={returnFromPlanet}
         />
       ) : null}
       <HeroOverlay
+        key={`hero-${instance}`}
         zoomTrackRef={zoomTrackRef}
         startAtSolarSystem={returnFromPlanet}
       />
+
+      {/* Plain links to every world — for keyboards, screen readers and
+          anyone who finds the tiny 3D planets hard to tap. */}
+      <nav
+        aria-label="Planets"
+        inert={!interactive}
+        className={cn(
+          "fixed inset-x-0 bottom-[max(4.5rem,calc(3.5rem+env(safe-area-inset-bottom)))] z-20 transition-opacity duration-500 sm:bottom-20",
+          interactive ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+      >
+        <ul className="mx-auto flex max-w-4xl gap-1.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:flex-wrap sm:justify-center">
+          {BODY_SLUGS.map((slug) => (
+            <li key={slug} className="shrink-0">
+              <Link
+                href={`/planet/${slug}`}
+                className="inline-flex min-h-9 items-center rounded-full border border-white/15 bg-black/45 px-3.5 text-xs text-foreground backdrop-blur-md transition-colors hover:border-accent hover:text-star focus-visible:border-accent focus-visible:outline-none"
+              >
+                {BODY_CONTENT[slug].name.replace(/^The /, "")}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       <section
         id="hero"

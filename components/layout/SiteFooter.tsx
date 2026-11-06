@@ -1,24 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/nav";
 
 /**
- * Site footer — compact brand row + path line; hidden on landing and planet pages.
+ * Site footer — compact brand row + path line, shown on every page.
+ * Solid background so it covers the fixed 3D canvas on home and planet pages.
  */
 export function SiteFooter() {
-  const pathname = usePathname();
   const year = new Date().getFullYear();
-
-  if (pathname === "/" || pathname === "/map" || pathname.startsWith("/planet"))
-    return null;
 
   const destinations = NAV_ITEMS.filter((item) => item.id !== "planet-walk");
 
   return (
-    <footer className="relative z-30 overflow-hidden border-t border-white/10">
+    <footer className="relative z-30 overflow-hidden border-t border-white/10 bg-[#03040a] text-star">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_0%_0%,rgba(110,182,255,0.1),transparent_50%),radial-gradient(ellipse_40%_50%_at_100%_100%,rgba(240,192,106,0.07),transparent_45%)]"
@@ -29,7 +25,7 @@ export function SiteFooter() {
       />
 
       <div className="relative mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-12">
-        <p className="font-nav text-[0.6rem] uppercase tracking-[0.4em] text-accent">
+        <p className="font-nav text-[0.68rem] uppercase tracking-[0.4em] text-accent">
           Gettysburg College
         </p>
 
@@ -58,7 +54,7 @@ export function SiteFooter() {
 
         {/* Compact path */}
         <div className="mt-8 flex items-center gap-3 sm:gap-5">
-          <p className="shrink-0 font-nav text-[0.55rem] uppercase tracking-[0.26em] text-accent-warm">
+          <p className="shrink-0 font-nav text-[0.65rem] uppercase tracking-[0.26em] text-accent-warm">
             Masters Hall
           </p>
           <div
@@ -68,7 +64,7 @@ export function SiteFooter() {
             <span className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent-warm" />
             <span className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent" />
           </div>
-          <p className="shrink-0 font-nav text-[0.55rem] uppercase tracking-[0.26em] text-accent">
+          <p className="shrink-0 font-nav text-[0.65rem] uppercase tracking-[0.26em] text-accent">
             Observatory
           </p>
         </div>
@@ -86,7 +82,7 @@ export function SiteFooter() {
                 ) : null}
                 <Link
                   href={item.href}
-                  className="font-nav text-[0.65rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
+                  className="font-nav text-[0.72rem] uppercase tracking-[0.22em] text-foreground-muted transition-colors hover:text-star"
                 >
                   {item.label}
                 </Link>
@@ -94,8 +90,8 @@ export function SiteFooter() {
             ))}
           </nav>
 
-          <p className="font-nav text-[0.6rem] uppercase tracking-[0.18em] text-foreground-muted/65">
-            {SITE.campus} · © {year}
+          <p className="text-xs leading-relaxed text-foreground-muted">
+            © {year} {SITE.author}. All rights reserved.
           </p>
         </div>
       </div>

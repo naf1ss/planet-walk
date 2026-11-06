@@ -11,7 +11,7 @@
   --background: #03040a;
   --background-elevated: #0a0c16;
   --foreground: #e8ecf5;
-  --foreground-muted: #8b93a7;
+  --foreground-muted: #a1a9bc;
 
   /* Brand / accent */
   --accent: #6eb6ff;
@@ -63,7 +63,7 @@ html[data-theme="day"] {
   --background: #0c1018;
   --background-elevated: #141a26;
   --foreground: #f2efe6;
-  --foreground-muted: #a39b8c;
+  --foreground-muted: #b6ae9f;
   --void: #080b12;
   --nebula: #3a2818;
   --accent: #7ec4ff;

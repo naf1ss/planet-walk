@@ -49,7 +49,7 @@ export function HeroOverlay({
           gsap.set(el, { clearProps: "opacity,y,transform" });
         },
       },
-      3,
+      1.2,
     );
 
     return () => {
@@ -194,7 +194,7 @@ export function HeroOverlay({
             aria-hidden
             className="h-px w-6 bg-gradient-to-r from-transparent to-accent/70 sm:w-12"
           />
-          <p className="font-nav text-[0.6rem] uppercase tracking-[0.32em] text-accent sm:text-[0.7rem] sm:tracking-[0.4em]">
+          <p className="font-nav text-[0.68rem] uppercase tracking-[0.32em] text-accent sm:text-[0.7rem] sm:tracking-[0.4em]">
             {SITE.campus}
           </p>
           <span
@@ -221,7 +221,7 @@ export function HeroOverlay({
         ref={scrollPromptRef}
         className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 flex w-full -translate-x-1/2 flex-col items-center gap-2 sm:bottom-10 sm:gap-3"
       >
-        <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent/90 sm:text-[0.65rem] sm:tracking-[0.38em]">
+        <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent/90 sm:text-[0.72rem] sm:tracking-[0.38em]">
           <span className="sm:hidden">Swipe up to enter</span>
           <span className="hidden sm:inline">Scroll to enter the galaxy</span>
         </p>
@@ -233,7 +233,7 @@ export function HeroOverlay({
 
       <p
         ref={midTextRef}
-        className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 w-full -translate-x-1/2 text-center font-nav text-[0.6rem] uppercase tracking-[0.28em] text-foreground-muted/90 sm:bottom-10 sm:text-[0.65rem] sm:tracking-[0.38em]"
+        className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 w-full -translate-x-1/2 text-center font-nav text-[0.68rem] uppercase tracking-[0.28em] text-foreground-muted/90 sm:bottom-10 sm:text-[0.72rem] sm:tracking-[0.38em]"
       >
         Diving through the Milky Way
       </p>
@@ -242,7 +242,7 @@ export function HeroOverlay({
         ref={endSectionRef}
         className="absolute bottom-[max(1.75rem,calc(1rem+env(safe-area-inset-bottom)))] left-1/2 flex w-full -translate-x-1/2 flex-col items-center gap-2 sm:bottom-10 sm:gap-3"
       >
-        <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent-warm/95 sm:text-[0.65rem] sm:tracking-[0.38em]">
+        <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent-warm/95 sm:text-[0.72rem] sm:tracking-[0.38em]">
           <span className="sm:hidden">Tap any world to begin</span>
           <span className="hidden sm:inline">Click any world to begin</span>
         </p>

@@ -92,7 +92,7 @@ export function CampusMap({
   }, [selectedSlug]);
 
   return (
-    <div className="campus-map-root h-full w-full overflow-hidden">
+    <div className="campus-map-root absolute inset-0 overflow-hidden">
       <MapContainer
         center={GETTYSBURG_COLLEGE_CENTER}
         zoom={16}

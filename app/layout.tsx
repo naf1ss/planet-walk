@@ -27,6 +27,15 @@ export const metadata: Metadata = {
   },
   description:
     "An interactive 3D solar system journey across Gettysburg College — from the Milky Way to Pluto.",
+  authors: [{ name: "Md Nafisul Hasan Sami" }],
+  openGraph: {
+    type: "website",
+    siteName: "Planet Walk",
+    title: "Planet Walk",
+    description:
+      "An interactive 3D solar system journey across Gettysburg College — from the Milky Way to Pluto.",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

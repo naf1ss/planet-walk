@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Planet Walk
 
-## Getting Started
+An interactive 3D solar system journey across Gettysburg College — the digital companion to the campus Planet Walk, a walkable scale model that runs about 7,561 ft (1.43 mi) from the Sun at the Hatter Planetarium to Pluto at the College Observatory.
 
-First, run the development server:
+By Md Nafisul Hasan Sami.
+
+## Pages
+
+| Route | What it is |
+| --- | --- |
+| `/` | Scroll from the Milky Way into the solar system, then tap a world |
+| `/planet/[name]` | One page per stop (`sun`, `mercury` … `pluto`): facts, campus marker, tile. Also the QR-code destination |
+| `/map` | Campus map of every stop with location photos |
+| `/tracker` | Walk passport: checklist, timer and distance, saved on the phone |
+| `/about` | The story behind the project |
+
+## Editing content
+
+- Planet text, facts and campus markers: `lib/planet-content.ts`
+- Map coordinates: `lib/campus-map-stops.ts`
+- Walk distances: `lib/planetData.ts`
+- 3D sizes and orbits: `lib/planets.ts`
+- Navigation: `lib/nav.ts`
+- Site name, tagline, author: `lib/constants.ts`
+
+Planet surface textures live in `public/textures` (2048 px, used on planet pages) and `public/textures/sm` (1024 px, used on the home page). Keep both in sync if you replace one.
+
+## Running locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # production build check
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with Next.js, React Three Fiber, GSAP and Leaflet. Deployed on Vercel: every push to `main` goes live.

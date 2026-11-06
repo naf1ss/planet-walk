@@ -21,7 +21,7 @@ export default function AboutPage() {
 
       {/* Hero */}
       <header className="max-w-2xl">
-        <p className="font-nav text-[0.65rem] uppercase tracking-[0.32em] text-accent">
+        <p className="font-nav text-[0.72rem] uppercase tracking-[0.32em] text-accent">
           Gettysburg College · Kolbe
         </p>
         <h1 className="mt-3 font-display text-4xl font-medium tracking-tight text-star sm:text-6xl">
@@ -36,7 +36,7 @@ export default function AboutPage() {
 
       {/* Project */}
       <section className="mt-16 border-t border-white/10 pt-10" aria-labelledby="project-heading">
-        <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent-warm">
+        <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent-warm">
           The project
         </p>
         <h2
@@ -68,7 +68,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-nav text-[0.55rem] uppercase tracking-[0.22em] text-accent-warm/90">
+        <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-nav text-[0.65rem] uppercase tracking-[0.22em] text-accent-warm/90">
           <span>Masters Hall</span>
           <span
             aria-hidden
@@ -80,7 +80,7 @@ export default function AboutPage() {
 
       {/* Artist */}
       <section className="mt-16 border-t border-white/10 pt-10" aria-labelledby="artist-heading">
-        <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent-warm">
+        <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent-warm">
           The artist
         </p>
         <h2
@@ -107,7 +107,7 @@ export default function AboutPage() {
 
       {/* Credits */}
       <section className="mt-16 border-t border-white/10 pt-10" aria-labelledby="credits-heading">
-        <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent-warm">
+        <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent-warm">
           Credits
         </p>
         <h2
@@ -118,13 +118,13 @@ export default function AboutPage() {
         </h2>
         <dl className="mt-6 space-y-5">
           <div>
-            <dt className="font-nav text-[0.6rem] uppercase tracking-[0.22em] text-star/45">
+            <dt className="font-nav text-[0.68rem] uppercase tracking-[0.22em] text-star/45">
               Researcher &amp; artist
             </dt>
             <dd className="mt-1 text-star">Md Nafisul Hasan Sami</dd>
           </div>
           <div>
-            <dt className="font-nav text-[0.6rem] uppercase tracking-[0.22em] text-star/45">
+            <dt className="font-nav text-[0.68rem] uppercase tracking-[0.22em] text-star/45">
               Mentor
             </dt>
             <dd className="mt-1 text-star">
@@ -135,7 +135,7 @@ export default function AboutPage() {
             </dd>
           </div>
           <div>
-            <dt className="font-nav text-[0.6rem] uppercase tracking-[0.22em] text-star/45">
+            <dt className="font-nav text-[0.68rem] uppercase tracking-[0.22em] text-star/45">
               Support
             </dt>
             <dd className="mt-1 text-foreground-muted">
@@ -147,25 +147,25 @@ export default function AboutPage() {
 
       {/* CTAs */}
       <section className="mt-16 border-t border-white/10 pt-10" aria-label="Continue exploring">
-        <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent">
+        <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent">
           Continue
         </p>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
             href="/#explore"
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-star transition-colors hover:border-white/30 hover:bg-white/5"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-5 py-2.5 font-nav text-[0.72rem] uppercase tracking-[0.2em] text-star transition-colors hover:border-white/30 hover:bg-white/5"
           >
             Explore
           </Link>
           <Link
             href="/map"
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-star transition-colors hover:border-white/30 hover:bg-white/5"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-5 py-2.5 font-nav text-[0.72rem] uppercase tracking-[0.2em] text-star transition-colors hover:border-white/30 hover:bg-white/5"
           >
             Map
           </Link>
           <Link
             href="/tracker"
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-accent-warm/40 bg-accent-warm/10 px-5 py-2.5 font-nav text-[0.65rem] uppercase tracking-[0.2em] text-accent-warm transition-colors hover:border-accent-warm/60 hover:bg-accent-warm/20"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-accent-warm/40 bg-accent-warm/10 px-5 py-2.5 font-nav text-[0.72rem] uppercase tracking-[0.2em] text-accent-warm transition-colors hover:border-accent-warm/60 hover:bg-accent-warm/20"
           >
             Track
           </Link>

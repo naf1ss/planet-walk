@@ -174,7 +174,7 @@ export function WalkTracker() {
       </AnimatePresence>
 
       <section className="mt-12">
-        <p className="font-nav text-[0.65rem] uppercase tracking-[0.28em] text-accent">
+        <p className="font-nav text-[0.72rem] uppercase tracking-[0.28em] text-accent">
           Planetary stops
         </p>
         <ul className="mt-5 space-y-3">
@@ -228,7 +228,7 @@ export function WalkTracker() {
 
                   <div className="min-w-0 flex-1 py-0.5">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-nav text-[0.55rem] uppercase tracking-[0.2em] text-foreground-muted">
+                      <span className="font-nav text-[0.65rem] uppercase tracking-[0.2em] text-foreground-muted">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <p className="font-display text-lg leading-tight text-star sm:text-xl">
@@ -247,7 +247,7 @@ export function WalkTracker() {
 
                   <Link
                     href={`/planet/${stop.slug}`}
-                    className="self-center shrink-0 rounded-sm border border-transparent px-2 py-2 font-nav text-[0.6rem] uppercase tracking-[0.18em] text-accent transition-colors hover:border-accent/40 hover:text-star"
+                    className="self-center shrink-0 rounded-sm border border-transparent px-2 py-2 font-nav text-[0.68rem] uppercase tracking-[0.18em] text-accent transition-colors hover:border-accent/40 hover:text-star"
                   >
                     View
                   </Link>
@@ -312,7 +312,7 @@ function CompletionSummary({
       <div className="relative">
         <p
           data-reveal
-          className="inline-flex items-center gap-2 font-nav text-[0.65rem] uppercase tracking-[0.28em] text-accent-warm"
+          className="inline-flex items-center gap-2 font-nav text-[0.72rem] uppercase tracking-[0.28em] text-accent-warm"
         >
           <Sparkles className="h-3.5 w-3.5" aria-hidden />
           Journey complete
@@ -412,7 +412,7 @@ function WalkMissionDebrief({ elapsedMs }: { elapsedMs: number }) {
       data-reveal
       className="mt-4 rounded-sm border border-accent/25 bg-accent/5 px-4 py-4"
     >
-      <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-accent">
+      <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-accent">
         Mission debrief
       </p>
       <ul className="mt-3 space-y-2.5 text-sm leading-relaxed text-foreground-muted">
@@ -505,7 +505,7 @@ function IncompleteOrbitNudge({
               <AlertCircle className="h-5 w-5" strokeWidth={2} aria-hidden />
             </div>
             <div className="min-w-0 pt-0.5">
-              <p className="font-nav text-[0.6rem] uppercase tracking-[0.28em] text-[#ff8a90]">
+              <p className="font-nav text-[0.68rem] uppercase tracking-[0.28em] text-[#ff8a90]">
                 Incomplete orbit
               </p>
               <h2
@@ -526,7 +526,7 @@ function IncompleteOrbitNudge({
           </div>
 
           <div className="mt-5 rounded-sm border border-[#f07178]/20 bg-black/30 px-3 py-3">
-            <p className="font-nav text-[0.55rem] uppercase tracking-[0.24em] text-[#ff8a90]/90">
+            <p className="font-nav text-[0.65rem] uppercase tracking-[0.24em] text-[#ff8a90]/90">
               Still missing
             </p>
             <ul className="mt-3 flex flex-wrap gap-2">
@@ -614,7 +614,7 @@ function Stat({
         className,
       )}
     >
-      <p className="font-nav text-[0.55rem] uppercase tracking-[0.16em] text-accent sm:text-[0.6rem] sm:tracking-[0.2em]">
+      <p className="font-nav text-[0.65rem] uppercase tracking-[0.16em] text-accent sm:text-[0.68rem] sm:tracking-[0.2em]">
         {label}
       </p>
       <p
@@ -627,7 +627,7 @@ function Stat({
       >
         {value}
       </p>
-      <p className="mt-1 text-[0.6rem] leading-snug text-foreground-muted sm:text-[0.65rem]">
+      <p className="mt-1 text-[0.68rem] leading-snug text-foreground-muted sm:text-[0.72rem]">
         {hint}
       </p>
     </div>
