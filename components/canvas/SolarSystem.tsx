@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Line, useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -12,6 +12,11 @@ import {
   orbitPhase,
 } from "@/lib/orbit-physics";
 import { useDayNight } from "@/components/providers/DayNightProvider";
+import {
+  registerBodySelect,
+  setHoveredBody,
+  useHoveredBody,
+} from "@/lib/body-hover";
 
 export type BodySelectPayload = {
   slug: string;
@@ -73,7 +78,7 @@ function PlanetBody({
   const groupRef = useRef<THREE.Group>(null);
   const angleRef = useRef(orbitPhase(planet.slug));
   const omega = orbitalSpeedRadPerSec(planet.periodDays);
-  const [hovered, setHovered] = useState(false);
+  const hovered = useHoveredBody() === planet.slug;
   const map = useTexture(planet.texture);
   map.colorSpace = THREE.SRGBColorSpace;
   map.anisotropy = 8;
@@ -87,8 +92,7 @@ function PlanetBody({
     groupRef.current.rotation.y += delta * (0.15 + omega * 0.35);
   });
 
-  const select = (e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
+  const startDive = () => {
     if (!groupRef.current || !onSelect) return;
     const position = new THREE.Vector3();
     groupRef.current.getWorldPosition(position);
@@ -99,16 +103,28 @@ function PlanetBody({
       position,
     });
   };
+  const startDiveRef = useRef(startDive);
+  startDiveRef.current = startDive;
+
+  useEffect(
+    () => registerBodySelect(planet.slug, () => startDiveRef.current()),
+    [planet.slug],
+  );
+
+  const select = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    startDive();
+  };
 
   const onPointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    setHovered(true);
+    setHoveredBody(planet.slug);
     document.body.style.cursor = "pointer";
   };
 
   const onPointerOut = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    setHovered(false);
+    setHoveredBody(null);
     document.body.style.cursor = "auto";
   };
 
@@ -216,7 +232,7 @@ function SunBody({
 }) {
   const sunRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Group>(null);
-  const [hovered, setHovered] = useState(false);
+  const hovered = useHoveredBody() === "sun";
   const map = useTexture(SUN.texture);
   map.colorSpace = THREE.SRGBColorSpace;
   map.anisotropy = 8;
@@ -233,8 +249,7 @@ function SunBody({
     }
   });
 
-  const select = (e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
+  const startDive = () => {
     onSelect?.({
       slug: "sun",
       name: "The Sun",
@@ -242,16 +257,25 @@ function SunBody({
       position: new THREE.Vector3(0, 0, 0),
     });
   };
+  const startDiveRef = useRef(startDive);
+  startDiveRef.current = startDive;
+
+  useEffect(() => registerBodySelect("sun", () => startDiveRef.current()), []);
+
+  const select = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    startDive();
+  };
 
   const onPointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    setHovered(true);
+    setHoveredBody("sun");
     document.body.style.cursor = "pointer";
   };
 
   const onPointerOut = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    setHovered(false);
+    setHoveredBody(null);
     document.body.style.cursor = "auto";
   };
 

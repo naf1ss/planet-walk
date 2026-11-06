@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { BodyContent } from "@/lib/planet-content";
 
 type PlanetDetailOverlayProps = {
@@ -15,65 +12,20 @@ type PlanetDetailOverlayProps = {
 
 /**
  * Planet page chrome: first viewport = title top / marker+hero bottom over 3D;
- * desktop side-scroll (phones: vertical stack) reveals facts panel + tile.
+ * scrolling down reveals the facts panel + tile (normal vertical scroll).
  */
 export function PlanetDetailOverlay({
   body,
   onBack,
   exiting = false,
 }: PlanetDetailOverlayProps) {
-  const pinRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const pin = pinRef.current;
-    const track = trackRef.current;
-    if (!pin || !track) return;
-
-    // Side-scroll only on large screens; phones and tablets scroll top-to-bottom.
-    const mm = gsap.matchMedia();
-    mm.add("(min-width: 1024px)", () => {
-      const getDistance = () =>
-        Math.max(0, track.scrollWidth - window.innerWidth);
-
-      gsap.fromTo(
-        track,
-        { x: 0 },
-        {
-          x: () => -getDistance(),
-          ease: "none",
-          scrollTrigger: {
-            trigger: pin,
-            start: "top top",
-            end: () => `+=${getDistance()}`,
-            pin: true,
-            scrub: 1,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        },
-      );
-    });
-
-    const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
-
-    return () => {
-      cancelAnimationFrame(raf);
-      mm.revert();
-    };
-  }, [body.slug]);
 
   return (
     <div className="ui-layer relative z-20">
-      <div ref={pinRef} className="relative overflow-hidden">
-        <div
-          ref={trackRef}
-          className="flex flex-col lg:w-[200vw] lg:flex-row lg:will-change-transform"
-        >
+      <div className="relative">
+        <div className="flex flex-col">
           {/* Initial viewport — unobstructed canvas; no backdrops or glass */}
-          <section className="pointer-events-none relative z-10 flex h-[100svh] w-full shrink-0 flex-col justify-between lg:h-screen lg:w-screen px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(5.5rem,env(safe-area-inset-top))] sm:px-8">
+          <section className="pointer-events-none relative z-10 flex h-[100svh] w-full shrink-0 flex-col justify-between px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(5.5rem,env(safe-area-inset-top))] sm:px-8">
             <motion.div
               initial={false}
               animate={{ opacity: exiting ? 0 : 1 }}
@@ -130,19 +82,11 @@ export function PlanetDetailOverlay({
             </motion.div>
           </section>
 
-          {/* Facts panel — below the hero on phones, side-scrolled into view on desktop */}
-          <section className="relative flex w-full shrink-0 flex-col border-t border-border bg-[rgba(3,4,10,0.94)] px-5 py-14 backdrop-blur-md sm:px-8 sm:py-20 lg:h-[100dvh] lg:w-screen lg:justify-center lg:overflow-y-auto lg:border-l lg:border-t-0 safe-pb">
-            <div className="mx-auto grid w-full max-w-5xl gap-10 sm:gap-14 lg:grid-cols-2 lg:items-start">
+          {/* Facts panel — directly below the hero */}
+          <section className="relative flex w-full shrink-0 flex-col border-t border-border bg-[rgba(3,4,10,0.94)] px-5 py-14 backdrop-blur-md sm:px-8 sm:py-20 lg:py-28 safe-pb">
+            <div className="mx-auto grid w-full max-w-5xl gap-10 sm:gap-14 lg:grid-cols-2 lg:items-center">
               <div>
-                {/* Phones already show the marker right above; repeat it only on desktop */}
-                <p className="hidden font-nav text-[0.72rem] uppercase tracking-[0.28em] text-accent lg:block">
-                  Campus marker
-                </p>
-                <p className="mt-3 hidden text-base font-medium leading-relaxed text-star sm:text-lg lg:block">
-                  {body.markerLocation}
-                </p>
-
-                <p className="font-nav lg:mt-10 text-[0.72rem] uppercase tracking-[0.28em] text-accent">
+                <p className="font-nav text-[0.72rem] uppercase tracking-[0.28em] text-accent">
                   Facts
                 </p>
                 <ul className="mt-6 space-y-5">
