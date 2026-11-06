@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
-import { Check, Sparkles, RotateCcw, Play, Pause, AlertCircle } from "lucide-react";
+import {
+  Check,
+  Sparkles,
+  RotateCcw,
+  Play,
+  Pause,
+  AlertCircle,
+  Share2,
+  Download,
+} from "lucide-react";
 import { BODY_CONTENT } from "@/lib/planet-content";
 import {
   completionPercent,
@@ -17,6 +26,9 @@ import {
 } from "@/lib/planetData";
 import { formatElapsed, useWalkTracker } from "@/lib/tracker-storage";
 import { cn } from "@/lib/utils";
+import { renderShareCard, shareOrDownload } from "@/lib/share-card";
+import { WalkLine } from "@/components/tracker/WalkLine";
+import { StardustBurst } from "@/components/tracker/StardustBurst";
 
 /**
  * Digital passport for the physical Gettysburg Planet Walk.
@@ -65,7 +77,7 @@ export function WalkTracker() {
       <main className="ui-layer relative mx-auto max-w-2xl px-4 pb-[max(6rem,calc(4rem+env(safe-area-inset-bottom)))] pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pb-28 sm:pt-28">
       <AnimatePresence>
         {justCompleted ? (
-          <CompletionBurst key="burst" onDone={dismissCelebration} />
+          <StardustBurst key="burst" onDone={dismissCelebration} />
         ) : null}
       </AnimatePresence>
 
@@ -96,6 +108,7 @@ export function WalkTracker() {
             key="complete"
             elapsedMs={elapsedMs}
             visitedCount={visitedCount}
+            visited={state.visited}
             onReset={resetWalk}
           />
         ) : (
@@ -131,14 +144,7 @@ export function WalkTracker() {
               />
             </div>
 
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-border">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-accent to-accent-warm"
-                initial={false}
-                animate={{ width: `${percent}%` }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </div>
+            <WalkLine visited={state.visited} className="mt-7" />
 
             <div className="mt-8 flex flex-wrap gap-3">
               {!state.running ? (
@@ -270,10 +276,12 @@ export function WalkTracker() {
 function CompletionSummary({
   elapsedMs,
   visitedCount,
+  visited,
   onReset,
 }: {
   elapsedMs: number;
   visitedCount: number;
+  visited: readonly string[];
   onReset: () => void;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -319,18 +327,24 @@ function CompletionSummary({
         </p>
         <h2
           data-reveal
-          className="font-display mt-3 text-4xl text-star sm:text-5xl"
+          className="font-display mt-3 text-4xl leading-[1.05] text-star sm:text-6xl"
         >
-          Congratulations
+          You walked {WALK_TOTAL_LABEL.milesLabel.replace(" mi", " miles")}{" "}
+          <span className="italic text-accent-warm">
+            across the solar system.
+          </span>
         </h2>
         <p
           data-reveal
           className="mt-4 max-w-lg text-sm leading-relaxed text-foreground-muted sm:text-base"
         >
-          You have successfully traversed the scale of the entire solar system,
-          bridging the physical campus from Masters Hall to your final
-          destination at the College Observatory!
+          From the Sun at Masters Hall to Pluto at the College Observatory —
+          every world stamped.
         </p>
+
+        <div data-reveal className="mt-8">
+          <WalkLine visited={visited} />
+        </div>
 
         <div
           data-reveal
@@ -360,6 +374,11 @@ function CompletionSummary({
         </p>
 
         <WalkMissionDebrief elapsedMs={elapsedMs} />
+
+        <ShareCardPanel
+          time={formatElapsed(elapsedMs).replace(/\.\d+$/, "")}
+          stamped={visitedCount}
+        />
 
         <div data-reveal className="mt-8 flex flex-wrap gap-3">
           <Link
@@ -557,40 +576,80 @@ function IncompleteOrbitNudge({
   );
 }
 
-function CompletionBurst({ onDone }: { onDone: () => void }) {
+/** Preview of the shareable finish card + share / download buttons. */
+function ShareCardPanel({ time, stamped }: { time: string; stamped: number }) {
+  const [blob, setBlob] = useState<Blob | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+
   useEffect(() => {
-    const t = window.setTimeout(onDone, 2200);
-    return () => window.clearTimeout(t);
-  }, [onDone]);
+    let cancelled = false;
+    let objectUrl: string | null = null;
+    renderShareCard({ time, stamped })
+      .then((b) => {
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(b);
+        setBlob(b);
+        setUrl(objectUrl);
+      })
+      .catch(() => setStatus("Couldn’t make the image on this device."));
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [time, stamped]);
+
+  const onShare = async () => {
+    if (!blob) return;
+    const r = await shareOrDownload(blob);
+    setStatus(r === "downloaded" ? "Saved to your downloads." : null);
+  };
 
   return (
-    <motion.div
-      className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.35 }}
+    <div
+      data-reveal
+      className="mt-6 grid items-center gap-5 rounded-xl border border-white/10 bg-black/25 p-4 sm:grid-cols-[11rem_1fr] sm:p-5"
     >
-      <motion.div
-        className="absolute inset-0 bg-void/50"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      />
-      <motion.div
-        className="relative flex h-40 w-40 items-center justify-center rounded-full border border-accent/50 bg-accent/15 shadow-[0_0_80px_rgba(110,182,255,0.55)] backdrop-blur-md"
-        initial={{ scale: 0.4, opacity: 0 }}
-        animate={{ scale: [0.4, 1.08, 1], opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <Sparkles className="h-12 w-12 text-accent-warm" aria-hidden />
-        <motion.div
-          className="absolute inset-0 rounded-full border border-accent-warm/40"
-          animate={{ scale: [1, 1.55], opacity: [0.7, 0] }}
-          transition={{ duration: 1.2, repeat: 1, ease: "easeOut" }}
-        />
-      </motion.div>
-    </motion.div>
+      <div className="mx-auto w-40 overflow-hidden rounded-lg border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.55)] sm:w-44">
+        {url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={url} alt="Your Planet Walk finish card" className="block h-auto w-full" />
+        ) : (
+          <div className="aspect-[4/5] w-full animate-pulse bg-white/5" />
+        )}
+      </div>
+      <div>
+        <p className="font-display text-2xl text-star">Share your walk</p>
+        <p className="mt-1 text-sm leading-relaxed text-foreground-muted">
+          A card with your time and every world you stamped — ready for
+          stories or the group chat.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onShare}
+            disabled={!blob}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-accent-warm px-5 text-sm font-medium text-void transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            <Share2 className="h-4 w-4" aria-hidden />
+            Share
+          </button>
+          {url ? (
+            <a
+              href={url}
+              download="planet-walk.png"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 px-5 text-sm text-star transition-colors hover:border-white/35"
+            >
+              <Download className="h-4 w-4" aria-hidden />
+              Download
+            </a>
+          ) : null}
+        </div>
+        {status ? (
+          <p className="mt-2 text-xs text-foreground-muted">{status}</p>
+        ) : null}
+      </div>
+    </div>
   );
 }
 
