@@ -67,14 +67,14 @@ export function WalkTracker() {
 
   if (!hydrated) {
     return (
-      <main className="ui-layer mx-auto max-w-2xl px-4 pb-24 pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pt-28">
+      <main className="ui-layer mx-auto max-w-2xl px-4 pb-24 pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pt-28 lg:max-w-6xl lg:px-10 lg:pt-36">
         <p className="text-sm text-foreground-muted">Loading passport…</p>
       </main>
     );
   }
 
   return (
-      <main className="ui-layer relative mx-auto max-w-2xl px-4 pb-[max(6rem,calc(4rem+env(safe-area-inset-bottom)))] pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pb-28 sm:pt-28">
+      <main className="ui-layer relative mx-auto max-w-2xl px-4 pb-[max(6rem,calc(4rem+env(safe-area-inset-bottom)))] pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pb-28 sm:pt-28 lg:max-w-6xl lg:px-10 lg:pt-36">
       <AnimatePresence>
         {justCompleted ? (
           <StardustBurst key="burst" onDone={dismissCelebration} />
@@ -91,184 +91,197 @@ export function WalkTracker() {
         ) : null}
       </AnimatePresence>
 
-      <p className="font-nav text-[0.7rem] uppercase tracking-[0.2em] text-accent">
-        Passport
-      </p>
-      <h1 className="font-display mt-3 text-3xl text-star sm:text-5xl">
-        Walk Tracker
-      </h1>
-      <p className="mt-3 max-w-md text-sm leading-relaxed text-foreground-muted">
-        Check off each tile as you find it on campus. Your progress and timer
-        stay on this phone — and freeze the moment you reach Pluto.
-      </p>
+      {/* Desktop: passport pinned left, stops list right. Phones stay stacked. */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
+        <div
+          className={cn(
+            "lg:self-start",
+            // The finished summary is taller than the viewport — let it scroll.
+            !isWalkComplete && "lg:sticky lg:top-28",
+          )}
+        >
+          <p className="font-nav text-[0.7rem] uppercase tracking-[0.2em] text-accent">
+            Passport
+          </p>
+          <h1 className="font-display mt-3 text-3xl text-star sm:text-5xl lg:text-6xl">
+            Walk Tracker
+          </h1>
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-foreground-muted">
+            Check off each tile as you find it on campus. Your progress and timer
+            stay on this phone — and freeze the moment you reach Pluto.
+          </p>
 
-      <AnimatePresence mode="wait">
-        {isWalkComplete ? (
-          <CompletionSummary
-            key="complete"
-            elapsedMs={elapsedMs}
-            visitedCount={visitedCount}
-            visited={state.visited}
-            onReset={resetWalk}
-          />
-        ) : (
-          <motion.div
-            key="active"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35 }}
-          >
-            <div className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-3">
-              <Stat
-                label="Elapsed"
-                value={formatElapsed(elapsedMs)}
-                hint={
-                  state.running
-                    ? "Running"
-                    : hasStarted
-                      ? "Paused"
-                      : "Not started"
-                }
-                mono
+          <AnimatePresence mode="wait">
+            {isWalkComplete ? (
+              <CompletionSummary
+                key="complete"
+                elapsedMs={elapsedMs}
+                visitedCount={visitedCount}
+                visited={state.visited}
+                onReset={resetWalk}
               />
-              <Stat
-                label="Distance"
-                value={distance.feetLabel}
-                hint={distance.milesLabel}
-              />
-              <Stat
-                label="Complete"
-                value={`${percent}%`}
-                hint={`${visitedCount}/${WALK_STOPS.length} stops`}
-              />
-            </div>
-
-            <WalkLine visited={state.visited} className="mt-7" />
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              {!state.running ? (
-                <button
-                  type="button"
-                  onClick={startWalk}
-                  className="inline-flex min-h-12 items-center gap-2 rounded-sm bg-accent px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-void transition-opacity hover:opacity-90"
-                >
-                  <Play className="h-3.5 w-3.5" aria-hidden />
-                  {hasStarted ? "Resume Walk" : "Start Walk"}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={pauseWalk}
-                  className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border bg-glass px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-star transition-colors hover:border-accent"
-                >
-                  <Pause className="h-3.5 w-3.5" aria-hidden />
-                  Pause
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={resetWalk}
-                className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-foreground-muted transition-colors hover:text-star"
+            ) : (
+              <motion.div
+                key="active"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.35 }}
               >
-                <RotateCcw className="h-3.5 w-3.5" aria-hidden />
-                Reset
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <div className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-3">
+                  <Stat
+                    label="Elapsed"
+                    value={formatElapsed(elapsedMs)}
+                    hint={
+                      state.running
+                        ? "Running"
+                        : hasStarted
+                          ? "Paused"
+                          : "Not started"
+                    }
+                    mono
+                  />
+                  <Stat
+                    label="Distance"
+                    value={distance.feetLabel}
+                    hint={distance.milesLabel}
+                  />
+                  <Stat
+                    label="Complete"
+                    value={`${percent}%`}
+                    hint={`${visitedCount}/${WALK_STOPS.length} stops`}
+                  />
+                </div>
 
-      <section className="mt-12">
-        <p className="font-nav text-[0.72rem] uppercase tracking-[0.16em] text-accent">
-          Planetary stops
-        </p>
-        <ul className="mt-5 space-y-3">
-          {WALK_STOPS.map((stop, index) => {
-            const checked = state.visited.includes(stop.slug);
-            const landmark =
-              BODY_CONTENT[stop.slug]?.campus.landmark ?? stop.name;
-            const stopDistance = formatWalkDistance(stop.walkFt);
+                <WalkLine visited={state.visited} className="mt-7" />
 
-            return (
-              <li key={stop.slug}>
-                <div
-                  className={cn(
-                    "group flex items-stretch gap-3 rounded-sm border px-3 py-3 transition-all sm:gap-4 sm:px-4 sm:py-3.5",
-                    checked
-                      ? "border-accent/40 bg-accent/10 shadow-[0_0_24px_rgba(110,182,255,0.12)]"
-                      : "border-border bg-background-elevated/60 hover:border-white/20",
+                <div className="mt-8 flex flex-wrap gap-3">
+                  {!state.running ? (
+                    <button
+                      type="button"
+                      onClick={startWalk}
+                      className="inline-flex min-h-12 items-center gap-2 rounded-sm bg-accent px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-void transition-opacity hover:opacity-90"
+                    >
+                      <Play className="h-3.5 w-3.5" aria-hidden />
+                      {hasStarted ? "Resume Walk" : "Start Walk"}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={pauseWalk}
+                      className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border bg-glass px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-star transition-colors hover:border-accent"
+                    >
+                      <Pause className="h-3.5 w-3.5" aria-hidden />
+                      Pause
+                    </button>
                   )}
-                >
                   <button
                     type="button"
-                    role="checkbox"
-                    aria-checked={checked}
-                    aria-label={`Mark ${stop.name} as ${checked ? "not visited" : "visited"}`}
-                    onClick={() => {
-                      toggleVisited(stop.slug);
-                      if (
-                        typeof navigator !== "undefined" &&
-                        "vibrate" in navigator &&
-                        !checked
-                      ) {
-                        navigator.vibrate?.(stop.slug === "pluto" ? [40, 30, 60] : 18);
-                      }
-                    }}
-                    className={cn(
-                      "mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-md border-2 transition-all active:scale-95 sm:h-12 sm:w-12",
-                      checked
-                        ? "border-accent bg-accent text-void shadow-[0_0_18px_rgba(110,182,255,0.45)]"
-                        : "border-white/25 bg-black/20 text-transparent hover:border-accent/70",
-                    )}
+                    onClick={resetWalk}
+                    className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border px-5 py-3 font-nav text-[0.7rem] uppercase tracking-[0.14em] text-foreground-muted transition-colors hover:text-star"
                   >
-                    <Check
-                      className={cn(
-                        "h-6 w-6 transition-opacity",
-                        checked ? "opacity-100" : "opacity-0",
-                      )}
-                      strokeWidth={3}
-                      aria-hidden
-                    />
+                    <RotateCcw className="h-3.5 w-3.5" aria-hidden />
+                    Reset
                   </button>
-
-                  <div className="min-w-0 flex-1 py-0.5">
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-nav text-[0.65rem] uppercase tracking-[0.14em] text-foreground-muted">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <p className="font-display text-lg leading-tight text-star sm:text-xl">
-                        {stop.name}
-                      </p>
-                    </div>
-                    <p className="mt-1 text-xs leading-snug text-foreground-muted">
-                      {landmark}
-                    </p>
-                    <p className="mt-1 text-[0.7rem] tracking-wide text-foreground-muted/80">
-                      {stop.walkFt < 0.5
-                        ? "Start · Planetarium"
-                        : `${stopDistance.combined} from Sun`}
-                    </p>
-                  </div>
-
-                  <Link
-                    href={`/planet/${stop.slug}`}
-                    className="self-center shrink-0 rounded-sm border border-transparent px-2 py-2 font-nav text-[0.68rem] uppercase tracking-[0.18em] text-accent transition-colors hover:border-accent/40 hover:text-star"
-                  >
-                    View
-                  </Link>
                 </div>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-      <p className="mt-8 text-xs leading-relaxed text-foreground-muted/80">
-        Campus scale: Sun → Pluto = {WALK_TOTAL_LABEL.combined} (
-        {WALK_TOTAL_FT.toLocaleString("en-US")} ft). Distance walked is measured
-        to your farthest checked stop from the Planetarium.
-      </p>
+        <div>
+          <section className="mt-12 lg:mt-0">
+            <p className="font-nav text-[0.72rem] uppercase tracking-[0.16em] text-accent">
+              Planetary stops
+            </p>
+            <ul className="mt-5 space-y-3">
+              {WALK_STOPS.map((stop, index) => {
+                const checked = state.visited.includes(stop.slug);
+                const landmark =
+                  BODY_CONTENT[stop.slug]?.campus.landmark ?? stop.name;
+                const stopDistance = formatWalkDistance(stop.walkFt);
+
+                return (
+                  <li key={stop.slug}>
+                    <div
+                      className={cn(
+                        "group flex items-stretch gap-3 rounded-sm border px-3 py-3 transition-all sm:gap-4 sm:px-4 sm:py-3.5",
+                        checked
+                          ? "border-accent/40 bg-accent/10 shadow-[0_0_24px_rgba(110,182,255,0.12)]"
+                          : "border-border bg-background-elevated/60 hover:border-white/20",
+                      )}
+                    >
+                      <button
+                        type="button"
+                        role="checkbox"
+                        aria-checked={checked}
+                        aria-label={`Mark ${stop.name} as ${checked ? "not visited" : "visited"}`}
+                        onClick={() => {
+                          toggleVisited(stop.slug);
+                          if (
+                            typeof navigator !== "undefined" &&
+                            "vibrate" in navigator &&
+                            !checked
+                          ) {
+                            navigator.vibrate?.(stop.slug === "pluto" ? [40, 30, 60] : 18);
+                          }
+                        }}
+                        className={cn(
+                          "mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-md border-2 transition-all active:scale-95 sm:h-12 sm:w-12",
+                          checked
+                            ? "border-accent bg-accent text-void shadow-[0_0_18px_rgba(110,182,255,0.45)]"
+                            : "border-white/25 bg-black/20 text-transparent hover:border-accent/70",
+                        )}
+                      >
+                        <Check
+                          className={cn(
+                            "h-6 w-6 transition-opacity",
+                            checked ? "opacity-100" : "opacity-0",
+                          )}
+                          strokeWidth={3}
+                          aria-hidden
+                        />
+                      </button>
+
+                      <div className="min-w-0 flex-1 py-0.5">
+                        <div className="flex items-baseline gap-2">
+                          <span className="font-nav text-[0.65rem] uppercase tracking-[0.14em] text-foreground-muted">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          <p className="font-display text-lg leading-tight text-star sm:text-xl">
+                            {stop.name}
+                          </p>
+                        </div>
+                        <p className="mt-1 text-xs leading-snug text-foreground-muted">
+                          {landmark}
+                        </p>
+                        <p className="mt-1 text-[0.7rem] tracking-wide text-foreground-muted/80">
+                          {stop.walkFt < 0.5
+                            ? "Start · Planetarium"
+                            : `${stopDistance.combined} from Sun`}
+                        </p>
+                      </div>
+
+                      <Link
+                        href={`/planet/${stop.slug}`}
+                        className="self-center shrink-0 rounded-sm border border-transparent px-2 py-2 font-nav text-[0.68rem] uppercase tracking-[0.18em] text-accent transition-colors hover:border-accent/40 hover:text-star"
+                      >
+                        View
+                      </Link>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+
+          <p className="mt-8 text-xs leading-relaxed text-foreground-muted/80">
+            Campus scale: Sun → Pluto = {WALK_TOTAL_LABEL.combined} (
+            {WALK_TOTAL_FT.toLocaleString("en-US")} ft). Distance walked is measured
+            to your farthest checked stop from the Planetarium.
+          </p>
+        </div>
+      </div>
     </main>
   );
 }
