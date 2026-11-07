@@ -116,7 +116,7 @@ export default function AboutPage() {
             </p>
             <p>
               Station markers are ceramic tiles designed for the walk, each
-              carrying planet art drawn on iPad and printed on vinyl. At the
+              carrying planet art drawn digitally and printed on vinyl. At the
               Observatory, a mural completes the journey as a public visual
               destination — a bold arrival point for Physics &amp; Astronomy
               outreach on campus.
