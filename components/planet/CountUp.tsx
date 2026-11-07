@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
 
 type CountUpProps = {
@@ -30,7 +30,13 @@ export function CountUp({
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
   const reduce = useReducedMotion();
-  const [shown, setShown] = useState(0);
+  // Server HTML carries the real value so crawlers and no-JS readers see it;
+  // the client resets to 0 before paint and counts up when in view.
+  const [shown, setShown] = useState(value);
+
+  useLayoutEffect(() => {
+    if (!reduce) setShown(0);
+  }, [reduce]);
 
   useEffect(() => {
     if (!inView) return;
