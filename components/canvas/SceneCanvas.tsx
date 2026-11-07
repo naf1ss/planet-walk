@@ -57,9 +57,19 @@ function Experience({
     solarSystemScroll.scale = scale;
   }, [startAtSolarSystem]);
 
+  // Safety net: each time the view arrives at the full-size solar system,
+  // restore any planet the entrance fade left transparent.
+  const arrivedRef = useRef(false);
   useFrame(() => {
     const root = solarSystemGroupRef.current;
-    if (root) root.scale.setScalar(solarSystemScroll.scale);
+    if (!root) return;
+    root.scale.setScalar(solarSystemScroll.scale);
+    if (solarSystemScroll.scale > 0.97 && !arrivedRef.current) {
+      arrivedRef.current = true;
+      resetSolarSystemVisibility(root);
+    } else if (solarSystemScroll.scale < 0.5) {
+      arrivedRef.current = false;
+    }
   });
 
   useLayoutEffect(() => {

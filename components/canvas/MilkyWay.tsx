@@ -31,7 +31,13 @@ type MilkyWayProps = {
   playEntrance?: boolean;
 };
 
-function setGroupOpacity(root: THREE.Object3D, opacity: number, init = false) {
+/**
+ * Scale every material under `root` to `opacity` × its original opacity.
+ * The original is captured only the first time — never re-captured mid-fade,
+ * or a second "start at 0" call would record 0 as the original and leave the
+ * planets permanently invisible (dark discs where they occlude the stars).
+ */
+function setGroupOpacity(root: THREE.Object3D, opacity: number) {
   root.traverse((obj) => {
     const mesh = obj as THREE.Mesh;
     if (!mesh.material) return;
@@ -39,7 +45,7 @@ function setGroupOpacity(root: THREE.Object3D, opacity: number, init = false) {
     for (const mat of mats) {
       if (!mat || !("opacity" in mat)) continue;
       const m = mat as THREE.Material & { opacity: number; transparent: boolean };
-      if (init || m.userData._entranceBaseOpacity === undefined) {
+      if (m.userData._entranceBaseOpacity === undefined) {
         m.userData._entranceBaseOpacity = m.opacity;
         m.userData._entranceWasTransparent = m.transparent;
       }
@@ -67,7 +73,8 @@ export function resetSolarSystemVisibility(root: THREE.Object3D) {
 
       const base = m.userData._entranceBaseOpacity as number | undefined;
       if (base !== undefined) {
-        m.opacity = base;
+        // A base of ~0 on a textured body can only be a bad capture — show it.
+        m.opacity = base < 0.01 && m.map ? 1 : base;
         const wasTransparent = m.userData._entranceWasTransparent as
           | boolean
           | undefined;
@@ -353,7 +360,7 @@ export function MilkyWay({
 
     // Always read .current — the group may attach a frame after this effect.
     const solarRootNow = solarSystemRef?.current;
-    if (solarRootNow) setGroupOpacity(solarRootNow, 0, true);
+    if (solarRootNow) setGroupOpacity(solarRootNow, 0);
     rotationMulRef.current = ROTATION_PEAK / ROTATION_BASE;
 
     const anim = { progress: 0 };
@@ -401,7 +408,7 @@ export function MilkyWay({
         },
         onStart: () => {
           const root = solarSystemRef?.current;
-          if (root) setGroupOpacity(root, 0, true);
+          if (root) setGroupOpacity(root, 0);
         },
         onComplete: () => {
           const root = solarSystemRef?.current;
@@ -414,6 +421,11 @@ export function MilkyWay({
     return () => {
       tl.kill();
       rotationMulRef.current = 1;
+      // Interrupted mid-fade (remount, navigation): never leave planets hidden.
+      // Reading the latest .current is intended — the group attaches late.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const root = solarSystemRef?.current;
+      if (root) resetSolarSystemVisibility(root);
     };
   }, [
     geometry,
