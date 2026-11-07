@@ -201,9 +201,16 @@ export function HeroOverlay({
     }, track);
 
     const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+    const t = window.setTimeout(() => ScrollTrigger.refresh(), 200);
+    const onResize = () => ScrollTrigger.refresh();
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
 
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(t);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
       ctx.revert();
     };
   }, [zoomTrackRef, startAtSolarSystem]);

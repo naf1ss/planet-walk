@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { applyCircularPointDiscard } from "@/lib/circle-point-texture";
+import {
+  applyCircularPointDiscard,
+  useCirclePointTexture,
+} from "@/lib/circle-point-texture";
 
 type SoftStarsProps = {
   radius?: number;
@@ -14,33 +16,27 @@ type SoftStarsProps = {
   saturation?: number;
   fade?: boolean;
   speed?: number;
+  /** Soft overall dimming without remounting geometry */
+  opacity?: number;
 };
 
 /**
- * Drop-in replacement for drei <Stars> that draws soft round points.
- * Uses /textures/particle.png + gl_PointCoord discard (no square GL_POINTS).
+ * Soft background stars — canvas-generated disc texture (no missing PNG race),
+ * stable geometry (count must stay fixed for the life of the instance).
  */
 export function SoftStars({
   radius = 100,
   depth = 50,
-  count = 5000,
+  count = 1600,
   factor = 4,
   saturation = 0,
   fade = false,
   speed = 1,
+  opacity = 1,
 }: SoftStarsProps) {
   const groupRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.PointsMaterial>(null);
-  const circleMap = useTexture("/textures/particle.png");
-
-  useMemo(() => {
-    circleMap.colorSpace = THREE.NoColorSpace;
-    circleMap.magFilter = THREE.LinearFilter;
-    circleMap.minFilter = THREE.LinearFilter;
-    circleMap.generateMipmaps = false;
-    circleMap.premultiplyAlpha = true;
-    circleMap.needsUpdate = true;
-  }, [circleMap]);
+  const circleMap = useCirclePointTexture();
 
   const geometry = useMemo(() => {
     const positions = new Float32Array(count * 3);
@@ -73,9 +69,20 @@ export function SoftStars({
 
   useEffect(() => {
     const mat = materialRef.current;
-    if (!mat) return;
+    if (!mat || !circleMap) return;
+    mat.map = circleMap;
+    mat.alphaMap = circleMap;
     applyCircularPointDiscard(mat);
+    mat.needsUpdate = true;
   }, [circleMap]);
+
+  useEffect(() => {
+    const mat = materialRef.current;
+    if (!mat) return;
+    mat.size = factor;
+    mat.opacity = opacity;
+    mat.needsUpdate = true;
+  }, [factor, opacity]);
 
   useEffect(() => {
     return () => {
@@ -88,6 +95,8 @@ export function SoftStars({
     groupRef.current.rotation.y += delta * speed * 0.02;
   });
 
+  if (!circleMap) return null;
+
   return (
     <points ref={groupRef} geometry={geometry} frustumCulled={false}>
       <pointsMaterial
@@ -98,7 +107,7 @@ export function SoftStars({
         sizeAttenuation
         vertexColors
         transparent
-        opacity={1}
+        opacity={opacity}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
         alphaTest={0.01}

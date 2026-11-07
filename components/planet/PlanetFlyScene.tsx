@@ -228,8 +228,9 @@ export function PlanetFlyScene({
           <SoftStars
             radius={480}
             depth={90}
-            count={isDay ? 1400 : 1800}
+            count={1600}
             factor={isDay ? 1.6 : 2}
+            opacity={isDay ? 0.85 : 1}
             saturation={0}
             fade
             speed={0.12}

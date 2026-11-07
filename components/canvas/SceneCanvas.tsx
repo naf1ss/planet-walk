@@ -96,8 +96,9 @@ function Experience({
       <SoftStars
         radius={480}
         depth={90}
-        count={isDay ? 1400 : 1800}
-        factor={isDay ? 1.6 : 2}
+        count={1600}
+        factor={isDay ? 1.55 : 2}
+        opacity={isDay ? 0.85 : 1}
         saturation={0}
         fade
         speed={0.12}
@@ -169,9 +170,21 @@ export function SceneCanvas({
     }, track);
 
     const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+    const t1 = window.setTimeout(() => ScrollTrigger.refresh(), 120);
+    const t2 = window.setTimeout(() => ScrollTrigger.refresh(), 600);
+
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("resize", refresh);
+    window.addEventListener("orientationchange", refresh);
+    window.addEventListener("pageshow", refresh);
 
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.removeEventListener("resize", refresh);
+      window.removeEventListener("orientationchange", refresh);
+      window.removeEventListener("pageshow", refresh);
       scrubRef.current = null;
       scaleScrubRef.current = null;
       ctx.revert();
@@ -263,6 +276,16 @@ export function SceneCanvas({
           }}
           onCreated={({ gl }) => {
             gl.setClearColor(spaceColor);
+            const canvas = gl.domElement;
+            const onLost = (e: Event) => {
+              e.preventDefault();
+            };
+            const onRestored = () => {
+              gl.setClearColor(spaceColor);
+              ScrollTrigger.refresh();
+            };
+            canvas.addEventListener("webglcontextlost", onLost, false);
+            canvas.addEventListener("webglcontextrestored", onRestored, false);
           }}
         >
           <Suspense fallback={null}>

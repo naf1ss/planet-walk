@@ -8,6 +8,7 @@ import * as THREE from "three";
 import {
   applyCircularPointDiscard,
   applyPerParticleScale,
+  useCirclePointTexture,
 } from "@/lib/circle-point-texture";
 
 const STAR_COUNT = 9000;
@@ -98,19 +99,12 @@ export function MilkyWay({
   const groupRef = useRef<THREE.Group>(null);
   const materialRef = useRef<THREE.PointsMaterial>(null);
   const rotationMulRef = useRef(1);
-  const [skyMap, circleMap] = useTexture([
-    "/textures/milky-way.jpg",
-    "/textures/particle.png",
-  ]);
+  const skyMap = useTexture("/textures/milky-way.jpg");
+  // Generated disc — avoids intermittent square/missing stars when particle.png
+  // fails to bind or Suspense remounts mid-entrance.
+  const circleMap = useCirclePointTexture();
   skyMap.colorSpace = THREE.SRGBColorSpace;
   skyMap.anisotropy = 8;
-
-  circleMap.colorSpace = THREE.NoColorSpace;
-  circleMap.magFilter = THREE.LinearFilter;
-  circleMap.minFilter = THREE.LinearFilter;
-  circleMap.generateMipmaps = false;
-  circleMap.premultiplyAlpha = true;
-  circleMap.needsUpdate = true;
 
   const { geometry, startPositions, targetPositions } = useMemo(() => {
     const targetPositions = new Float32Array(STAR_COUNT * 3);
@@ -274,9 +268,12 @@ export function MilkyWay({
 
   useEffect(() => {
     const mat = materialRef.current;
-    if (!mat) return;
+    if (!mat || !circleMap) return;
+    mat.map = circleMap;
+    mat.alphaMap = circleMap;
     applyCircularPointDiscard(mat);
     applyPerParticleScale(mat);
+    mat.needsUpdate = true;
   }, [circleMap]);
 
   // Orbital decay: polar (r, theta, y) → Cartesian; spirals inward to final seats.
@@ -289,7 +286,6 @@ export function MilkyWay({
     ) as THREE.BufferAttribute;
     const live = positionAttr.array as Float32Array;
     const scales = scaleAttr.array as Float32Array;
-    const solarRoot = solarSystemRef?.current ?? null;
 
     const startR = new Float32Array(STAR_COUNT);
     const startTheta = new Float32Array(STAR_COUNT);
@@ -350,11 +346,14 @@ export function MilkyWay({
     if (!playEntrance) {
       settleFinal();
       rotationMulRef.current = 1;
-      if (solarRoot) resetSolarSystemVisibility(solarRoot);
+      const root = solarSystemRef?.current;
+      if (root) resetSolarSystemVisibility(root);
       return;
     }
 
-    if (solarRoot) setGroupOpacity(solarRoot, 0, true);
+    // Always read .current — the group may attach a frame after this effect.
+    const solarRootNow = solarSystemRef?.current;
+    if (solarRootNow) setGroupOpacity(solarRootNow, 0, true);
     rotationMulRef.current = ROTATION_PEAK / ROTATION_BASE;
 
     const anim = { progress: 0 };
@@ -397,10 +396,16 @@ export function MilkyWay({
         duration: SOLAR_FADE_DURATION,
         ease: "power2.out",
         onUpdate: () => {
-          if (solarRoot) setGroupOpacity(solarRoot, solar.opacity);
+          const root = solarSystemRef?.current;
+          if (root) setGroupOpacity(root, solar.opacity);
         },
         onStart: () => {
-          if (solarRoot) setGroupOpacity(solarRoot, 0, true);
+          const root = solarSystemRef?.current;
+          if (root) setGroupOpacity(root, 0, true);
+        },
+        onComplete: () => {
+          const root = solarSystemRef?.current;
+          if (root) resetSolarSystemVisibility(root);
         },
       },
       SOLAR_FADE_AT,
@@ -462,23 +467,25 @@ export function MilkyWay({
         />
       </mesh>
 
-      <points geometry={geometry} frustumCulled={false}>
-        <pointsMaterial
-          ref={materialRef}
-          map={circleMap}
-          alphaMap={circleMap}
-          size={1.2}
-          sizeAttenuation
-          vertexColors
-          transparent
-          opacity={1}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          alphaTest={0.01}
-          fog={false}
-          toneMapped={false}
-        />
-      </points>
+      {circleMap ? (
+        <points geometry={geometry} frustumCulled={false}>
+          <pointsMaterial
+            ref={materialRef}
+            map={circleMap}
+            alphaMap={circleMap}
+            size={1.2}
+            sizeAttenuation
+            vertexColors
+            transparent
+            opacity={1}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+            alphaTest={0.01}
+            fog={false}
+            toneMapped={false}
+          />
+        </points>
+      ) : null}
     </group>
   );
 }

@@ -48,16 +48,28 @@ function themeFor(mode: DayNightMode): Omit<DayNightValue, "mode" | "isDay"> {
  * Sets `data-theme` on <html> so CSS overlays pick up warm vs cool tokens.
  */
 export function DayNightProvider({ children }: { children: React.ReactNode }) {
+  // Stable SSR/hydrate default — reading `window` in useState caused day-mode
+  // hydration mismatches that remounted the landing canvas intermittently.
   const [mode, setMode] = useState<DayNightMode>("night");
 
   const refresh = useCallback(() => {
-    setMode(getModeFromLocalTime());
+    setMode((prev) => {
+      const next = getModeFromLocalTime();
+      return prev === next ? prev : next;
+    });
   }, []);
 
   useEffect(() => {
     refresh();
     const id = window.setInterval(refresh, 60_000);
-    return () => window.clearInterval(id);
+    const onVis = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    window.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.clearInterval(id);
+      window.removeEventListener("visibilitychange", onVis);
+    };
   }, [refresh]);
 
   useEffect(() => {
