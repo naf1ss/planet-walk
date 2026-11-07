@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ContactIcon } from "@/components/layout/ContactIcon";
+import { CONTACT_LINKS, isExternalContact } from "@/lib/contact";
 import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/nav";
 
@@ -86,9 +88,28 @@ export function SiteFooter() {
             ))}
           </nav>
 
-          <p className="text-xs leading-relaxed text-foreground-muted">
-            © {year} {SITE.author}. All rights reserved.
-          </p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <ul aria-label="Contact" className="flex items-center gap-1.5">
+              {CONTACT_LINKS.map((link) => (
+                <li key={link.id}>
+                  <a
+                    href={link.href}
+                    {...(isExternalContact(link)
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    aria-label={link.label}
+                    title={link.display}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-foreground-muted transition-colors hover:border-accent/40 hover:text-star"
+                  >
+                    <ContactIcon id={link.id} className="h-4 w-4" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs leading-relaxed text-foreground-muted">
+              © {year} {SITE.author}. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

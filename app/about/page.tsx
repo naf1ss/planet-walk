@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { ContactIcon } from "@/components/layout/ContactIcon";
+import { CONTACT_LINKS, isExternalContact } from "@/lib/contact";
 import { SITE } from "@/lib/constants";
 import { WALK_STOPS, WALK_TOTAL_LABEL } from "@/lib/planetData";
 
@@ -151,6 +154,46 @@ export default function AboutPage() {
               space becomes a place where research and aesthetics meet.
             </p>
           </div>
+
+          <p className="mt-8 font-nav text-[0.65rem] uppercase tracking-[0.16em] text-star/45">
+            Find Nafis
+          </p>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:max-w-2xl">
+            {CONTACT_LINKS.map((link) => {
+              const external = isExternalContact(link);
+              return (
+                <li
+                  key={link.id}
+                  className={link.id === "email" ? "sm:col-span-2" : undefined}
+                >
+                  <a
+                    href={link.href}
+                    {...(external
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    className="group flex min-h-14 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 transition-colors hover:border-white/25 hover:bg-white/[0.06]"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 text-accent transition-colors group-hover:border-accent/40 group-hover:text-star">
+                      <ContactIcon id={link.id} className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-nav text-[0.62rem] uppercase tracking-[0.16em] text-star/45">
+                        {link.label}
+                      </span>
+                      <span className="mt-0.5 block truncate text-sm text-star">
+                        {link.display}
+                      </span>
+                    </span>
+                    <ArrowUpRight
+                      className="h-4 w-4 shrink-0 text-foreground-muted transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent-warm"
+                      strokeWidth={1.75}
+                      aria-hidden
+                    />
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </section>
 
