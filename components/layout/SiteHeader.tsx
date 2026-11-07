@@ -159,7 +159,7 @@ export function SiteHeader() {
     return isItemActive(item, pathname);
   };
 
-  const light = pathname === "/map";
+  const wide = pathname === "/map";
 
   return (
     <MotionConfig reducedMotion="user">
@@ -171,7 +171,7 @@ export function SiteHeader() {
         aria-hidden
         className={cn(
           "absolute inset-x-0 top-0 h-[calc(100%+0.75rem)] backdrop-blur-xl transition-opacity duration-500 [mask-image:linear-gradient(to_bottom,black_65%,transparent)]",
-          light ? "bg-[#eef2f6]/80" : "bg-[#03040a]/70",
+          "bg-[#03040a]/70",
           scrolled && pathname !== "/" ? "opacity-100" : "opacity-0",
         )}
       />
@@ -179,7 +179,7 @@ export function SiteHeader() {
         className={cn(
           "relative mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))] transition-all duration-500 sm:gap-3 sm:px-6 sm:pt-5",
           scrolled && "sm:pt-3",
-          light && "max-w-[90rem]",
+          wide && "max-w-[90rem]",
         )}
       >
         {/* Brand — cool blue wordmark, distinct from gold Track CTA */}
@@ -198,36 +198,17 @@ export function SiteHeader() {
         >
           <span
             aria-hidden
-            className={cn(
-              "h-7 w-[2px] shrink-0 rounded-full bg-gradient-to-b transition-all sm:h-8",
-              light
-                ? "from-[#3b82c4] via-[#3b82c4]/70 to-[#3b82c4]/20 shadow-[0_0_12px_rgba(59,130,196,0.35)] group-hover:shadow-[0_0_18px_rgba(59,130,196,0.5)]"
-                : "from-accent via-accent/70 to-accent/20 shadow-[0_0_12px_rgba(110,182,255,0.45)] group-hover:shadow-[0_0_18px_rgba(110,182,255,0.65)]",
-            )}
+            className="h-7 w-[2px] shrink-0 rounded-full bg-gradient-to-b from-accent via-accent/70 to-accent/20 shadow-[0_0_12px_rgba(110,182,255,0.45)] transition-all group-hover:shadow-[0_0_18px_rgba(110,182,255,0.65)] sm:h-8"
           />
           <span className="flex min-w-0 flex-col gap-0.5">
-            <span
-              className={cn(
-                "hidden font-nav text-[0.65rem] uppercase tracking-[0.2em] transition-colors sm:block",
-                light
-                  ? "text-[#3b82c4] group-hover:text-[#1d4ed8]"
-                  : "text-accent/80 group-hover:text-accent",
-              )}
-            >
+            <span className="hidden font-nav text-[0.65rem] uppercase tracking-[0.2em] text-accent/80 transition-colors group-hover:text-accent sm:block">
               Home
             </span>
             <span className="relative flex min-w-0">
-              <span
-                className={cn(
-                  "relative z-[1] truncate font-display text-[1.15rem] leading-none transition-colors sm:text-[1.3rem]",
-                  light
-                    ? "text-[#121826] group-hover:text-[#1d4ed8]"
-                    : "text-star group-hover:text-accent",
-                )}
-              >
+              <span className="relative z-[1] truncate font-display text-[1.15rem] leading-none text-star transition-colors group-hover:text-accent sm:text-[1.3rem]">
                 Planet Walk
               </span>
-              <BrandOrbit hovered={brandHover} light={light} />
+              <BrandOrbit hovered={brandHover} />
             </span>
           </span>
         </Link>
@@ -238,13 +219,9 @@ export function SiteHeader() {
           {...warpIn(0.15)}
           className={cn(
             "pointer-events-auto absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 rounded-full border px-1.5 py-1.5 transition-all duration-300 md:flex",
-            light
-              ? scrolled
-                ? "border-[#c9d3e2] bg-white/90 shadow-[0_12px_40px_rgba(18,24,38,0.1)] backdrop-blur-xl"
-                : "border-[#d5dde8] bg-white/75 backdrop-blur-lg"
-              : scrolled
-                ? "border-white/12 bg-black/50 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl"
-                : "border-white/10 bg-white/[0.05] backdrop-blur-lg",
+            scrolled
+              ? "border-white/12 bg-black/50 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl"
+              : "border-white/10 bg-white/[0.05] backdrop-blur-lg",
           )}
           aria-label="Primary"
         >
@@ -257,13 +234,9 @@ export function SiteHeader() {
                 onClick={(e) => onNavClick(item, e)}
                 className={cn(
                   "relative rounded-full px-4 py-2 font-nav text-[0.72rem] uppercase tracking-[0.14em] transition-colors",
-                  light
-                    ? active
-                      ? "text-[#121826]"
-                      : "text-[#5b6577] hover:text-[#121826]"
-                    : active
-                      ? "text-star"
-                      : "text-foreground-muted hover:text-star",
+                  active
+                    ? "text-star"
+                    : "text-foreground-muted hover:text-star",
                 )}
               >
                 {active ? (
@@ -272,22 +245,14 @@ export function SiteHeader() {
                       layoutId="nav-active-pill"
                       transition={ORB_SPRING}
                       aria-hidden
-                      className={cn(
-                        "absolute inset-0 rounded-full",
-                        light ? "bg-[#e8edf3]" : "bg-white/10",
-                      )}
+                      className="absolute inset-0 rounded-full bg-white/10"
                     />
                     {/* Glowing planet riding the pill's border */}
                     <motion.span
                       layoutId="nav-active-orb"
                       transition={ORB_SPRING}
                       aria-hidden
-                      className={cn(
-                        "absolute -bottom-[9px] left-[calc(50%-2.5px)] h-[5px] w-[5px] rounded-full",
-                        light
-                          ? "bg-[#3b82c4] shadow-[0_0_8px_rgba(59,130,196,0.8)]"
-                          : "bg-[#dcecff] shadow-[0_0_10px_2px_rgba(110,182,255,0.7)]",
-                      )}
+                      className="absolute -bottom-[9px] left-[calc(50%-2.5px)] h-[5px] w-[5px] rounded-full bg-[#dcecff] shadow-[0_0_10px_2px_rgba(110,182,255,0.7)]"
                     />
                   </>
                 ) : null}
@@ -307,13 +272,9 @@ export function SiteHeader() {
             onClick={() => setOpen(false)}
             className={cn(
               "track-cta inline-flex min-h-10 items-center gap-2 rounded-full px-3 py-2 font-nav text-[0.68rem] font-medium uppercase tracking-[0.18em] transition-all sm:px-5 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.14em]",
-              light
-                ? activeFor(TRACKER_ITEM)
-                  ? "bg-[#1d4ed8] text-white shadow-[0_0_24px_rgba(29,78,216,0.25)] [--flare:#ffffff]"
-                  : "border border-[#1d4ed8]/30 bg-[#1d4ed8]/8 text-[#1d4ed8] hover:border-[#1d4ed8]/50 hover:bg-[#1d4ed8]/14 [--flare:#1d4ed8]"
-                : activeFor(TRACKER_ITEM)
-                  ? "bg-accent-warm text-void shadow-[0_0_24px_rgba(240,192,106,0.35)] [--flare:#ffffff]"
-                  : "border border-accent-warm/35 bg-accent-warm/10 text-accent-warm hover:border-accent-warm/60 hover:bg-accent-warm/20 [--flare:var(--accent-warm)]",
+              activeFor(TRACKER_ITEM)
+                ? "bg-accent-warm text-void shadow-[0_0_24px_rgba(240,192,106,0.35)] [--flare:#ffffff]"
+                : "border border-accent-warm/35 bg-accent-warm/10 text-accent-warm hover:border-accent-warm/60 hover:bg-accent-warm/20 [--flare:var(--accent-warm)]",
             )}
           >
             <span aria-hidden className="track-cta__flare" />
@@ -328,12 +289,7 @@ export function SiteHeader() {
 
           <button
             type="button"
-            className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-md transition-colors md:hidden",
-              light
-                ? "border-[#c9d3e2] bg-white/85 text-[#121826] hover:bg-white"
-                : "border-white/15 bg-black/40 text-star hover:border-white/30 hover:bg-white/10",
-            )}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/40 text-star backdrop-blur-md transition-colors hover:border-white/30 hover:bg-white/10 md:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -374,10 +330,7 @@ export function SiteHeader() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className={cn(
-              "absolute inset-0 backdrop-blur-sm",
-              light ? "bg-[#121826]/35" : "bg-void/75",
-            )}
+            className="absolute inset-0 bg-void/75 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
           <motion.nav
@@ -397,34 +350,14 @@ export function SiteHeader() {
             }}
             transition={{ duration: 0.4, ease: EASE }}
             style={{ transformOrigin: "top right" }}
-            className={cn(
-              "absolute inset-x-4 top-20 overflow-hidden rounded-2xl border shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl",
-              light
-                ? "border-[#d5dde8] bg-white/95"
-                : "border-white/12 bg-[#070912]/92 shadow-[0_24px_80px_rgba(0,0,0,0.55)]",
-            )}
+            className="absolute inset-x-4 top-20 overflow-hidden rounded-2xl border border-white/12 bg-[#070912]/92 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl"
             aria-label="Mobile"
           >
-            <div
-              className={cn(
-                "border-b px-5 py-4",
-                light ? "border-[#e8edf3]" : "border-white/8",
-              )}
-            >
-              <p
-                className={cn(
-                  "font-mono text-[0.65rem] uppercase tracking-[0.22em]",
-                  light ? "text-[#5b6577]" : "text-star/45",
-                )}
-              >
+            <div className="border-b border-white/8 px-5 py-4">
+              <p className="font-mono text-[0.65rem] uppercase tracking-[0.22em] text-star/45">
                 Navigate
               </p>
-              <p
-                className={cn(
-                  "font-display mt-1 text-lg",
-                  light ? "text-[#121826]" : "text-star",
-                )}
-              >
+              <p className="font-display mt-1 text-lg text-star">
                 {SITE.name}
               </p>
             </div>
@@ -443,25 +376,16 @@ export function SiteHeader() {
                       onClick={(e) => onNavClick(item, e)}
                       className={cn(
                         "flex items-center justify-between rounded-xl px-4 py-3.5 transition-colors",
-                        light
-                          ? active
-                            ? "bg-[#e8edf3] text-[#121826]"
-                            : "text-[#5b6577] hover:bg-[#f3f6fa] hover:text-[#121826]"
-                          : active
-                            ? "bg-white/8 text-star"
-                            : "text-foreground-muted hover:bg-white/5 hover:text-star",
+                        active
+                          ? "bg-white/8 text-star"
+                          : "text-foreground-muted hover:bg-white/5 hover:text-star",
                       )}
                     >
                       <span className="font-nav text-[0.7rem] uppercase tracking-[0.14em]">
                         {item.label}
                       </span>
                       {active ? (
-                        <span
-                          className={cn(
-                            "h-1.5 w-1.5 rounded-full",
-                            light ? "bg-[#1d4ed8]" : "bg-accent-warm",
-                          )}
-                        />
+                        <span className="h-1.5 w-1.5 rounded-full bg-accent-warm" />
                       ) : null}
                     </Link>
                   </motion.li>

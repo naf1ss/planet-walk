@@ -2,7 +2,6 @@
 
 import { useAnimationFrame, useReducedMotion } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
 
 /** Orbit geometry — keep in sync with the ring's inset/height classes below. */
 const RX_PAD = 7;
@@ -16,13 +15,7 @@ const HOVER_SPEED = BASE_SPEED * 3.2;
  * A tiny moon circling the wordmark. Passes behind the letters on the far
  * side of its orbit, and speeds up while the brand is hovered.
  */
-export function BrandOrbit({
-  hovered,
-  light,
-}: {
-  hovered: boolean;
-  light: boolean;
-}) {
+export function BrandOrbit({ hovered }: { hovered: boolean }) {
   const reduce = useReducedMotion();
   const rootRef = useRef<HTMLSpanElement>(null);
   const moonRef = useRef<HTMLSpanElement>(null);
@@ -73,20 +66,10 @@ export function BrandOrbit({
       aria-hidden
       className="pointer-events-none absolute inset-0"
     >
-      <span
-        className={cn(
-          "absolute -left-[7px] -right-[7px] top-1/2 h-[18px] -translate-y-1/2 rotate-[-6.9deg] rounded-[50%] border opacity-0 transition-opacity duration-500 group-hover:opacity-100",
-          light ? "border-[#3b82c4]/25" : "border-accent/20",
-        )}
-      />
+      <span className="absolute -left-[7px] -right-[7px] top-1/2 h-[18px] -translate-y-1/2 rotate-[-6.9deg] rounded-[50%] border border-accent/20 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       <span
         ref={moonRef}
-        className={cn(
-          "absolute left-1/2 top-1/2 -ml-[2px] -mt-[2px] h-[4px] w-[4px] rounded-full opacity-0 will-change-transform",
-          light
-            ? "bg-[#3b82c4] shadow-[0_0_6px_rgba(59,130,196,0.7)]"
-            : "bg-[#dcecff] shadow-[0_0_6px_1px_rgba(110,182,255,0.75)]",
-        )}
+        className="absolute left-1/2 top-1/2 -ml-[2px] -mt-[2px] h-[4px] w-[4px] rounded-full bg-[#dcecff] opacity-0 shadow-[0_0_6px_1px_rgba(110,182,255,0.75)] will-change-transform"
       />
     </span>
   );

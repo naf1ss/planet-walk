@@ -89,9 +89,9 @@ function WalkPath() {
         positions={WALK_PATH}
         interactive={false}
         pathOptions={{
-          color: "#3b82f6",
+          color: "#6eb6ff",
           weight: 14,
-          opacity: 0.16,
+          opacity: 0.2,
           lineCap: "round",
           lineJoin: "round",
         }}
@@ -101,9 +101,9 @@ function WalkPath() {
         positions={WALK_PATH}
         interactive={false}
         pathOptions={{
-          color: "#1d4ed8",
+          color: "#8cc8ff",
           weight: 3,
-          opacity: 0.85,
+          opacity: 0.9,
           lineCap: "round",
           lineJoin: "round",
         }}
@@ -136,12 +136,15 @@ function FocusSelected({
 
   useEffect(() => {
     if (!stop) return;
+    // Open once the flight lands so the popup's auto-pan can fit it in view.
+    const open = () => markerRefs.current[stop.slug]?.openPopup();
+    map.once("moveend", open);
     map.flyTo([stop.lat, stop.lng], Math.max(map.getZoom(), 17), {
       duration: 0.7,
     });
-    const marker = markerRefs.current[stop.slug];
-    const t = window.setTimeout(() => marker?.openPopup(), 320);
-    return () => window.clearTimeout(t);
+    return () => {
+      map.off("moveend", open);
+    };
   }, [stop, map, markerRefs]);
 
   return null;
@@ -160,8 +163,8 @@ function stopIcon(stop: CampusMapStop, selected: boolean) {
 }
 
 /**
- * Light campus map — muted OSM basemap (no API key), animated walk
- * path, planet-coloured stop markers.
+ * Dark campus map — OSM basemap inverted to night (no API key), animated
+ * walk path, planet-coloured stop markers.
  */
 export function CampusMap({
   selectedSlug,
@@ -191,12 +194,12 @@ export function CampusMap({
         scrollWheelZoom
         className="h-full w-full"
       >
-        {/* OpenStreetMap tiles (free, no key), muted in CSS (.map-tiles-muted)
+        {/* OpenStreetMap tiles (free, no key), darkened in CSS (.map-tiles-dark)
             so the walk path and planet pins carry the colour */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          className="map-tiles-muted"
+          className="map-tiles-dark"
           maxZoom={19}
         />
 

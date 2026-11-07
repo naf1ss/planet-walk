@@ -189,52 +189,52 @@ body {
   z-index: 5;
 }
 
-/* Campus map — light page + Leaflet chrome */
-html.map-light {
-  color-scheme: light;
-}
-
-html.map-light body {
-  background-color: #eef2f6;
-  background-image: none;
-  color: #121826;
-}
-
-html.map-light .map-page-light {
-  background: #eef2f6;
-}
-
+/* Campus map — dark Leaflet chrome to match the space theme */
 .campus-map-root .leaflet-container,
 .campus-map-root .leaflet-container * {
   cursor: pointer !important;
 }
 
 .campus-map-root .leaflet-container {
-  background: #f2f3f0;
+  background: #05070f;
   font-family: var(--font-body);
 }
 
+.campus-map-root .leaflet-bar {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+}
+
 .campus-map-root .leaflet-control-zoom a {
-  color: #121826 !important;
-  background: rgba(255, 255, 255, 0.92) !important;
-  border-bottom-color: #d5dde8 !important;
+  color: var(--star) !important;
+  background: rgba(7, 9, 18, 0.82) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   width: 32px !important;
   height: 32px !important;
   line-height: 32px !important;
 }
 
 .campus-map-root .leaflet-control-zoom a:hover {
-  background: #fff !important;
+  background: rgba(20, 26, 44, 0.92) !important;
+  color: var(--accent) !important;
+}
+
+.campus-map-root .leaflet-control-zoom a.leaflet-disabled {
+  color: rgba(245, 247, 255, 0.3) !important;
 }
 
 .campus-map-root .leaflet-control-attribution {
-  background: rgba(255, 255, 255, 0.82) !important;
-  color: #5b6577 !important;
+  background: rgba(3, 4, 10, 0.72) !important;
+  color: rgba(245, 247, 255, 0.5) !important;
   font-size: 10px !important;
 }
 
 .campus-map-root .leaflet-control-attribution a {
-  color: #1d4ed8 !important;
+  color: var(--accent) !important;
 }
 
 .campus-stop-marker {
@@ -255,9 +255,9 @@ html.map-light .map-page-light {
     radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.75), transparent 42%),
     radial-gradient(circle at 50% 50%, var(--stop-color, #3b82c4) 55%, color-mix(in srgb, var(--stop-color, #3b82c4) 55%, #0b1020) 100%);
   box-shadow:
-    0 0 0 2px #fff,
-    0 0 14px color-mix(in srgb, var(--stop-color, #3b82c4) 70%, transparent),
-    0 6px 14px rgba(18, 24, 38, 0.28);
+    0 0 0 2px rgba(245, 247, 255, 0.9),
+    0 0 18px color-mix(in srgb, var(--stop-color, #3b82c4) 80%, transparent),
+    0 6px 14px rgba(0, 0, 0, 0.55);
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -299,10 +299,11 @@ html.map-light .map-page-light {
   100% { transform: scale(2.4); opacity: 0; }
 }
 
-/* Muted, cool-grey OSM tiles so the route and planet pins carry the colour */
-.map-tiles-muted {
-  filter: grayscale(0.85) sepia(0.12) hue-rotate(185deg) saturate(0.7)
-    brightness(1.06) contrast(0.86);
+/* OSM tiles inverted into a deep navy night map, so the route and
+   planet pins carry the colour (no dark-tile API key needed) */
+.map-tiles-dark {
+  filter: invert(1) grayscale(1) brightness(0.62) contrast(1.15) sepia(0.35)
+    hue-rotate(180deg) saturate(2.2);
 }
 
 /* light dots streaming Sun → Pluto along the route */
@@ -331,8 +332,12 @@ html.map-light .map-page-light {
 .campus-map-root .leaflet-popup-content-wrapper {
   border-radius: 14px;
   padding: 0;
-  box-shadow: 0 16px 40px rgba(18, 24, 38, 0.18);
-  border: 1px solid #d5dde8;
+  background: rgba(7, 9, 18, 0.94);
+  color: var(--star);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .campus-map-root .leaflet-popup-content {
@@ -341,8 +346,16 @@ html.map-light .map-page-light {
 }
 
 .campus-map-root .leaflet-popup-tip {
-  background: #fff;
-  border: 1px solid #d5dde8;
+  background: rgba(7, 9, 18, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.campus-map-root .leaflet-container a.leaflet-popup-close-button {
+  color: rgba(245, 247, 255, 0.5);
+}
+
+.campus-map-root .leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--star);
 }
 
 .campus-map-popup {
@@ -354,7 +367,7 @@ html.map-light .map-page-light {
   font-size: 0.65rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #3b82c4;
+  color: var(--accent);
   font-family: var(--font-nav);
 }
 
@@ -362,7 +375,7 @@ html.map-light .map-page-light {
   margin: 0.35rem 0 0;
   font-size: 1.05rem;
   font-weight: 600;
-  color: #121826;
+  color: var(--star);
   font-family: var(--font-display);
 }
 
@@ -370,7 +383,7 @@ html.map-light .map-page-light {
   margin: 0.35rem 0 0;
   font-size: 0.8rem;
   line-height: 1.4;
-  color: #5b6577;
+  color: var(--foreground-muted);
 }
 
 .campus-map-popup__photo {
@@ -382,7 +395,7 @@ html.map-light .map-page-light {
   font-size: 0.65rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #5b6577;
+  color: rgba(245, 247, 255, 0.5);
   font-family: var(--font-nav);
 }
 
@@ -390,8 +403,8 @@ html.map-light .map-page-light {
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 10px;
-  border: 1px dashed #c9d3e2;
-  background: #f3f6fa;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .campus-map-popup__photo-btn {
@@ -408,12 +421,12 @@ html.map-light .map-page-light {
   display: block;
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(18, 24, 38, 0.12);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .campus-map-popup__photo-btn:hover .campus-map-popup__photo-frame {
-  box-shadow: 0 10px 28px rgba(18, 24, 38, 0.18);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(110, 182, 255, 0.35);
   transform: translateY(-1px);
 }
 
@@ -422,7 +435,7 @@ html.map-light .map-page-light {
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 10px;
-  background: #e8edf3;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .campus-map-popup__photo-img {

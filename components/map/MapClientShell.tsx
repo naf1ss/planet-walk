@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { CAMPUS_MAP_STOPS, type CampusMapStop } from "@/lib/campus-map-stops";
@@ -13,7 +13,7 @@ const CampusMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="absolute inset-0 flex items-center justify-center bg-[#e8edf3] text-sm text-[#5b6577]">
+      <div className="absolute inset-0 flex items-center justify-center bg-[#05070f] text-sm text-foreground-muted">
         Loading campus map…
       </div>
     ),
@@ -21,36 +21,31 @@ const CampusMap = dynamic(
 );
 
 /**
- * Light map experience — stop list + interactive campus map.
+ * Map experience — stop list + interactive campus map.
  * Phone: compact intro, tall map, snap-scrolling stop chips.
  */
 export function MapClientShell() {
   const [selectedSlug, setSelectedSlug] = useState<BodySlug | null>(null);
   const [previewStop, setPreviewStop] = useState<CampusMapStop | null>(null);
 
-  useEffect(() => {
-    document.documentElement.classList.add("map-light");
-    return () => document.documentElement.classList.remove("map-light");
-  }, []);
-
   const closePreview = useCallback(() => setPreviewStop(null), []);
 
   return (
     <>
       <div className="map-page-shell flex min-h-[calc(100dvh-4.75rem)] flex-col gap-3 sm:gap-5 lg:h-[calc(100dvh-5.25rem)] lg:min-h-0 lg:flex-row lg:gap-0">
-        <aside className="flex w-full shrink-0 flex-col lg:w-[22rem] lg:border-r lg:border-[#d5dde8]">
-          <div className="border-b border-[#d5dde8] px-4 py-3 sm:px-6 sm:py-5">
-            <p className="font-nav text-[0.68rem] uppercase tracking-[0.2em] text-[#3b82c4] sm:text-[0.72rem]">
+        <aside className="flex w-full shrink-0 flex-col lg:w-[22rem] lg:border-r lg:border-white/10 lg:bg-[#05070f]/60 lg:backdrop-blur-xl">
+          <div className="border-b border-white/10 px-4 py-3 sm:px-6 sm:py-5">
+            <p className="font-nav text-[0.68rem] uppercase tracking-[0.2em] text-accent sm:text-[0.72rem]">
               Campus route
             </p>
-            <h1 className="mt-1.5 font-display text-3xl text-[#121826] sm:mt-2 sm:text-5xl">
+            <h1 className="mt-1.5 font-display text-3xl text-star sm:mt-2 sm:text-5xl">
               Planet Walk Map
             </h1>
-            <p className="mt-1.5 hidden text-sm leading-relaxed text-[#5b6577] sm:mt-2 sm:block">
+            <p className="mt-1.5 hidden text-sm leading-relaxed text-foreground-muted sm:mt-2 sm:block">
               Follow the path from the Planetarium to the Observatory. Select a
               stop to focus the map.
             </p>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#5b6577] sm:hidden">
+            <p className="mt-1.5 text-xs leading-relaxed text-foreground-muted sm:hidden">
               Tap a stop, then tap a marker for its location photo.
             </p>
           </div>
@@ -64,28 +59,26 @@ export function MapClientShell() {
                     type="button"
                     onClick={() => setSelectedSlug(stop.slug)}
                     className={cn(
-                      "flex w-full min-h-11 min-w-[9.75rem] items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition-colors sm:min-w-[10.5rem] sm:gap-3 lg:min-w-0",
+                      "flex w-full min-h-11 min-w-[9.75rem] items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-colors sm:min-w-[10.5rem] sm:gap-3 lg:min-w-0",
                       active
-                        ? "bg-[#121826] text-white"
-                        : "bg-white/70 text-[#121826] hover:bg-white lg:bg-transparent lg:hover:bg-[#e8edf3]",
+                        ? "border-white/15 bg-white/[0.08] text-star"
+                        : "border-white/[0.06] bg-white/[0.03] text-star/90 hover:bg-white/[0.06] lg:border-transparent lg:bg-transparent lg:hover:bg-white/[0.05]",
                     )}
+                    style={
+                      active
+                        ? { boxShadow: `inset 3px 0 0 ${stop.color}` }
+                        : undefined
+                    }
                   >
                     <span
                       aria-hidden
-                      className={cn(
-                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-xs font-semibold",
-                        active
-                          ? "border-white/30 bg-white/10 text-white"
-                          : "border-transparent text-[#121826]",
-                      )}
-                      style={
-                        active
-                          ? undefined
-                          : {
-                              backgroundColor: `${stop.color}33`,
-                              boxShadow: `inset 0 0 0 2px ${stop.color}`,
-                            }
-                      }
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white"
+                      style={{
+                        backgroundColor: `${stop.color}${active ? "55" : "26"}`,
+                        boxShadow: active
+                          ? `inset 0 0 0 2px ${stop.color}, 0 0 14px ${stop.color}66`
+                          : `inset 0 0 0 2px ${stop.color}`,
+                      }}
                     >
                       {stop.index + 1}
                     </span>
@@ -96,7 +89,7 @@ export function MapClientShell() {
                       <span
                         className={cn(
                           "mt-0.5 block truncate text-[0.7rem]",
-                          active ? "text-white/65" : "text-[#5b6577]",
+                          active ? "text-star/70" : "text-foreground-muted",
                         )}
                       >
                         {stop.landmark}
@@ -108,20 +101,20 @@ export function MapClientShell() {
             })}
           </ol>
 
-          <div className="mt-auto hidden border-t border-[#d5dde8] px-5 py-4 lg:block">
-            <p className="text-xs text-[#5b6577]">
+          <div className="mt-auto hidden border-t border-white/10 px-5 py-4 lg:block">
+            <p className="text-xs text-foreground-muted">
               {CAMPUS_MAP_STOPS.length} stops · Sun → Pluto
             </p>
             <Link
               href="/tracker"
-              className="mt-2 inline-flex font-nav text-[0.72rem] uppercase tracking-[0.14em] text-[#1d4ed8] transition-colors hover:text-[#1e3a8a]"
+              className="mt-2 inline-flex font-nav text-[0.72rem] uppercase tracking-[0.14em] text-accent-warm transition-colors hover:text-star"
             >
               Track your walk →
             </Link>
           </div>
         </aside>
 
-        <div className="relative min-h-[58dvh] flex-1 overflow-hidden rounded-2xl border border-[#d5dde8] bg-[#e8edf3] shadow-[0_20px_50px_rgba(18,24,38,0.08)] sm:min-h-[55vh] lg:min-h-0 lg:rounded-none lg:border-0 lg:shadow-none">
+        <div className="relative min-h-[58dvh] flex-1 overflow-hidden rounded-2xl border border-white/10 bg-[#05070f] shadow-[0_20px_60px_rgba(0,0,0,0.5)] sm:min-h-[55vh] lg:min-h-0 lg:rounded-none lg:border-0 lg:shadow-none">
           <CampusMap
             selectedSlug={selectedSlug}
             onSelect={setSelectedSlug}
@@ -131,12 +124,12 @@ export function MapClientShell() {
         </div>
 
         <div className="flex items-center justify-between px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] lg:hidden">
-          <p className="text-[0.7rem] text-[#5b6577]">
+          <p className="text-[0.7rem] text-foreground-muted">
             {CAMPUS_MAP_STOPS.length} stops · Sun → Pluto
           </p>
           <Link
             href="/tracker"
-            className="inline-flex min-h-10 items-center font-nav text-[0.72rem] uppercase tracking-[0.14em] text-[#1d4ed8]"
+            className="inline-flex min-h-10 items-center font-nav text-[0.72rem] uppercase tracking-[0.14em] text-accent-warm"
           >
             Track →
           </Link>
