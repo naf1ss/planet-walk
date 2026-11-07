@@ -586,3 +586,88 @@ html.map-light .map-page-light {
   font-size: 0.7rem;
   color: var(--accent-warm, #f0c06a);
 }
+
+/* Header Track CTA — thruster ignition on hover. `--flare` is set per state. */
+.track-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.track-cta__flare {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    110% 160% at 0% 50%,
+    color-mix(in srgb, var(--flare, currentColor) 34%, transparent),
+    transparent 62%
+  );
+  opacity: 0;
+  transform: scaleX(0.35);
+  transform-origin: left center;
+  transition:
+    opacity 0.35s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.track-cta__core {
+  display: block;
+  transform-origin: right center;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.track-cta__spark {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.track-cta:hover .track-cta__flare,
+.track-cta:focus-visible .track-cta__flare {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.track-cta:hover .track-cta__core,
+.track-cta:focus-visible .track-cta__core {
+  transform: scaleX(2.2);
+  box-shadow: 0 0 6px 1px var(--flare, currentColor);
+  animation: thruster-flicker 0.22s ease-in-out infinite alternate;
+}
+
+.track-cta:hover .track-cta__spark,
+.track-cta:focus-visible .track-cta__spark {
+  animation: thruster-spark 0.7s ease-out infinite;
+}
+
+.track-cta:hover .track-cta__spark:nth-child(3),
+.track-cta:focus-visible .track-cta__spark:nth-child(3) {
+  animation-delay: 0.23s;
+  margin-top: -2px;
+}
+
+.track-cta:hover .track-cta__spark:nth-child(4),
+.track-cta:focus-visible .track-cta__spark:nth-child(4) {
+  animation-delay: 0.46s;
+  margin-top: 0;
+}
+
+@keyframes thruster-flicker {
+  from { transform: scaleX(1.9); opacity: 0.75; }
+  to { transform: scaleX(2.5); opacity: 1; }
+}
+
+@keyframes thruster-spark {
+  0% { transform: translateX(-2px) scale(1); opacity: 0.9; }
+  100% { transform: translateX(-14px) scale(0.3); opacity: 0; }
+}
