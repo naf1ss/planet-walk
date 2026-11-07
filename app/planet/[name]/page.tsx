@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { BODY_SLUGS, getBodyContent, isBodySlug } from "@/lib/planet-content";
 import { PlanetExperience } from "@/components/planet/PlanetExperience";
+import { pageSeo } from "@/lib/seo";
 
 type PlanetPageProps = {
   params: Promise<{ name: string }>;
@@ -17,9 +18,15 @@ export async function generateMetadata({
   const { name } = await params;
   const body = getBodyContent(name.toLowerCase());
   if (!body) return { title: "Unknown body" };
+  const description = `${body.name} on the Gettysburg College Planet Walk — ${body.subtitle}. ${body.heroFact}`;
   return {
     title: body.name,
-    description: `${body.name} — ${body.subtitle}. ${body.heroFact}`,
+    description,
+    ...pageSeo({
+      path: `/planet/${name.toLowerCase()}`,
+      title: `${body.name} · Gettysburg Planet Walk`,
+      description,
+    }),
   };
 }
 

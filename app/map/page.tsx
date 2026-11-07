@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import { MapClientShell } from "@/components/map/MapClientShell";
+import { pageSeo } from "@/lib/seo";
+
+const MAP_DESCRIPTION =
+  "Interactive campus map of all 11 Gettysburg Planet Walk stops — follow the solar system scale model across Gettysburg College from the Hatter Planetarium to the College Observatory.";
 
 export const metadata: Metadata = {
-  title: "Map",
-  description:
-    "Campus map of Gettysburg Planet Walk stops from the Planetarium to the Observatory.",
+  title: "Campus Map",
+  description: MAP_DESCRIPTION,
+  ...pageSeo({
+    path: "/map",
+    title: "Campus Map · Gettysburg Planet Walk",
+    description: MAP_DESCRIPTION,
+  }),
 };
 
 export default function MapPage() {

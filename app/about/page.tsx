@@ -2,14 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { ContactIcon } from "@/components/layout/ContactIcon";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { CONTACT_LINKS, isExternalContact } from "@/lib/contact";
 import { SITE } from "@/lib/constants";
 import { WALK_STOPS, WALK_TOTAL_LABEL } from "@/lib/planetData";
+import { pageSeo } from "@/lib/seo";
+import { aboutJsonLd } from "@/lib/structured-data";
+
+const ABOUT_TITLE = `About ${SITE.author} · Planet Walk`;
+const ABOUT_DESCRIPTION =
+  "Md Nafisul Hasan Sami (Nafis) is a multidisciplinary artist at Gettysburg College working across studio art, mathematics, and data science — and the creator of the Gettysburg Planet Walk, a campus-scale solar system with ceramic tiles and an Observatory mural.";
 
 export const metadata: Metadata = {
-  title: "About",
-  description:
-    "The story of Gettysburg Planet Walk — a campus-scale solar system, Observatory mural, and interactive site by multidisciplinary artist Md Nafisul Hasan Sami.",
+  title: { absolute: ABOUT_TITLE },
+  description: ABOUT_DESCRIPTION,
+  ...pageSeo({
+    path: "/about",
+    title: ABOUT_TITLE,
+    description: ABOUT_DESCRIPTION,
+    type: "profile",
+  }),
 };
 
 /** Section shell — stacked on phones, label/heading rail + body on desktop. */
@@ -24,6 +36,7 @@ const SECTION_BODY = "lg:col-span-8";
 export default function AboutPage() {
   return (
     <main className="ui-layer relative mx-auto max-w-3xl px-4 pb-[max(6rem,calc(4rem+env(safe-area-inset-bottom)))] pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] sm:px-8 sm:pb-28 sm:pt-28 lg:max-w-6xl lg:px-10 lg:pt-36">
+      <JsonLd data={aboutJsonLd()} />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgba(110,182,255,0.12),transparent_55%)]"

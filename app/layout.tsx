@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Instrument_Serif, Space_Grotesk } from "next/font/google";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { SiteShell } from "@/components/layout/SiteShell";
+import { SITE } from "@/lib/constants";
+import { HOME_TITLE, OG_IMAGE } from "@/lib/seo";
 import "./globals.css";
 
 /**
@@ -30,21 +32,48 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: {
-    default: "Planet Walk",
-    template: "%s · Planet Walk",
+    default: HOME_TITLE,
+    template: "%s · Gettysburg Planet Walk",
   },
-  description:
-    "An interactive 3D solar system journey across Gettysburg College — from the Milky Way to Pluto.",
-  authors: [{ name: "Md Nafisul Hasan Sami" }],
+  description: SITE.description,
+  applicationName: SITE.name,
+  authors: [{ name: SITE.author, url: `${SITE.url}/about` }],
+  creator: SITE.author,
+  keywords: [
+    "Planet Walk",
+    "Gettysburg Planet Walk",
+    "Gettysburg College Planet Walk",
+    "solar system scale model",
+    "solar system walk",
+    "Gettysburg College",
+    "Hatter Planetarium",
+    "Gettysburg College Observatory",
+    "Md Nafisul Hasan Sami",
+    "Nafis",
+    "nuancesbynafis",
+  ],
+  category: "education",
   openGraph: {
     type: "website",
-    siteName: "Planet Walk",
-    title: "Planet Walk",
-    description:
-      "An interactive 3D solar system journey across Gettysburg College — from the Milky Way to Pluto.",
+    siteName: SITE.name,
+    locale: "en_US",
+    title: HOME_TITLE,
+    description: SITE.description,
+    images: [OG_IMAGE],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    title: HOME_TITLE,
+    description: SITE.description,
+    images: [OG_IMAGE.url],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
 };
 
 export const viewport: Viewport = {
